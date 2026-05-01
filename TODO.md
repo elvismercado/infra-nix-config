@@ -200,3 +200,13 @@ No findings — deep dive across per-host configs, vscode/fnm/pyenv shell-init, 
 No findings. Deep dive across `.github/instructions/`, `.github/prompts/`, flake input follows, per-host `user-settings.nix`, `kde_plasma.nix`, `git.nix`, `darwin/system-preferences.nix`, `display-profiles.nix`, and a regex sweep for the Round 12 bug pattern across all modules.
 
 Decision logged: `git.nix` builds `user.email` as `"${userSettings.username}@${userSettings.hostname}"` (e.g. `jin@JIN`) — confirmed intentional, not a defect. Future audits should not re-flag this.
+
+## Round 14
+
+### P1 — Security & Correctness
+
+- [x] **DARWIN.md and NIXOS.md "Adding a New Host" templates were missing required `user-settings.nix` fields** — Both templates showed only 5 fields (`username`, `hostname`, `system`, `channel`, `timeZone`) but the actual host configs and `copilot-instructions.md` document 8: adding `uid`, `repoPath`, and `desktopEnvironment`. A new user following either template would have hit errors (`user.nix` reads `userSettings.uid`; `postinstall.nix` asserts `repoPath` shape). Updated both templates to show the full set with realistic sample values and comments — Darwin uses `uid = 501` and `desktopEnvironment = null`; NixOS uses `uid = 1000` and `desktopEnvironment = "kde-plasma"`.
+
+### P3 — Architecture & Convention
+
+- [x] **DARWIN.md "Adding a New Darwin Host" directory tree omitted `homebrew.nix`** — EDGE now uses `hosts/EDGE/configuration/homebrew.nix` as the recommended pattern for separating Homebrew package management from host wiring. Added `homebrew.nix` to the example tree with an inline comment marking it as recommended (with pointer to EDGE) so future Mac hosts follow the same split rather than putting the homebrew block inline.

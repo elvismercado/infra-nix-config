@@ -174,11 +174,14 @@ Modules default to `false` — importing without enabling has no effect.
 
    ```nix
    {
-     username = "myuser";
-     hostname = "MYHOST";
+     username = "myuser"; # username or name of the system user
+     hostname = "MYHOST"; # description / hostname (must match networking.hostName)
      system = "x86_64-linux";
-     channel = "stable"; # or "unstable"
+     channel = "stable"; # "stable" or "unstable"
      timeZone = "Europe/Amsterdam";
+     uid = 1000; # UID for the system user — must match install script chown
+     repoPath = "git/nix-config"; # relative to $HOME
+     desktopEnvironment = "kde-plasma"; # "kde-plasma", "cosmic", or null
    }
    ```
 
