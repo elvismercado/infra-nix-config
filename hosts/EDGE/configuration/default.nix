@@ -13,6 +13,7 @@
     # enable-flakes.nix is not needed — Determinate Nix already enables flakes,
     # and nix.enable = false means nix.settings is not managed by nix-darwin.
     ./user.nix
+    ./homebrew.nix
 
     # Darwin / UI
     ../../../modules/systems/darwin/dock.nix
@@ -30,67 +31,6 @@
     # Shared
     ../../../modules/systems/shared/bash.nix
   ];
-
-  homebrew = {
-    enable = true;
-    brews = [
-      "mpv" # CLI/GUI media player (no cask available)
-    ];
-    casks = [
-      # Window management
-      "rectangle"
-
-      # Browsers & Communication
-      "brave-browser"
-      "discord"
-      "librewolf" # deprecated in Homebrew Sep 2026 — revisit before then
-      "signal"
-
-      # Media
-      "handbrake-app"
-      "moonlight"
-      "shotcut"
-      "spotify"
-      "steam"
-      "vlc"
-
-      # Productivity
-      "beeper"
-      "ferdium"
-      "nextcloud"
-      "orbstack"
-      "syncthing-app"
-
-      # Email
-      "thunderbird"
-
-      # Security & VPN
-      "mullvad-vpn"
-      "proton-mail-bridge"
-
-      # Development
-      "visual-studio-code"
-
-      # System & Hardware
-      "appcleaner"
-      "insync"
-      "libreoffice"
-      "localsend"
-      "raspberry-pi-imager"
-      "sweet-home3d"
-      "the-unarchiver"
-      "unraid-usb-creator-next"
-      "yubico-authenticator"
-    ];
-    masApps = {
-      "WireGuard" = 1451685025;
-    };
-    onActivation = {
-      autoUpdate = true;
-      upgrade = true;
-      # cleanup = "uninstall"; # remove packages not in config
-    };
-  };
 
   environment.shells = [ pkgs.bashInteractive ];
   environment.variables.LANG = "en_GB.UTF-8";

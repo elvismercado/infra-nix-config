@@ -30,72 +30,10 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 
 ## Installed applications
 
-### Homebrew brews
-
-| Formula | Description          |
-| ------- | -------------------- |
-| mpv     | CLI/GUI media player |
-
-### Homebrew casks
-
-**Window management**
-
-- rectangle
-
-**Browsers & Communication**
-
-- brave-browser
-- discord
-- librewolf
-- signal
-
-**Media**
-
-- handbrake-app
-- moonlight
-- shotcut
-- spotify
-- steam
-- vlc
-
-**Productivity**
-
-- beeper
-- ferdium
-- nextcloud
-- orbstack
-- syncthing-app
-
-**Email**
-
-- thunderbird
-
-**Security & VPN**
-
-- mullvad-vpn
-- proton-mail-bridge
-
-**Development**
-
-- visual-studio-code
-
-**System & Hardware**
-
-- appcleaner
-- insync
-- libreoffice
-- localsend
-- raspberry-pi-imager
-- sweet-home3d
-- the-unarchiver
-- unraid-usb-creator-next
-- yubico-authenticator
-
-### Mac App Store
-
-| App       | ID         |
-| --------- | ---------- |
-| WireGuard | 1451685025 |
+Homebrew formulae, casks, and Mac App Store apps are declared in
+[configuration/homebrew.nix](configuration/homebrew.nix) — that file
+is the source of truth, with the same category grouping this README
+used to mirror. Check there for the live list.
 
 ## Useful commands
 
