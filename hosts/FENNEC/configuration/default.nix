@@ -92,6 +92,7 @@
   custom.sysNixI18n.enable = true;
   custom.sysFonts.enable = true;
   custom.sysNixNetworkTuning.enable = true;
+  custom.sysNixNetworkTuning.congestionControl = "cubic"; # gaming host — BBR collapses Steam/Akamai downloads to ~150 Mbps
 
   # Display
   custom.sysNixSddm.enable = true;
