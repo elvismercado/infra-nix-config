@@ -52,7 +52,7 @@ let
   # M3 right of M2 (full chain)
   m3RightOfM2 = {
     resolution = "3840x2160";
-    scale = 1.0;
+    scale = 1.7;
     refreshRate = 60;
     orientation = "normal";
     brightness = 1.0;
@@ -62,7 +62,7 @@ let
   # M3 right of M1 (when M2 absent)
   m3RightOfM1 = {
     resolution = "3840x2160";
-    scale = 1.0;
+    scale = 1.7;
     refreshRate = 60;
     orientation = "normal";
     brightness = 1.0;
@@ -72,7 +72,7 @@ let
   # M3 standalone (no anchor, becomes primary)
   m3Alone = {
     resolution = "3840x2160";
-    scale = 1.0;
+    scale = 1.7;
     refreshRate = 60;
     orientation = "normal";
     brightness = 1.0;
@@ -180,14 +180,7 @@ in
       match."DP-2" = "1920x1200";
       match."HDMI-A-1" = "4096x2160";
       outputs."DP-2" = m2Alone;
-      outputs."HDMI-A-1" = {
-        resolution = "3840x2160";
-        scale = 1.0;
-        refreshRate = 60;
-        orientation = "normal";
-        brightness = 1.0;
-        position = "right-of-DP-2";
-      };
+      outputs."HDMI-A-1" = m3RightOfM2;
     };
 
     # --- M1 + M2 ---
