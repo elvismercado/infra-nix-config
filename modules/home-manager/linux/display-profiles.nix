@@ -26,7 +26,7 @@
 #   custom.hmDisplayProfiles.profiles."4k-dual" = {
 #     match."DP-1" = "3840x2160";
 #     match."DP-2" = "1920x1200";
-#     outputs."DP-1" = { resolution = "3840x2160"; scale = 1.5; refreshRate = 60; };
+#     outputs."DP-1" = { resolution = "3840x2160"; scale = 1.5; refreshRate = 60; primary = true; };
 #     outputs."DP-2" = { resolution = "1920x1200"; scale = 1.0; orientation = "right"; position = "right-of-DP-1"; };
 #   };
 
@@ -117,6 +117,19 @@ let
           Null = don't touch.
         '';
       };
+
+      primary = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        example = true;
+        description = ''
+          Mark this output as the primary display (where the panel,
+          launcher, and new windows appear by default). At most one
+          output per profile should be primary; if multiple are set,
+          the last one applied wins. Default false leaves the primary
+          flag untouched on this output.
+        '';
+      };
     };
   };
 
@@ -170,6 +183,7 @@ let
             orientation = if out.orientation != null then orientationMap.${out.orientation} else null;
             brightness = out.brightness;
             position = out.position;
+            primary = out.primary;
           }
         ) profile.outputs;
       }
@@ -440,7 +454,14 @@ let
             args+=("output.$output_id.brightness.$brightness_pct")
           fi
 
-          log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness"
+          # Primary — mark as the primary output (panel/launcher anchor)
+          local primary
+          primary=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].primary // false')
+          if [ "$primary" = "true" ]; then
+            args+=("output.$output_id.primary")
+          fi
+
+          log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness primary=$primary"
         done
 
         if [ ''${#args[@]} -gt 0 ]; then
