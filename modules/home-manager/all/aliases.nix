@@ -28,7 +28,7 @@
 
       # --- terminal eye candy ---
       funmatrix = "unimatrix -s 96 -l o"; # Matrix rain (fast, iconic katakana set)
-      funbonsai = "cbonsai -l"; # Live-growing ASCII bonsai
+      funbonsai = "cbonsai -li"; # Live-growing ASCII bonsai, infinite loop
       funhack = "genact"; # Fake hacking activity generator
     };
   };
