@@ -111,9 +111,16 @@ let
         example = "right-of-DP-1";
         description = ''
           Output position. Use one of:
-            "right-of-CONNECTOR" — auto-calculated from that output's
-              applied resolution and scale (x = width / scale, y = 0)
-            "X,Y" — explicit pixel position (e.g. "1920,0")
+            "right-of-CONNECTOR" — logical x = anchor's own x-offset +
+              its logical width (rotation-aware: portrait references
+              use their height as logical width). Anchor may itself be
+              positioned with right-of/left-of — chains are resolved
+              recursively (max depth 10).
+            "left-of-CONNECTOR" — mirror of right-of; this output is
+              placed so its right edge meets the anchor's left edge.
+            "X,Y" — explicit pixel position (e.g. "1920,0").
+          A warning is logged if the named anchor is not connected;
+          the output then falls back to position "0,0".
           Null = don't touch.
         '';
       };
@@ -335,36 +342,111 @@ let
         echo "$PROFILES_JSON" | jq -c --arg name "$profile_name" '.[$name].outputs'
       }
 
-      # Calculate position for "right-of-CONNECTOR" using current topology
-      calc_right_of_position() {
-        local ref_connector="$1"
+      # Calculate logical width of an output, accounting for rotation and scale.
+      # Portrait orientations (left/right) swap WxH for on-screen logical width.
+      # Echoes an integer; "0" if the output's resolution is unknown.
+      calc_logical_width() {
+        local connector="$1"
         local topology="$2"
         local profile_outputs="$3"
 
-        # Use configured resolution for the reference output, fall back to current
-        local ref_res
-        ref_res=$(echo "$profile_outputs" | jq -r --arg c "$ref_connector" '.[$c].resolution // empty')
-        if [ -z "$ref_res" ]; then
-          ref_res=$(echo "$topology" | jq -r --arg c "$ref_connector" '.[$c].currentResolution // empty')
+        local res
+        res=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].resolution // empty')
+        if [ -z "$res" ]; then
+          res=$(echo "$topology" | jq -r --arg c "$connector" '.[$c].currentResolution // empty')
         fi
-        if [ -z "$ref_res" ]; then
-          echo "0,0"
+        if [ -z "$res" ]; then
+          echo "0"
           return
         fi
 
-        # Get width from resolution (WxH)
-        local ref_width
-        ref_width=$(echo "$ref_res" | cut -d'x' -f1)
+        local w h
+        w=$(echo "$res" | cut -d'x' -f1)
+        h=$(echo "$res" | cut -d'x' -f2)
 
-        # Get the scale applied to the reference output (from the profile)
-        local ref_scale
-        ref_scale=$(echo "$profile_outputs" | jq -r --arg c "$ref_connector" '.[$c].scale // 1')
+        local orientation
+        orientation=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].orientation // empty')
+        local logical_w="$w"
+        if [ "$orientation" = "left" ] || [ "$orientation" = "right" ]; then
+          logical_w="$h"
+        fi
 
-        # Calculate x position: width / scale (logical pixels)
-        local x_pos
-        x_pos=$(awk "BEGIN { printf \"%d\", $ref_width / $ref_scale }")
+        local scale
+        scale=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].scale // 1')
 
-        echo "''${x_pos},0"
+        awk "BEGIN { printf \"%d\", $logical_w / $scale }"
+      }
+
+      # Recursively resolve the absolute logical x-offset of an output by
+      # walking its `position` chain (right-of/left-of/literal). Returns 0
+      # for outputs with no position. Warns and returns 0 if the chain
+      # exceeds MAX_POSITION_DEPTH or references a missing anchor.
+      MAX_POSITION_DEPTH=10
+      calc_x_offset() {
+        local connector="$1"
+        local topology="$2"
+        local profile_outputs="$3"
+        local depth="$4"
+
+        if [ "$depth" -ge "$MAX_POSITION_DEPTH" ]; then
+          log "  Warning: position chain depth exceeded $MAX_POSITION_DEPTH at $connector — falling back to 0"
+          echo "0"
+          return
+        fi
+
+        local position
+        position=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].position // empty')
+        if [ -z "$position" ]; then
+          echo "0"
+          return
+        fi
+
+        if [[ "$position" == right-of-* ]]; then
+          local anchor="''${position#right-of-}"
+          local anchor_id
+          anchor_id=$(echo "$topology" | jq -r --arg c "$anchor" '.[$c].id // empty')
+          if [ -z "$anchor_id" ]; then
+            log "  Warning: position anchor '$anchor' not connected for $connector — falling back to 0"
+            echo "0"
+            return
+          fi
+          local anchor_x anchor_w
+          anchor_x=$(calc_x_offset "$anchor" "$topology" "$profile_outputs" $((depth + 1)))
+          anchor_w=$(calc_logical_width "$anchor" "$topology" "$profile_outputs")
+          awk "BEGIN { printf \"%d\", $anchor_x + $anchor_w }"
+          return
+        fi
+
+        if [[ "$position" == left-of-* ]]; then
+          local anchor="''${position#left-of-}"
+          local anchor_id
+          anchor_id=$(echo "$topology" | jq -r --arg c "$anchor" '.[$c].id // empty')
+          if [ -z "$anchor_id" ]; then
+            log "  Warning: position anchor '$anchor' not connected for $connector — falling back to 0"
+            echo "0"
+            return
+          fi
+          local anchor_x self_w
+          anchor_x=$(calc_x_offset "$anchor" "$topology" "$profile_outputs" $((depth + 1)))
+          self_w=$(calc_logical_width "$connector" "$topology" "$profile_outputs")
+          awk "BEGIN { printf \"%d\", $anchor_x - $self_w }"
+          return
+        fi
+
+        # Literal "X,Y" — parse X
+        echo "$position" | cut -d',' -f1
+      }
+
+      # Resolve a position string for an output to an absolute "X,Y" pair.
+      # Handles right-of-CONNECTOR, left-of-CONNECTOR, and literal "X,Y".
+      calc_anchored_position() {
+        local connector="$1"
+        local topology="$2"
+        local profile_outputs="$3"
+
+        local x
+        x=$(calc_x_offset "$connector" "$topology" "$profile_outputs" 0)
+        echo "''${x},0"
       }
 
       # Apply a profile's output settings
@@ -436,9 +518,8 @@ let
           position=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].position // empty')
           if [ -n "$position" ]; then
             local actual_pos
-            if [[ "$position" == right-of-* ]]; then
-              local ref_conn="''${position#right-of-}"
-              actual_pos=$(calc_right_of_position "$ref_conn" "$topology" "$profile_outputs")
+            if [[ "$position" == right-of-* ]] || [[ "$position" == left-of-* ]]; then
+              actual_pos=$(calc_anchored_position "$connector" "$topology" "$profile_outputs")
             else
               actual_pos="$position"
             fi

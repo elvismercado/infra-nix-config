@@ -7,7 +7,7 @@
 let
   # --- FENNEC display profile building blocks ---
   # M1: dual-mode primary on DP-1 (4K @ 160Hz scale 1.7  /  1080p @ 320Hz scale 1.0)
-  # M2: portrait on DP-2 (1920x1200 @ 100Hz, rotated left)
+  # M2: portrait on DP-2 (1920x1200 @ 100Hz, rotated right)
   # M3: 4K landscape on HDMI-A-1 (3840x2160 @ 60Hz)
   # Layout when all present: M1 (primary) → M2 (right of M1) → M3 (right of M2)
 
@@ -34,7 +34,7 @@ let
     resolution = "1920x1200";
     scale = 1.0;
     refreshRate = 100;
-    orientation = "left";
+    orientation = "right";
     brightness = 1.0;
     position = "right-of-DP-1";
   };
@@ -44,7 +44,7 @@ let
     resolution = "1920x1200";
     scale = 1.0;
     refreshRate = 100;
-    orientation = "left";
+    orientation = "right";
     brightness = 1.0;
     primary = true;
   };
