@@ -525,6 +525,10 @@ let
               actual_pos="$position"
             fi
             args+=("output.$output_id.position.$actual_pos")
+          else
+            # No explicit position → reset to origin so previously-anchored
+            # outputs don't keep stale x-offsets after a topology change.
+            args+=("output.$output_id.position.0,0")
           fi
 
           # Brightness (best-effort) — convert 0.0-1.0 to 0-100 for kscreen-doctor
