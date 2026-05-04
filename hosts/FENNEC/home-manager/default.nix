@@ -171,14 +171,14 @@ in
 
     # --- M3 only ---
     "m3" = {
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."HDMI-A-1" = m3Alone;
     };
 
     # --- M2 + M3 (no M1) ---
     "m2+m3" = {
       match."DP-2" = "1920x1200";
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."DP-2" = m2Alone;
       outputs."HDMI-A-1" = {
         resolution = "3840x2160";
@@ -207,13 +207,13 @@ in
     # --- M1 + M3 (M2 absent — M3 sits where M2 normally would) ---
     "m1-4k+m3" = {
       match."DP-1" = "3840x2160";
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."DP-1" = m1At4k;
       outputs."HDMI-A-1" = m3RightOfM1;
     };
     "m1-hd+m3" = {
       match."DP-1" = "1920x1080";
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."DP-1" = m1AtHd;
       outputs."HDMI-A-1" = m3RightOfM1;
     };
@@ -222,7 +222,7 @@ in
     "m1-4k+all" = {
       match."DP-1" = "3840x2160";
       match."DP-2" = "1920x1200";
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."DP-1" = m1At4k;
       outputs."DP-2" = m2WithM1;
       outputs."HDMI-A-1" = m3RightOfM2;
@@ -230,7 +230,7 @@ in
     "m1-hd+all" = {
       match."DP-1" = "1920x1080";
       match."DP-2" = "1920x1200";
-      match."HDMI-A-1" = "3840x2160";
+      match."HDMI-A-1" = "4096x2160";
       outputs."DP-1" = m1AtHd;
       outputs."DP-2" = m2WithM1;
       outputs."HDMI-A-1" = m3RightOfM2;
