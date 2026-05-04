@@ -1,6 +1,10 @@
 # Display Profiles — topology-based auto-configuration service
 # https://invent.kde.org/plasma/libkscreen
 #
+# KDE Plasma only — uses kscreen-doctor (kdePackages.libkscreen) and
+# reads KWin state. Module asserts `userSettings.desktopEnvironment ==
+# "kde-plasma"` when enabled.
+#
 # Watches the display topology (connected outputs + resolutions) and
 # automatically applies the best-matching profile. Handles:
 #   - Dual-mode monitors (e.g. 4K ↔ 1080p hardware switch)

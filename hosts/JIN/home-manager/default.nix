@@ -86,8 +86,9 @@
 
   # Services
   custom.hmDisplayProfiles.enable = true;
-  custom.hmShutdownDisableOutputs.enable = true;
-  custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash
+  # parked — see TODO.md Backlog (decide: remove or upgrade)
+  # custom.hmShutdownDisableOutputs.enable = true;
+  # custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash
 
   # Dual-monitor profiles (DP-2 connected — score 2, wins over single)
   custom.hmDisplayProfiles.profiles."4k-dual" = {

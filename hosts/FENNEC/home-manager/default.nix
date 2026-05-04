@@ -70,7 +70,8 @@
   # Linux
   custom.hmLinuxAliases.enable = true;
   custom.hmWindowShortcuts.enable = true;
-  custom.hmDisplayProfiles.enable = true;
+  # disabled — no profiles defined yet (see TODO.md Backlog)
+  # custom.hmDisplayProfiles.enable = true;
 
   # Linux / KDE Plasma
   custom.hmPlasmaConfig.enable = true;

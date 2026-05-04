@@ -210,3 +210,15 @@ Decision logged: `git.nix` builds `user.email` as `"${userSettings.username}@${u
 ### P3 — Architecture & Convention
 
 - [x] **DARWIN.md "Adding a New Darwin Host" directory tree omitted `homebrew.nix`** — EDGE now uses `hosts/EDGE/configuration/homebrew.nix` as the recommended pattern for separating Homebrew package management from host wiring. Added `homebrew.nix` to the example tree with an inline comment marking it as recommended (with pointer to EDGE) so future Mac hosts follow the same split rather than putting the homebrew block inline.
+
+## Backlog — Pending Decisions
+
+Items outside the audit-round cadence; ad-hoc enhancements awaiting a decision.
+
+### Display modules — parked, decide remove vs upgrade
+
+- [ ] **`custom.sysNixSddmMonitorLayout` — decide: remove or upgrade.** Module: `modules/systems/nixos/display_manager/sddm-monitor-layout.nix`. Status: zero hosts enable it. Activation script copies a runtime-mutated `~/.config/kwinoutputconfig.json` to the SDDM user; fragile (file may not exist on fresh install, mid-session edits not captured until next rebuild). Either delete and remove from NIXOS.md table, or rework to derive layout declaratively.
+
+- [ ] **`custom.hmShutdownDisableOutputs` — decide: remove or upgrade.** Module: `modules/home-manager/linux/shutdown-disable-outputs.nix`. Status: parked on JIN (commented out, see `hosts/JIN/home-manager/default.nix`). The Plymouth-multi-monitor-flicker problem may be obsolete in current Plasma 6 / Plymouth — verify the symptom still occurs on a clean shutdown before re-enabling. If not needed, delete and remove from HOME-MANAGER.md.
+
+- [ ] **FENNEC `hmDisplayProfiles` — define profiles or remove module enable.** Currently disabled (commented out in `hosts/FENNEC/home-manager/default.nix`) because no profiles were defined — the daemon would idle-loop with nothing to match. Re-enable with profile definitions when FENNEC gets a multi-monitor setup, or remove the import entirely if FENNEC stays single-monitor.

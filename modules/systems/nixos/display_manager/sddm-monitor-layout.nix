@@ -1,6 +1,10 @@
 # SDDM Monitor Layout — deploy kwinoutputconfig.json to the SDDM user
 # https://wiki.archlinux.org/title/SDDM#Match_Plasma_display_configuration
 #
+# KDE Plasma only — deploys KWin's output config to the SDDM Wayland
+# greeter. Module asserts `userSettings.desktopEnvironment ==
+# "kde-plasma"` when enabled.
+#
 # Copies your KDE Plasma monitor layout (positions, resolutions,
 # rotations, primary display, scaling) to the SDDM user's config
 # directory so the Wayland greeter (kwin_wayland) inherits the same
@@ -26,12 +30,16 @@
   config,
   lib,
   pkgs,
+  userSettings,
   ...
 }:
 
+let
+  cfg = config.custom.sysNixSddmMonitorLayout;
+in
 {
   options = {
-    custom.sysNixSddmMonitorLayout.enable = lib.mkEnableOption "applies monitor layout to SDDM login screen";
+    custom.sysNixSddmMonitorLayout.enable = lib.mkEnableOption "applies monitor layout to SDDM login screen (KDE Plasma only)";
 
     custom.sysNixSddmMonitorLayout.disabledOutputs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -47,7 +55,14 @@
     };
   };
 
-  config = lib.mkIf config.custom.sysNixSddmMonitorLayout.enable {
+  config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = (userSettings.desktopEnvironment or null) == "kde-plasma";
+        message = "custom.sysNixSddmMonitorLayout requires KDE Plasma (set desktopEnvironment = \"kde-plasma\" in user-settings.nix)";
+      }
+    ];
+
     # Deploy the kwin output config to the sddm user on every rebuild/activation.
     # This ensures the SDDM Wayland greeter (which uses kwin_wayland)
     # renders with the correct monitor layout.
