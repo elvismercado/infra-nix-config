@@ -207,6 +207,7 @@ let
       pkgs.gnused
       pkgs.gnugrep
       pkgs.gawk
+      pkgs.glib # gdbus (hotplug listener)
     ];
     text = ''
       set -euo pipefail
@@ -545,6 +546,22 @@ let
           log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness primary=$primary"
         done
 
+        # Auto-disable any connected outputs not mentioned in the profile.
+        # Prevents stale positions when a monitor is hot-plugged into a
+        # topology whose matched profile doesn't reference that connector.
+        local topo_connectors
+        topo_connectors=$(echo "$topology" | jq -r 'keys[]')
+        for tc in $topo_connectors; do
+          local in_profile
+          in_profile=$(echo "$profile_outputs" | jq --arg c "$tc" 'has($c)')
+          if [ "$in_profile" = "false" ]; then
+            local tc_id
+            tc_id=$(echo "$topology" | jq -r --arg c "$tc" '.[$c].id')
+            args+=("output.$tc_id.disable")
+            log "  $tc (id=$tc_id): not in profile, disabling"
+          fi
+        done
+
         if [ ''${#args[@]} -gt 0 ]; then
           log "Applying: kscreen-doctor ''${args[*]}"
           kscreen-doctor "''${args[@]}" || log "Warning: kscreen-doctor returned non-zero"
@@ -553,13 +570,45 @@ let
 
       # ── Main loop ─────────────────────────────────────────────────────
 
-      log "Starting display-profiles daemon (poll every ''${POLL_INTERVAL}s)"
+      # Hot-plug listener: subscribes to KScreen D-Bus signals and writes a
+      # "kick" line to a FIFO whenever something happens. The main loop
+      # blocks on `read -t` from the FIFO instead of plain sleep, so it
+      # wakes immediately on hot-plug events and otherwise polls every
+      # POLL_INTERVAL seconds as a safety net.
+      HOTPLUG_FIFO=$(mktemp -u --tmpdir display-profiles-hotplug.XXXXXX)
+      mkfifo "$HOTPLUG_FIFO"
+      # Open the FIFO read+write in this process so `read` never sees EOF
+      # when the listener restarts or briefly disconnects.
+      exec 3<>"$HOTPLUG_FIFO"
+
+      (
+        # gdbus monitor exits on bus errors; restart it under a loop so
+        # transient failures don't kill the listener.
+        while true; do
+          gdbus monitor --session --dest org.kde.KScreen 2>/dev/null \
+            | while IFS= read -r _line; do
+                echo "kick" >&3 2>/dev/null || true
+              done
+          sleep 2
+        done
+      ) &
+      HOTPLUG_PID=$!
+
+      cleanup() {
+        kill "$HOTPLUG_PID" 2>/dev/null || true
+        exec 3>&- || true
+        rm -f "$HOTPLUG_FIFO"
+      }
+      trap cleanup EXIT INT TERM
+
+      log "Starting display-profiles daemon (poll every ''${POLL_INTERVAL}s, hot-plug listener pid=$HOTPLUG_PID)"
 
       while true; do
         topology=$(get_topology)
 
         if [ "$topology" != "$LAST_TOPOLOGY" ]; then
           LAST_TOPOLOGY="$topology"
+          log "Topology: $topology"
 
           # Find best matching profile
           best_profile=$(find_best_profile "$topology") || true
@@ -572,6 +621,7 @@ let
             # Re-read topology after settle (KWin may have adjusted)
             topology=$(get_topology)
             LAST_TOPOLOGY="$topology"
+            log "Topology (post-settle): $topology"
 
             # Re-evaluate with settled topology
             best_profile=$(find_best_profile "$topology") || true
@@ -587,12 +637,17 @@ let
             fi
           elif [ -z "$best_profile" ] && [ "$LAST_PROFILE" != "__none__" ]; then
             log "Topology changed — no matching profile, leaving KDE defaults"
-            log "Current topology: $topology"
             LAST_PROFILE="__none__"
           fi
         fi
 
-        sleep "$POLL_INTERVAL"
+        # Wait up to POLL_INTERVAL seconds, but wake immediately on hot-plug.
+        # Drain any additional kicks queued during the work above so a flurry
+        # of events collapses into a single re-poll on the next iteration.
+        if read -r -t "$POLL_INTERVAL" _kick <&3; then
+          while read -r -t 0.05 _drain <&3; do :; done
+          log "Hot-plug event — immediate re-poll"
+        fi
       done
     '';
   };
