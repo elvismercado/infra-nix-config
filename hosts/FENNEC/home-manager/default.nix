@@ -109,6 +109,7 @@ in
 
     # Linux / KDE Plasma
     ../../../modules/home-manager/linux/plasma-config.nix
+    ../../../modules/home-manager/linux/sddm-monitor-layout.nix
 
     # Linux / Gaming
     ../../../modules/home-manager/linux/gaming.nix
@@ -147,6 +148,8 @@ in
   custom.hmLinuxAliases.enable = true;
   custom.hmWindowShortcuts.enable = true;
   custom.hmDisplayProfiles.enable = true;
+  custom.hmSddmMonitorLayout.enable = true;
+  custom.hmSddmMonitorLayout.profile = "m1-4k";
 
   # Display profiles — 7 topologies × M1's 2 hardware modes = 11 profiles.
   # Match uses max resolution from DRM sysfs, so M1's hardware mode toggle

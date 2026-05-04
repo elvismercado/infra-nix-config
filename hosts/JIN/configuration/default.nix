@@ -128,7 +128,6 @@
   # '';
   custom.sysNixSddm.enable = true;
   custom.sysNixSddmMonitorLayout.enable = true;
-  custom.sysNixSddmMonitorLayout.disabledOutputs = [ "DP-2" ]; # login screen on primary only
   custom.sysNixSddmInputConfig.enable = true;
   custom.sysNixKdePlasma.enable = true;
 

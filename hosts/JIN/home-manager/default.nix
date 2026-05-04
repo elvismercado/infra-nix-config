@@ -82,6 +82,7 @@ in
     ../../../modules/home-manager/linux/plasma-config.nix
     ../../../modules/home-manager/linux/window-shortcuts.nix
     ../../../modules/home-manager/linux/display-profiles.nix
+    ../../../modules/home-manager/linux/sddm-monitor-layout.nix
     ../../../modules/home-manager/linux/shutdown-disable-outputs.nix
 
     # Linux / Utilities
@@ -131,6 +132,9 @@ in
 
   # Services
   custom.hmDisplayProfiles.enable = true;
+  custom.hmSddmMonitorLayout.enable = true;
+  custom.hmSddmMonitorLayout.profile = "m1-4k";
+  custom.hmSddmMonitorLayout.disabledOutputs = [ "DP-2" ]; # login screen on primary only
   # parked — see TODO.md Backlog (decide: remove or upgrade)
   # custom.hmShutdownDisableOutputs.enable = true;
   # custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash

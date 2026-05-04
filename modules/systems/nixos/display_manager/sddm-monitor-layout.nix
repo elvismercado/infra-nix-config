@@ -1,56 +1,50 @@
-# SDDM Monitor Layout — deploy kwinoutputconfig.json to the SDDM user
+# SDDM Monitor Layout — install rendered kwinoutputconfig.json for SDDM
 # https://wiki.archlinux.org/title/SDDM#Match_Plasma_display_configuration
 #
-# KDE Plasma only — deploys KWin's output config to the SDDM Wayland
-# greeter. Module asserts `userSettings.desktopEnvironment ==
-# "kde-plasma"` when enabled.
+# KDE Plasma only — copies the home-manager-rendered
+# `kwinoutputconfig.json` (produced by `custom.hmSddmMonitorLayout`)
+# into `/var/lib/sddm/.config/` on every system activation, so the SDDM
+# Wayland greeter renders with the chosen canonical layout.
 #
-# Copies your KDE Plasma monitor layout (positions, resolutions,
-# rotations, primary display, scaling) to the SDDM user's config
-# directory so the Wayland greeter (kwin_wayland) inherits the same
-# layout on the login screen.
+# Source is a deterministic `/nix/store/...` path produced at evaluation
+# time from `custom.hmDisplayProfiles.profiles` — not scraped from
+# runtime KWin state. The login layout is therefore stable regardless
+# of which physical topology is active at the time of `nixos-rebuild`.
 #
-# The source file is auto-detected from the first user's home directory
-# at ~/.config/kwinoutputconfig.json during system activation.
-#
-# Optionally, specific outputs can be disabled for the SDDM login screen
-# only (e.g. to show the greeter on the primary monitor only). The
-# user's desktop session is unaffected — KDE uses its own config.
+# Companion to `modules/home-manager/linux/sddm-monitor-layout.nix`,
+# which exposes the profile selection and disabledOutputs API.
 #
 # Usage:
 #   imports = [
 #     ../../../modules/systems/nixos/display_manager/sddm-monitor-layout.nix
 #   ];
 #   custom.sysNixSddmMonitorLayout.enable = true;
-#
-#   # Optional: disable secondary monitor on the login screen
-#   custom.sysNixSddmMonitorLayout.disabledOutputs = [ "DP-2" ];
+#   # Optional override: which user's hm config to read from (defaults to userSettings.username)
+#   # custom.sysNixSddmMonitorLayout.sourceUser = "elvis";
 
 {
   config,
   lib,
-  pkgs,
   userSettings,
   ...
 }:
 
 let
   cfg = config.custom.sysNixSddmMonitorLayout;
+  hmUserCfg = config.home-manager.users.${cfg.sourceUser} or { };
+  hmSddm = hmUserCfg.custom.hmSddmMonitorLayout or { };
 in
 {
-  options = {
-    custom.sysNixSddmMonitorLayout.enable = lib.mkEnableOption "applies monitor layout to SDDM login screen (KDE Plasma only)";
+  options.custom.sysNixSddmMonitorLayout = {
+    enable = lib.mkEnableOption "installs the home-manager-rendered SDDM monitor layout (KDE Plasma only)";
 
-    custom.sysNixSddmMonitorLayout.disabledOutputs = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      example = [ "DP-2" ];
+    sourceUser = lib.mkOption {
+      type = lib.types.str;
+      default = userSettings.username;
       description = ''
-        DRM connector names to disable on the SDDM login screen.
-        These outputs will be set to "enabled": false in the
-        kwinoutputconfig.json deployed to the SDDM user, so the
-        KWin Wayland greeter only renders on the remaining outputs.
-        The user's desktop session is unaffected.
+        Which home-manager user's `custom.hmSddmMonitorLayout` should
+        provide the rendered `kwinoutputconfig.json`. Defaults to the
+        primary user from `user-settings.nix`.
       '';
     };
   };
@@ -61,49 +55,26 @@ in
         assertion = (userSettings.desktopEnvironment or null) == "kde-plasma";
         message = "custom.sysNixSddmMonitorLayout requires KDE Plasma (set desktopEnvironment = \"kde-plasma\" in user-settings.nix)";
       }
+      {
+        assertion = (hmSddm.enable or false) == true;
+        message = ''
+          custom.sysNixSddmMonitorLayout.enable = true requires
+          custom.hmSddmMonitorLayout.enable = true in user
+          "${cfg.sourceUser}"'s home-manager config.
+        '';
+      }
     ];
 
-    # Deploy the kwin output config to the sddm user on every rebuild/activation.
-    # This ensures the SDDM Wayland greeter (which uses kwin_wayland)
-    # renders with the correct monitor layout.
+    # Copy the rendered store path into SDDM's config dir on every
+    # activation. The source path changes (new store hash) only when
+    # the underlying profile or disabledOutputs change in Nix.
     system.activationScripts.sddmMonitorLayout = {
-      text =
-        let
-          disabledOutputs = config.custom.sysNixSddmMonitorLayout.disabledOutputs;
-          jq = "${pkgs.jq}/bin/jq";
-
-          # Build a jq filter that disables specified outputs in every setup.
-          # For each disabled connector, find its outputIndex from the "outputs"
-          # section, then set "enabled": false for matching entries in "setups".
-          disableFilter = lib.concatMapStringsSep " | " (connector: ''
-            (.[0].data | to_entries | map(select(.value.connectorName == "${connector}")) | .[0].key) as $idx |
-            .[1].data |= map(.outputs |= map(if .outputIndex == $idx then .enabled = false else . end))
-          '') disabledOutputs;
-        in
-        ''
-          SDDM_CONFIG="/var/lib/sddm/.config"
-          mkdir -p "$SDDM_CONFIG"
-
-          # Auto-detect: copy from the first user's home directory if available
-          for HOME_DIR in /home/*/; do
-            if [ -f "$HOME_DIR.config/kwinoutputconfig.json" ]; then
-              cp "$HOME_DIR.config/kwinoutputconfig.json" "$SDDM_CONFIG/kwinoutputconfig.json"
-              break
-            fi
-          done
-
-          ${lib.optionalString (disabledOutputs != [ ]) ''
-            # Disable specified outputs for the SDDM greeter only
-            if [ -f "$SDDM_CONFIG/kwinoutputconfig.json" ]; then
-              ${jq} '${disableFilter}' "$SDDM_CONFIG/kwinoutputconfig.json" > "$SDDM_CONFIG/kwinoutputconfig.json.tmp" \
-                && mv "$SDDM_CONFIG/kwinoutputconfig.json.tmp" "$SDDM_CONFIG/kwinoutputconfig.json"
-            fi
-          ''}
-
-          if [ -f "$SDDM_CONFIG/kwinoutputconfig.json" ]; then
-            chown sddm:sddm "$SDDM_CONFIG/kwinoutputconfig.json"
-          fi
-        '';
+      text = ''
+        SDDM_CONFIG="/var/lib/sddm/.config"
+        mkdir -p "$SDDM_CONFIG"
+        cp ${hmSddm._renderedConfig or "/dev/null"} "$SDDM_CONFIG/kwinoutputconfig.json"
+        chown sddm:sddm "$SDDM_CONFIG/kwinoutputconfig.json"
+      '';
     };
   };
 }

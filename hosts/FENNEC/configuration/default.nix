@@ -38,6 +38,7 @@
 
     # Display
     ../../../modules/systems/nixos/display_manager/sddm.nix
+    ../../../modules/systems/nixos/display_manager/sddm-monitor-layout.nix
     ../../../modules/systems/nixos/desktop_environment/kde_plasma.nix
 
     # Peripherals
@@ -96,6 +97,7 @@
 
   # Display
   custom.sysNixSddm.enable = true;
+  custom.sysNixSddmMonitorLayout.enable = true;
   custom.sysNixKdePlasma.enable = true;
 
   # Peripherals

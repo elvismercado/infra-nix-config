@@ -97,6 +97,7 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 | `home-manager/linux/packages.nix`                 | `custom.hmLinuxPackages.enable`          |
 | `home-manager/linux/vscode.nix`                   | `custom.hmVscode.enable`                 |
 | `home-manager/linux/plasma-config.nix`            | `custom.hmPlasmaConfig.enable`           |
+| `home-manager/linux/sddm-monitor-layout.nix`      | `custom.hmSddmMonitorLayout.enable`      |
 | `home-manager/linux/shutdown-disable-outputs.nix` | `custom.hmShutdownDisableOutputs.enable` |
 | `home-manager/linux/strawberry.nix`               | `custom.hmStrawberry.enable`             |
 | `home-manager/linux/vesktop.nix`                  | `custom.hmVesktop.enable`                |
