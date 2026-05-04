@@ -149,7 +149,11 @@ in
   custom.hmWindowShortcuts.enable = true;
   custom.hmDisplayProfiles.enable = true;
   custom.hmSddmMonitorLayout.enable = true;
-  custom.hmSddmMonitorLayout.profile = "m1-4k";
+  custom.hmSddmMonitorLayout.profile = "m1-4k+all";
+  custom.hmSddmMonitorLayout.disabledOutputs = [
+    "DP-2"
+    "HDMI-A-1"
+  ]; # login screen on M1 only
 
   # Display profiles — 7 topologies × M1's 2 hardware modes = 11 profiles.
   # Match uses max resolution from DRM sysfs, so M1's hardware mode toggle

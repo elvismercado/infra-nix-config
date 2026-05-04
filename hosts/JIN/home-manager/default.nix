@@ -133,7 +133,8 @@ in
   # Services
   custom.hmDisplayProfiles.enable = true;
   custom.hmSddmMonitorLayout.enable = true;
-  custom.hmSddmMonitorLayout.profile = "m1-4k"; # single-monitor login (DP-1 only)
+  custom.hmSddmMonitorLayout.profile = "m1-4k+m2";
+  custom.hmSddmMonitorLayout.disabledOutputs = [ "DP-2" ]; # login screen on M1 only
   # parked — see TODO.md Backlog (decide: remove or upgrade)
   # custom.hmShutdownDisableOutputs.enable = true;
   # custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash
