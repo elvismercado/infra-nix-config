@@ -13,8 +13,10 @@
     # Bootloader
     ../../../modules/systems/nixos/bootloader/grub.nix
     ../../../modules/systems/nixos/bootloader/grub-theme-sleek.nix
-    ../../../modules/systems/nixos/bootloader/plymouth.nix
-    ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
+    # Bootloader
+    # parked — see TODO.md Backlog (improve before re-enabling)
+    # ../../../modules/systems/nixos/bootloader/plymouth.nix
+    # ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_3900x.nix
@@ -86,14 +88,15 @@
   custom.sysNixGrub.gfxmodeEfi = "3840x2160,2560x1440,1920x1200,1920x1080,auto"; # 4K → 1440p → 1200p → 1080p → auto fallback
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
-  custom.sysNixPlymouth.enable = true;
-  custom.sysNixPlymouth.bootDisabledOutputs = [ "DP-2" ]; # auto-adds video=DP-2:d, re-enables before display manager
-  custom.sysNixPlymouth.useSimpleDrm = false; # disable SimpleDRM — amdgpu forced-SI ignores video=DP-2:d either way
-  custom.sysNixPlymouth.minAnimationDuration = 3; # NVMe boots fast — ensure animation plays
-  custom.sysNixPlymouth.minShutdownDuration = 3; # NVMe shuts down fast — ensure splash is visible
+  # Plymouth — parked, see TODO.md Backlog (improve before re-enabling)
+  # custom.sysNixPlymouth.enable = true;
+  # custom.sysNixPlymouth.bootDisabledOutputs = [ "DP-2" ]; # auto-adds video=DP-2:d, re-enables before display manager
+  # custom.sysNixPlymouth.useSimpleDrm = false; # disable SimpleDRM — amdgpu forced-SI ignores video=DP-2:d either way
+  # custom.sysNixPlymouth.minAnimationDuration = 3; # NVMe boots fast — ensure animation plays
+  # custom.sysNixPlymouth.minShutdownDuration = 3; # NVMe shuts down fast — ensure splash is visible
   # custom.sysNixPlymouth.debug = true; # writes /var/log/plymouth-debug.log
-  custom.sysNixPlymouthThemeAdi1090x.enable = true;
-  custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
+  # custom.sysNixPlymouthThemeAdi1090x.enable = true;
+  # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
 
   # Hardware
   custom.sysNixAmdRyzen93900x.enable = true; # Ryzen 9 3900X profile (ryzen + pstate + zenpower)

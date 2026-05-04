@@ -13,8 +13,10 @@
     # Bootloader
     ../../../modules/systems/nixos/bootloader/grub.nix
     ../../../modules/systems/nixos/bootloader/grub-theme-sleek.nix
-    ../../../modules/systems/nixos/bootloader/plymouth.nix
-    ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
+    # Bootloader
+    # parked — see TODO.md Backlog (improve before re-enabling)
+    # ../../../modules/systems/nixos/bootloader/plymouth.nix
+    # ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_5900x.nix
@@ -68,11 +70,12 @@
   custom.sysNixGrub.timeout = 2; # dual-boot — short window; be ready at boot to pick Windows
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
-  custom.sysNixPlymouth.enable = true;
-  custom.sysNixPlymouth.minAnimationDuration = 3; # NVMe boots fast — ensure animation plays
-  custom.sysNixPlymouth.minShutdownDuration = 3;
-  custom.sysNixPlymouthThemeAdi1090x.enable = true;
-  custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
+  # Plymouth — parked, see TODO.md Backlog (improve before re-enabling)
+  # custom.sysNixPlymouth.enable = true;
+  # custom.sysNixPlymouth.minAnimationDuration = 3; # NVMe boots fast — ensure animation plays
+  # custom.sysNixPlymouth.minShutdownDuration = 3;
+  # custom.sysNixPlymouthThemeAdi1090x.enable = true;
+  # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
 
   # Hardware
   custom.sysNixAmdRyzen95900x.enable = true;

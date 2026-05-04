@@ -222,3 +222,10 @@ Items outside the audit-round cadence; ad-hoc enhancements awaiting a decision.
 - [ ] **`custom.hmShutdownDisableOutputs` — decide: remove or upgrade.** Module: `modules/home-manager/linux/shutdown-disable-outputs.nix`. Status: parked on JIN (commented out, see `hosts/JIN/home-manager/default.nix`). The Plymouth-multi-monitor-flicker problem may be obsolete in current Plasma 6 / Plymouth — verify the symptom still occurs on a clean shutdown before re-enabling. If not needed, delete and remove from HOME-MANAGER.md.
 
 - [x] **FENNEC `hmDisplayProfiles` — define profiles or remove module enable.** Defined 11 profiles in `hosts/FENNEC/home-manager/default.nix` covering all 7 topology combinations (M1, M2, M3, M1+M2, M1+M3, M2+M3, M1+M2+M3) × M1's two hardware modes (4K@160Hz scale 1.7, 1080p@320Hz scale 1.0). Module extended with `primary` flag so M1 stays primary across topology changes. M2 portrait left of M1, M3 right of M2.
+
+- [ ] **`custom.sysNixPlymouth` — improve before re-enabling.** Parked on JIN + FENNEC 2026-05-05. Issues to fix before re-enabling:
+  - `useSimpleDrm = false` workaround on JIN — amdgpu forced-SI ignores `video=<connector>:d`, so per-output suppression doesn't actually work. Need a real fix or remove the option.
+  - `bootDisabledOutputs` mechanism is GPU-driver-dependent (works for some cards, ignored by amdgpu). Document supported drivers, or replace with a more reliable approach (e.g. early kscreen-doctor invocation).
+  - Splash flickers/glitches at handoff to SDDM greeter — the new deterministic SDDM layout may help, but needs verification.
+  - `minAnimationDuration = 3` is a hack to mask "boots faster than animation"; consider whether the splash adds value at all on a 5s NVMe boot.
+  - Re-enable plan: pick one host (FENNEC, simpler config), validate, then enable on JIN.
