@@ -64,7 +64,7 @@
 
   # Bootloader
   custom.sysNixGrub.enable = true;
-  custom.sysNixGrub.timeout = 5; # dual-boot — give time to select OS
+  custom.sysNixGrub.timeout = 2; # dual-boot — short window; be ready at boot to pick Windows
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
   custom.sysNixPlymouth.enable = true;

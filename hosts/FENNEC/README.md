@@ -101,8 +101,9 @@ configuration for the Windows boot partition.
 2. Install NixOS first, then Windows on the second drive. Run
    `sudo nixos-rebuild switch` afterward to re-detect and add the Windows entry.
 
-Set `custom.sysNixGrub.timeout = 5` (the default) to give enough time to select the
-OS at boot.
+Set `custom.sysNixGrub.timeout` high enough to comfortably select the OS at
+boot. The host currently uses `2` for a fast boot; bump to `3`–`5` if you find
+the window too tight for selecting Windows.
 
 ## Next steps
 
