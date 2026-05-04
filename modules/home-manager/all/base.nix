@@ -26,8 +26,12 @@
       nixfmt-tree
       nil
 
+      # --- terminal eye candy ---
       cowsay
       lolcat
+      unimatrix # Matrix-style terminal rain (cmatrix successor with more character sets)
+      cbonsai # ASCII bonsai tree generator with live-growing mode
+      genact # Fake activity generator (npm install, kernel compile, etc.)
 
       mullvad-closest # Find Mullvad servers with the lowest latency at your location
 
