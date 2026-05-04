@@ -4,6 +4,51 @@
   ...
 }:
 
+let
+  # --- JIN display profile building blocks ---
+  # M1: dual-mode primary on DP-1 (4K @ 160Hz scale 1.7  /  1080p @ 320Hz scale 1.0)
+  # M2: portrait on DP-2 (1920x1200 @ 100Hz, rotated right)
+  # Layout when both present: M1 (primary) → M2 (right of M1)
+
+  m1At4k = {
+    resolution = "3840x2160";
+    scale = 1.7;
+    refreshRate = 160;
+    orientation = "normal";
+    brightness = 1.0;
+    primary = true;
+  };
+
+  m1AtHd = {
+    resolution = "1920x1080";
+    scale = 1.0;
+    refreshRate = 320;
+    orientation = "normal";
+    brightness = 1.0;
+    primary = true;
+  };
+
+  # M2 next to M1 (right-of-DP-1)
+  m2WithM1 = {
+    resolution = "1920x1200";
+    scale = 1.0;
+    refreshRate = 100;
+    orientation = "right";
+    brightness = 1.0;
+    position = "right-of-DP-1";
+  };
+
+  # M2 standalone (no anchor, becomes primary)
+  m2Alone = {
+    resolution = "1920x1200";
+    scale = 1.0;
+    refreshRate = 100;
+    orientation = "right";
+    brightness = 1.0;
+    primary = true;
+  };
+in
+
 {
   imports = [
     # Host
@@ -90,94 +135,39 @@
   # custom.hmShutdownDisableOutputs.enable = true;
   # custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash
 
-  # Dual-monitor profiles (DP-2 connected — score 2, wins over single)
-  custom.hmDisplayProfiles.profiles."4k-dual" = {
-    match."DP-1" = "3840x2160";
-    match."DP-2" = "1920x1200";
-    outputs."DP-1" = {
-      resolution = "3840x2160";
-      scale = 1.5;
-      refreshRate = 60;
-      orientation = "normal";
-      brightness = 1.0;
-    };
-    outputs."DP-2" = {
-      resolution = "1920x1200";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "right";
-      brightness = 1.0;
-      position = "right-of-DP-1";
-    };
-  };
-  custom.hmDisplayProfiles.profiles."2k-dual" = {
-    match."DP-1" = "2560x1440";
-    match."DP-2" = "1920x1200";
-    outputs."DP-1" = {
-      resolution = "2560x1440";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "normal";
-      brightness = 1.0;
-    };
-    outputs."DP-2" = {
-      resolution = "1920x1200";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "right";
-      brightness = 1.0;
-      position = "right-of-DP-1";
-    };
-  };
-  custom.hmDisplayProfiles.profiles."1080p-dual" = {
-    match."DP-1" = "1920x1080";
-    match."DP-2" = "1920x1200";
-    outputs."DP-1" = {
-      resolution = "1920x1080";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "normal";
-      brightness = 1.0;
-    };
-    outputs."DP-2" = {
-      resolution = "1920x1200";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "right";
-      brightness = 1.0;
-      position = "right-of-DP-1";
-    };
-  };
+  # Display profiles — 5 topologies covering M1's 2 hardware modes × M2 presence.
+  # Match uses max resolution from DRM sysfs, so M1's hardware mode toggle
+  # picks between m1-4k* and m1-hd* automatically.
+  custom.hmDisplayProfiles.profiles = {
 
-  # Single-monitor profiles (DP-2 disconnected — score 1, fallback)
-  custom.hmDisplayProfiles.profiles."4k-single" = {
-    match."DP-1" = "3840x2160";
-    outputs."DP-1" = {
-      resolution = "3840x2160";
-      scale = 1.5;
-      refreshRate = 60;
-      orientation = "normal";
-      brightness = 1.0;
+    # --- M1 only ---
+    "m1-4k" = {
+      match."DP-1" = "3840x2160";
+      outputs."DP-1" = m1At4k;
     };
-  };
-  custom.hmDisplayProfiles.profiles."2k-single" = {
-    match."DP-1" = "2560x1440";
-    outputs."DP-1" = {
-      resolution = "2560x1440";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "normal";
-      brightness = 1.0;
+    "m1-hd" = {
+      match."DP-1" = "1920x1080";
+      outputs."DP-1" = m1AtHd;
     };
-  };
-  custom.hmDisplayProfiles.profiles."1080p-single" = {
-    match."DP-1" = "1920x1080";
-    outputs."DP-1" = {
-      resolution = "1920x1080";
-      scale = 1.0;
-      refreshRate = 100;
-      orientation = "normal";
-      brightness = 1.0;
+
+    # --- M2 only ---
+    "m2" = {
+      match."DP-2" = "1920x1200";
+      outputs."DP-2" = m2Alone;
+    };
+
+    # --- M1 + M2 ---
+    "m1-4k+m2" = {
+      match."DP-1" = "3840x2160";
+      match."DP-2" = "1920x1200";
+      outputs."DP-1" = m1At4k;
+      outputs."DP-2" = m2WithM1;
+    };
+    "m1-hd+m2" = {
+      match."DP-1" = "1920x1080";
+      match."DP-2" = "1920x1200";
+      outputs."DP-1" = m1AtHd;
+      outputs."DP-2" = m2WithM1;
     };
   };
 
