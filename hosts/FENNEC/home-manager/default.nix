@@ -122,6 +122,7 @@ in
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
+    ../../../modules/home-manager/linux/autostart.nix
 
     # Packages
     ../../../modules/home-manager/linux/packages.nix
@@ -251,6 +252,41 @@ in
 
   # Linux / Utilities
   custom.hmLinutil.enable = true;
+
+  # Autostart — launch tray-friendly apps minimized at login.
+  # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing);
+  # Sunshine autostarts via its systemd system service (custom.sysNixSunshine).
+  # Steam: -silent  — boots into tray, no main window.
+  # Vesktop / Beeper / Ferdium: --start-minimized / --hidden — tray-only.
+  # Solaar: --window=hide — native flag, starts in tray.
+  custom.hmAutostart.enable = true;
+  custom.hmAutostart.entries = {
+    steam = {
+      name = "Steam";
+      exec = "steam -silent";
+      icon = "steam";
+    };
+    vesktop = {
+      name = "Vesktop";
+      exec = "vesktop --start-minimized";
+      icon = "vesktop";
+    };
+    beeper = {
+      name = "Beeper";
+      exec = "beeper --hidden";
+      icon = "beeper";
+    };
+    ferdium = {
+      name = "Ferdium";
+      exec = "ferdium --hidden";
+      icon = "ferdium";
+    };
+    solaar = {
+      name = "Solaar";
+      exec = "solaar --window=hide";
+      icon = "solaar";
+    };
+  };
 
   # Packages
   custom.hmLinuxPackages.enable = true;

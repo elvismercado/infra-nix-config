@@ -33,8 +33,6 @@
 
       # stuff that should always be in the "systemtray"
       ferdium # browser for always on services
-      protonmail-bridge-gui # ProtonMail bridge
-      insync # Google Drive, OneDrive, and Dropbox
     ];
   };
 }
