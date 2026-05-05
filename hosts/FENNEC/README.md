@@ -25,7 +25,7 @@ NixOS desktop — ASUS PRIME X570-PRO / NVIDIA RTX 3080
 | DP-2       | KVM PC2 top DP    | M2 (Dell P2425, portrait) | rotated right, scale 1.0 |
 | HDMI-A-1   | Long HDMI direct  | TV (Samsung 55Q70R)       | EDID max mode 4096×2160  |
 
-BIOS POSTs on **M2** ⚠️ — see [DISPLAYS.md](../../DISPLAYS.md#open-issue--fennec-bios-posts-on-m2).
+BIOS POSTs on **M2** ⚠️ by default — see [DISPLAYS.md](../../DISPLAYS.md#open-issue--fennec-bios-posts-on-m2). Workaround: power M2 off before cold boot, turn it back on after GRUB / SDDM appears on M1.
 
 For the shared KVM / monitor / TV topology, see [DISPLAYS.md](../../DISPLAYS.md).
 
