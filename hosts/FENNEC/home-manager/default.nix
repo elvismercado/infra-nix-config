@@ -253,12 +253,13 @@ in
   # Linux / Utilities
   custom.hmLinutil.enable = true;
 
-  # Autostart — launch tray-friendly apps minimized at login.
+  # Autostart — launch tray-friendly apps at login. Window state (start
+  # minimized) is enforced by KWin rules in custom.hmPlasmaConfig because
+  # the per-app flags below aren't reliably honoured on Wayland. The
+  # flags are kept as defense in depth.
   # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing);
   # Sunshine autostarts via its systemd system service (custom.sysNixSunshine).
   # Steam: -silent  — boots into tray, no main window.
-  # Vesktop / Beeper / Ferdium: --start-minimized / --hidden — tray-only.
-  # Solaar: --window=hide — native flag, starts in tray.
   custom.hmAutostart.enable = true;
   custom.hmAutostart.entries = {
     steam = {
