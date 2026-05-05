@@ -108,8 +108,6 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/display_manager/sddm.nix`                 | `custom.sysNixSddm.enable`                  |
 | `systems/nixos/display_manager/sddm-monitor-layout.nix`  | `custom.sysNixSddmMonitorLayout.enable`     |
 | `systems/nixos/display_manager/sddm-input-config.nix`    | `custom.sysNixSddmInputConfig.enable`       |
-| `systems/nixos/display_manager/greetd.nix`               | `custom.sysNixGreetd.enable`                |
-| `systems/nixos/display_manager/ly.nix`                   | `custom.sysNixLy.enable`                    |
 | **Graphics**                                             |                                             |
 | `systems/nixos/graphics/amd_radeon_r7_430.nix`           | `custom.sysNixAmdRadeonR7430.enable`        |
 | `systems/nixos/graphics/intel_arc_a380-intel-driver.nix` | `custom.sysNixIntelArcIntelDriver.enable`   |

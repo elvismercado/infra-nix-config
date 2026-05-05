@@ -76,7 +76,7 @@ modules/
       bootloader/            #   GRUB, systemd-boot, Plymouth, GRUB/Plymouth themes
       cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
       desktop_environment/   #   KDE Plasma, COSMIC
-      display_manager/       #   SDDM, SDDM monitor layout, SDDM input config, greetd, ly
+      display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
       gaming/                #   Steam, Proton, GameMode, Gamescope, Lutris
       graphics/              #   AMD, Intel Arc, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom

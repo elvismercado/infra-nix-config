@@ -42,8 +42,6 @@
     ../../../modules/systems/nixos/system/network-tuning.nix
 
     # Display
-    # ../../../modules/systems/nixos/display_manager/ly.nix
-    # ../../../modules/systems/nixos/display_manager/greetd.nix
     ../../../modules/systems/nixos/display_manager/sddm.nix
     ../../../modules/systems/nixos/display_manager/sddm-monitor-layout.nix
     ../../../modules/systems/nixos/display_manager/sddm-input-config.nix
@@ -123,12 +121,6 @@
   custom.sysNixNetworkTuning.enable = true;
 
   # Display
-  # custom.sysNixLy.enable = true;
-  # custom.sysNixGreetd.enable = true;
-  # custom.sysNixGreetd.swayOutputConfig = ''
-  #   output DP-1 mode 2560x1440@100Hz position 0 0
-  #   output DP-2 mode 1920x1200@100Hz transform 90 position 2560 0
-  # '';
   custom.sysNixSddm.enable = true;
   custom.sysNixSddmMonitorLayout.enable = true;
   custom.sysNixSddmInputConfig.enable = true;
