@@ -260,12 +260,13 @@ in
   # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing);
   # Sunshine autostarts via its systemd system service (custom.sysNixSunshine).
   #
-  # Before adding an entry: many apps (Steam, Ferdium, Discord clients, …)
-  # install their own ~/.config/autostart/<app>.desktop on first launch —
-  # declaring them here would collide with home-manager's symlink activation
-  # ("file already exists" errors). Run `ls ~/.config/autostart/
-  # /etc/xdg/autostart/` first; only add entries for apps not already
-  # covered. Steam and Ferdium are intentionally omitted for this reason.
+  # Before adding an entry: many apps (Steam, Discord clients, …) install
+  # their own ~/.config/autostart/<app>.desktop on first launch — declaring
+  # them here would collide with home-manager's symlink activation ("file
+  # already exists" errors). Run `ls ~/.config/autostart/ /etc/xdg/autostart/`
+  # first; if a stale plain file exists for an app declared below, remove
+  # it before rebuild. Steam is intentionally omitted — its own autostart
+  # entry is left in place.
   custom.hmAutostart.enable = true;
   custom.hmAutostart.entries = {
     vesktop = {
@@ -277,6 +278,11 @@ in
       name = "Beeper";
       exec = "beeper --hidden";
       icon = "beeper";
+    };
+    ferdium = {
+      name = "Ferdium";
+      exec = "ferdium --hidden";
+      icon = "ferdium";
     };
     solaar = {
       name = "Solaar";
