@@ -70,10 +70,7 @@
   custom.sysNixGrub.timeout = 2; # dual-boot — short window; be ready at boot to pick Windows
   custom.sysNixGrub.gfxmodeEfi = "3840x2160,2560x1440,1920x1200,1920x1080,auto"; # 4K → 1440p → 1200p → 1080p → auto fallback
   custom.sysNixGrub.fontSize = 32; # 4K-friendly font for menu + editor (`e` key)
-  custom.sysNixGrub.disableSplash = true; # suppress NixOS wordmark/snowflake splash
-  # Sleek theme temporarily disabled — debugging editor font + wordmark source.
-  # The wordmark/snowflake seen post-GRUB is the theme's nixos.png, not a kernel logo.
-  custom.sysNixGrubThemeSleek.enable = false;
+  custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
 
   # Plymouth — parked, see TODO.md Backlog (improve before re-enabling)
