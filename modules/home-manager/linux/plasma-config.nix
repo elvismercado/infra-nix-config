@@ -12,6 +12,8 @@
 #   - No splash screen (Plymouth handles the boot splash)
 #   - Login starts with empty session (no app restore)
 #   - New windows open under the cursor (UnderMouse placement)
+#   - Panels pinned to the primary screen (screen 0)
+#   - Desktop icons arranged top-to-bottom, left-aligned
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/plasma-config.nix ];
@@ -53,6 +55,7 @@
           height = 28;
           lengthMode = "fill";
           floating = false;
+          screen = 0; # pin to primary monitor — prevents drift after hot-plug
           widgets = [
             # App launcher — uncomment ONE of the following:
             # "org.kde.plasma.kickoff"        # Kickoff: traditional start menu
@@ -100,6 +103,7 @@
           alignment = "center";
           lengthMode = "fit";
           hiding = "dodgewindows"; # slides away when a window touches it
+          screen = 0; # pin to primary monitor — prevents drift after hot-plug
           widgets = [
             {
               iconTasks = {
@@ -139,6 +143,16 @@
         clickItemTo = "open"; # single-click to open (macOS default)
         splashScreen.theme = "None"; # Plymouth handles boot splash
       };
+
+      # ── Desktop icons ────────────────────────────────────────────────
+      # Re-anchor icons against the available geometry (excludes panel
+      # struts) so they line up below the top panel instead of under it.
+      desktop.icons = {
+        arrangement = "topToBottom";
+        alignment = "left";
+        lockInPlace = false;
+      };
+
       # ── Session ──────────────────────────────────────────────────────
       # Login starts with no apps reopened — no remembered window/screen
       # state from the previous session.
