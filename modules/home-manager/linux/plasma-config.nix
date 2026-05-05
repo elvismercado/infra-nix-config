@@ -12,7 +12,6 @@
 #   - No splash screen (Plymouth handles the boot splash)
 #   - Login starts with empty session (no app restore)
 #   - New windows open under the cursor (UnderMouse placement)
-#   - Panels pinned to the primary screen (screen 0)
 #   - Desktop icons arranged top-to-bottom, left-aligned
 #
 # Usage:
@@ -50,12 +49,17 @@
       # ── Panels ──────────────────────────────────────────────────────
       panels = [
         # Top panel — menu bar
+        # No `screen` set: plasma-manager only pins by numeric index, but DRM
+        # enumerates connectors in an unstable order on FENNEC (NVIDIA + 3
+        # outputs + KVM) so the index for M1 changes between boots. Letting
+        # Plasmashell place the panel on the KScreen-tracked primary output
+        # (M1 via `primary = true` in the host display profile) is the only
+        # stable option.
         {
           location = "top";
           height = 28;
           lengthMode = "fill";
           floating = false;
-          screen = 0; # pin to primary monitor — prevents drift after hot-plug
           widgets = [
             # App launcher — uncomment ONE of the following:
             # "org.kde.plasma.kickoff"        # Kickoff: traditional start menu
@@ -103,7 +107,6 @@
           alignment = "center";
           lengthMode = "fit";
           hiding = "dodgewindows"; # slides away when a window touches it
-          screen = 0; # pin to primary monitor — prevents drift after hot-plug
           widgets = [
             {
               iconTasks = {
