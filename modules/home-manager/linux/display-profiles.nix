@@ -10,6 +10,8 @@
 #   - Dual-mode monitors (e.g. 4K ↔ 1080p hardware switch)
 #   - Secondary monitor plugged/unplugged
 #   - Primary monitor swaps (different monitor on the same connector)
+#   - Hot-plugged unknown outputs (auto-enabled and placed right of the
+#     rightmost output configured by the matched profile)
 #
 # Each profile defines match criteria (connector → resolution) and
 # per-output settings (scale, refresh rate, orientation, brightness,
@@ -47,7 +49,13 @@ let
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Whether this output should be enabled. Set false to disable.";
+        description = ''
+          Whether this output should be enabled when the profile matches.
+          Set false to explicitly disable an output declared in the
+          profile. Outputs that are connected but **not** declared in the
+          profile are auto-enabled and placed right of the rightmost
+          declared output (see module header).
+        '';
       };
 
       resolution = lib.mkOption {
@@ -550,19 +558,53 @@ let
           log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness primary=$primary"
         done
 
-        # Auto-disable any connected outputs not mentioned in the profile.
-        # Prevents stale positions when a monitor is hot-plugged into a
-        # topology whose matched profile doesn't reference that connector.
+        # Auto-arrange any connected outputs not mentioned in the profile:
+        # enable them and place each one to the right of the rightmost
+        # already-positioned output. Prevents stale positions when a
+        # monitor is hot-plugged into a topology whose matched profile
+        # doesn't reference that connector, while keeping the new screen
+        # reachable instead of going dark.
+        local rightmost_x=0
+        local profile_connectors
+        profile_connectors=$(echo "$profile_outputs" | jq -r 'keys[]')
+        for pc in $profile_connectors; do
+          # Skip profile outputs that aren't actually connected.
+          local pc_id
+          pc_id=$(echo "$topology" | jq -r --arg c "$pc" '.[$c].id // empty')
+          if [ -z "$pc_id" ]; then
+            continue
+          fi
+          # Skip profile outputs explicitly disabled in the profile.
+          local pc_enabled
+          pc_enabled=$(echo "$profile_outputs" | jq -r --arg c "$pc" '.[$c].enable')
+          if [ "$pc_enabled" = "false" ]; then
+            continue
+          fi
+          local pc_x pc_w pc_right
+          pc_x=$(calc_x_offset "$pc" "$topology" "$profile_outputs" 0)
+          pc_w=$(calc_logical_width "$pc" "$topology" "$profile_outputs")
+          pc_right=$((pc_x + pc_w))
+          if [ "$pc_right" -gt "$rightmost_x" ]; then
+            rightmost_x="$pc_right"
+          fi
+        done
+
         local topo_connectors
         topo_connectors=$(echo "$topology" | jq -r 'keys[]')
         for tc in $topo_connectors; do
           local in_profile
           in_profile=$(echo "$profile_outputs" | jq --arg c "$tc" 'has($c)')
           if [ "$in_profile" = "false" ]; then
-            local tc_id
+            local tc_id tc_res tc_w
             tc_id=$(echo "$topology" | jq -r --arg c "$tc" '.[$c].id')
-            args+=("output.$tc_id.disable")
-            log "  $tc (id=$tc_id): not in profile, disabling"
+            args+=("output.$tc_id.enable")
+            args+=("output.$tc_id.position.''${rightmost_x},0")
+            log "  $tc (id=$tc_id): not in profile, auto-placing at x=$rightmost_x"
+            tc_res=$(echo "$topology" | jq -r --arg c "$tc" '.[$c].currentResolution // empty')
+            if [ -n "$tc_res" ]; then
+              tc_w=$(echo "$tc_res" | cut -d'x' -f1)
+              rightmost_x=$((rightmost_x + tc_w))
+            fi
           fi
         done
 
