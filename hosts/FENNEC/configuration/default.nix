@@ -69,14 +69,10 @@
   custom.sysNixGrub.enable = true;
   custom.sysNixGrub.timeout = 2; # dual-boot — short window; be ready at boot to pick Windows
   custom.sysNixGrub.fontSize = 32; # 4K-friendly font for menu + editor (`e` key)
-  custom.sysNixGrubThemeSleek.enable = true;
+  # Sleek theme temporarily disabled — debugging editor font + wordmark source.
+  # The wordmark/snowflake seen post-GRUB is the theme's nixos.png, not a kernel logo.
+  custom.sysNixGrubThemeSleek.enable = false;
   custom.sysNixGrubThemeSleek.style = "dark";
-
-  # TEMP — empirical test for the post-GRUB NixOS wordmark+snowflake.
-  # If the logo disappears after rebuild + reboot, it's the kernel built-in
-  # logo (CONFIG_LOGO). Keep this flag (or move it to a dedicated module);
-  # otherwise remove it and continue forensics (BGRT, GPU vbios, etc.).
-  boot.kernelParams = [ "logo.nologo" ];
 
   # Plymouth — parked, see TODO.md Backlog (improve before re-enabling)
   # custom.sysNixPlymouth.enable = true;
