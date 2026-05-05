@@ -13,8 +13,8 @@
 #   - Login starts with empty session (no app restore)
 #   - New windows open under the cursor (UnderMouse placement)
 #   - Desktop icons arranged top-to-bottom, left-aligned
-#   - Top + bottom panels pinned to screen index 2 (FENNEC's M1)
-#   - KWin rule: Beeper / Vesktop / Ferdium / Solaar start minimized
+#   - Top + bottom panels pinned to screen index 0 (KScreen priority 1 = M1 on FENNEC)
+#   - KWin rule: Steam / Beeper / Vesktop / Ferdium / Solaar start minimized
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/plasma-config.nix ];
@@ -51,16 +51,16 @@
       # ── Panels ──────────────────────────────────────────────────────
       panels = [
         # Top panel — menu bar
-        # Pinned to screen index 2 — DRM enumeration on FENNEC is stable:
-        # 0 = HDMI-A-1 (M3), 1 = DP-2 (M2), 2 = DP-3 (M1). Plasmashell
-        # ignores the KScreen primary tag for panel containment placement,
-        # so an explicit numeric index is the only reliable lever here.
+        # Pinned to screen index 0 — in Plasma 6, panel screen ordinals
+        # follow KScreen output priority. The host's display profile
+        # marks M1 (DP-3) as priority 1, which Plasma exposes as
+        # screen 0. Verify with `kscreen-doctor -o` if it ever moves.
         {
           location = "top";
           height = 28;
           lengthMode = "fill";
           floating = false;
-          screen = 2;
+          screen = 0;
           widgets = [
             # App launcher — uncomment ONE of the following:
             # "org.kde.plasma.kickoff"        # Kickoff: traditional start menu
@@ -101,7 +101,7 @@
         }
 
         # Bottom panel — floating app dock
-        # Pinned to screen index 2 — see top panel comment for rationale.
+        # Pinned to screen index 0 — see top panel comment for rationale.
         {
           location = "bottom";
           height = 56;
@@ -109,7 +109,7 @@
           alignment = "center";
           lengthMode = "fit";
           hiding = "dodgewindows"; # slides away when a window touches it
-          screen = 2;
+          screen = 0;
           widgets = [
             {
               iconTasks = {
@@ -173,53 +173,62 @@
       configFile."kwinrc"."Windows".Placement = "UnderMouse";
 
       # ── KWin window rules ────────────────────────────────────────────
-      # Force tray-friendly Electron apps + Solaar to start minimized.
-      # Their CLI flags (--start-minimized / --hidden / --window=hide)
-      # aren't reliably honoured on Wayland, so a KWin rule is the only
-      # stable mechanism. Substring match on wmclass to absorb the
-      # lowercase/titlecase drift between Electron versions.
+      # Force tray-friendly Electron apps + Steam + Solaar to start
+      # minimized. Their CLI flags (--start-minimized / --hidden /
+      # -silent / --window=hide) aren't reliably honoured on Wayland,
+      # so a KWin rule is the only stable mechanism. Regex match
+      # (wmclassmatch=2) with case-flexible patterns absorbs the case
+      # drift between apps (e.g. "Vesktop" vs "vesktop").
       #
       # rule schema (kwinrulesrc):
-      #   wmclass         — substring to match against window class
-      #   wmclasscomplete — match full class string (false = substring)
+      #   wmclass         — pattern matched against window class
+      #   wmclasscomplete — false: match either WM_CLASS field
       #   wmclassmatch    — 1 = substring, 2 = regex, 3 = exact
       #   minimize        — true to enforce a minimized state
       #   minimizerule    — 3 = Force (always apply, ignore user toggles
       #                     for the initial state)
       configFile."kwinrulesrc" = {
         General = {
-          count = 4;
-          rules = "beeper,vesktop,ferdium,solaar";
+          count = 5;
+          rules = "steam,beeper,vesktop,ferdium,solaar";
+        };
+        steam = {
+          Description = "Start Steam minimized";
+          wmclass = "^[Ss]team$";
+          wmclasscomplete = false;
+          wmclassmatch = 2;
+          minimize = true;
+          minimizerule = 3;
         };
         beeper = {
           Description = "Start Beeper minimized";
-          wmclass = "beeper";
+          wmclass = "[Bb]eeper";
           wmclasscomplete = false;
-          wmclassmatch = 1;
+          wmclassmatch = 2;
           minimize = true;
           minimizerule = 3;
         };
         vesktop = {
           Description = "Start Vesktop minimized";
-          wmclass = "vesktop";
+          wmclass = "[Vv]esktop";
           wmclasscomplete = false;
-          wmclassmatch = 1;
+          wmclassmatch = 2;
           minimize = true;
           minimizerule = 3;
         };
         ferdium = {
           Description = "Start Ferdium minimized";
-          wmclass = "ferdium";
+          wmclass = "[Ff]erdium";
           wmclasscomplete = false;
-          wmclassmatch = 1;
+          wmclassmatch = 2;
           minimize = true;
           minimizerule = 3;
         };
         solaar = {
           Description = "Start Solaar minimized";
-          wmclass = "solaar";
+          wmclass = "[Ss]olaar";
           wmclasscomplete = false;
-          wmclassmatch = 1;
+          wmclassmatch = 2;
           minimize = true;
           minimizerule = 3;
         };
