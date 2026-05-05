@@ -9,6 +9,17 @@
 # Each Exec= must resolve on PATH (install via the relevant module or
 # home.packages).
 #
+# Coexistence with app-installed autostart files: many apps (Steam, Ferdium,
+# Discord clients, …) drop their own ~/.config/autostart/<app>.desktop on
+# first launch. To avoid the home-manager "file already exists" abort and
+# to play nice with the user's history, this module compares content at
+# activation time:
+#   - target absent          → install our symlink
+#   - target == our content  → install our symlink (silent)
+#   - target != our content  → back up to <target>.pre-hm.<unix-ts>, then
+#                              install our symlink (logged warning)
+#   - stale managed symlink  → replace
+#
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/autostart.nix ];
 #   custom.hmAutostart = {
@@ -21,7 +32,7 @@
 #       };
 #       steam = {
 #         name = "Steam";
-#         exec = "steam -silent";
+#         exec = "steam -silent %U";
 #         icon = "steam";
 #       };
 #     };
@@ -30,6 +41,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -87,6 +99,12 @@ let
       ++ lib.optional (entry.comment != null) "Comment=${entry.comment}";
     in
     lib.concatStringsSep "\n" lines + "\n";
+
+  # Materialize each rendered .desktop into the Nix store so we have a
+  # stable path to symlink to AND to byte-compare against what's on disk.
+  entrySources = lib.mapAttrs (
+    slug: entry: pkgs.writeText "${slug}.desktop" (renderEntry entry)
+  ) cfg.entries;
 in
 
 {
@@ -105,11 +123,45 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    xdg.configFile = lib.mapAttrs' (slug: entry: {
-      name = "autostart/${slug}.desktop";
-      value = {
-        text = renderEntry entry;
-      };
-    }) cfg.entries;
+    home.activation.hmAutostart = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+      autostartDir="$HOME/.config/autostart"
+      $DRY_RUN_CMD mkdir -p "$autostartDir"
+
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (slug: src: ''
+          target="$autostartDir/${slug}.desktop"
+          source="${src}"
+
+          if [ -L "$target" ]; then
+            current="$(readlink "$target")"
+            if [ "$current" = "$source" ]; then
+              :  # already pointing at our store path
+            else
+              # Stale managed symlink (old generation) or foreign symlink.
+              # If foreign and points to existing content that differs from
+              # ours, back it up first.
+              if [ -e "$current" ] && ! cmp -s "$current" "$source"; then
+                backup="$target.pre-hm.$(date +%s)"
+                $VERBOSE_ECHO "hmAutostart: ${slug}: foreign symlink differs, backing up target → $backup"
+                $DRY_RUN_CMD cp -L "$target" "$backup"
+              fi
+              $DRY_RUN_CMD ln -sfn "$source" "$target"
+            fi
+          elif [ -e "$target" ]; then
+            if cmp -s "$target" "$source"; then
+              # Identical content — replace plain file with our symlink silently.
+              $DRY_RUN_CMD ln -sfn "$source" "$target"
+            else
+              backup="$target.pre-hm.$(date +%s)"
+              $VERBOSE_ECHO "hmAutostart: ${slug}: existing file differs, backing up → $backup"
+              $DRY_RUN_CMD mv "$target" "$backup"
+              $DRY_RUN_CMD ln -sfn "$source" "$target"
+            fi
+          else
+            $DRY_RUN_CMD ln -sfn "$source" "$target"
+          fi
+        '') entrySources
+      )}
+    '';
   };
 }
