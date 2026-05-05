@@ -6,10 +6,11 @@
 
 let
   # --- FENNEC display profile building blocks ---
-  # M1: dual-mode primary on DP-1 (4K @ 160Hz scale 1.7  /  1080p @ 320Hz scale 1.0)
+  # M1: dual-mode primary on DP-3 (4K @ 160Hz scale 1.7  /  1080p @ 320Hz scale 1.0)
   # M2: portrait on DP-2 (1920x1200 @ 100Hz, rotated right)
   # M3: 4K landscape on HDMI-A-1 (3840x2160 @ 60Hz)
   # Layout when all present: M1 (primary) → M2 (right of M1) → M3 (right of M2)
+  # M1 wired to DP-3 so NVIDIA POSTs BIOS/GRUB/SDDM on M1 (highest-numbered DP wins).
 
   m1At4k = {
     resolution = "3840x2160";
@@ -29,14 +30,14 @@ let
     primary = true;
   };
 
-  # M2 next to M1 (right-of-DP-1)
+  # M2 next to M1 (right-of-DP-3)
   m2WithM1 = {
     resolution = "1920x1200";
     scale = 1.0;
     refreshRate = 100;
     orientation = "right";
     brightness = 1.0;
-    position = "right-of-DP-1";
+    position = "right-of-DP-3";
   };
 
   # M2 standalone (no anchor, becomes primary)
@@ -66,7 +67,7 @@ let
     refreshRate = 60;
     orientation = "normal";
     brightness = 1.0;
-    position = "right-of-DP-1";
+    position = "right-of-DP-3";
   };
 
   # M3 standalone (no anchor, becomes primary)
@@ -162,12 +163,12 @@ in
 
     # --- M1 only ---
     "m1-4k" = {
-      match."DP-1" = "3840x2160";
-      outputs."DP-1" = m1At4k;
+      match."DP-3" = "3840x2160";
+      outputs."DP-3" = m1At4k;
     };
     "m1-hd" = {
-      match."DP-1" = "1920x1080";
-      outputs."DP-1" = m1AtHd;
+      match."DP-3" = "1920x1080";
+      outputs."DP-3" = m1AtHd;
     };
 
     # --- M2 only ---
@@ -192,46 +193,46 @@ in
 
     # --- M1 + M2 ---
     "m1-4k+m2" = {
-      match."DP-1" = "3840x2160";
+      match."DP-3" = "3840x2160";
       match."DP-2" = "1920x1200";
-      outputs."DP-1" = m1At4k;
+      outputs."DP-3" = m1At4k;
       outputs."DP-2" = m2WithM1;
     };
     "m1-hd+m2" = {
-      match."DP-1" = "1920x1080";
+      match."DP-3" = "1920x1080";
       match."DP-2" = "1920x1200";
-      outputs."DP-1" = m1AtHd;
+      outputs."DP-3" = m1AtHd;
       outputs."DP-2" = m2WithM1;
     };
 
     # --- M1 + M3 (M2 absent — M3 sits where M2 normally would) ---
     "m1-4k+m3" = {
-      match."DP-1" = "3840x2160";
+      match."DP-3" = "3840x2160";
       match."HDMI-A-1" = "4096x2160";
-      outputs."DP-1" = m1At4k;
+      outputs."DP-3" = m1At4k;
       outputs."HDMI-A-1" = m3RightOfM1;
     };
     "m1-hd+m3" = {
-      match."DP-1" = "1920x1080";
+      match."DP-3" = "1920x1080";
       match."HDMI-A-1" = "4096x2160";
-      outputs."DP-1" = m1AtHd;
+      outputs."DP-3" = m1AtHd;
       outputs."HDMI-A-1" = m3RightOfM1;
     };
 
     # --- M1 + M2 + M3 (full chain) ---
     "m1-4k+all" = {
-      match."DP-1" = "3840x2160";
+      match."DP-3" = "3840x2160";
       match."DP-2" = "1920x1200";
       match."HDMI-A-1" = "4096x2160";
-      outputs."DP-1" = m1At4k;
+      outputs."DP-3" = m1At4k;
       outputs."DP-2" = m2WithM1;
       outputs."HDMI-A-1" = m3RightOfM2;
     };
     "m1-hd+all" = {
-      match."DP-1" = "1920x1080";
+      match."DP-3" = "1920x1080";
       match."DP-2" = "1920x1200";
       match."HDMI-A-1" = "4096x2160";
-      outputs."DP-1" = m1AtHd;
+      outputs."DP-3" = m1AtHd;
       outputs."DP-2" = m2WithM1;
       outputs."HDMI-A-1" = m3RightOfM2;
     };

@@ -54,20 +54,22 @@ BIOS POSTs on **M1** ✅
 
 ### FENNEC (KVM PC2)
 
-| GPU output | Connection        | Sink                      |
-| ---------- | ----------------- | ------------------------- |
-| DP-1       | KVM PC2 bottom DP | M1 (Gigabyte M27U)        |
-| DP-2       | KVM PC2 top DP    | M2 (Dell P2425, portrait) |
-| HDMI-A-1   | Long HDMI direct  | TV (Samsung 55Q70R)       |
+| GPU output | Connection                        | Sink                      |
+| ---------- | --------------------------------- | ------------------------- |
+| DP-3       | RTX 3080 DP-3 → KVM PC2 bottom DP | M1 (Gigabyte M27U)        |
+| DP-2       | KVM PC2 top DP                    | M2 (Dell P2425, portrait) |
+| HDMI-A-1   | Long HDMI direct                  | TV (Samsung 55Q70R)       |
 
-BIOS POSTs on **M2** ⚠️ by default — see [Open issue](#open-issue--fennec-bios-posts-on-m2). Workaround: power M2 off before cold boot.
+BIOS POSTs on **M1** ✅ — see [Resolution](#resolution--fennec-bios-posts-on-m1).
 
-## Open issue — FENNEC BIOS POSTs on M2
+## Resolution — FENNEC BIOS POSTs on M1
 
-On cold boot of FENNEC, the BIOS / GRUB splash appears on M2 (secondary,
-portrait) instead of M1 (main).
+On cold boot of FENNEC, the BIOS / GRUB splash now appears on M1 (main).
+Previously it appeared on M2 (secondary, portrait). The fix was a one-time
+physical rewire on the GPU side combined with a connector-name update in the
+display profiles.
 
-**Why this is hard to fix:**
+**Background — why this was hard to fix in software:**
 
 - ASUS PRIME X570-PRO BIOS has no per-output POST display selector. The
   _Primary Display_ / _Initial Display Output_ options only choose between
@@ -79,13 +81,12 @@ portrait) instead of M1 (main).
 - The KVM does **not** emulate EDID, so the GPU only sees an EDID on a DP
   input when (a) FENNEC is the active KVM input AND (b) the corresponding
   monitor is powered on (KVM passes HPD through from the real monitor).
-- Implication: powering off / disconnecting one monitor at boot suppresses its
-  EDID at the GPU and can change which connector POSTs.
 
 ### Boot-state test matrix
 
-Cold-boot FENNEC, varying only the listed input. Recorded which display
-showed the BIOS splash.
+Preserved as evidence for the [NVIDIA POST display scan order](#nvidia-post-display-scan-order)
+rule documented below. The matrix was recorded with M1 on DP-1, M2 on DP-2,
+TV on HDMI-A-1 (the pre-fix wiring).
 
 > **"powered" = display soft-power on / off via the monitor's own power
 > button** (TV power button for the Samsung). Leave all DP and HDMI cables
@@ -102,21 +103,70 @@ showed the BIOS splash.
 | 4   | PC2 (FENNEC)     | on         | on         | **on**     | possibly TV (HDMI often wins on NVIDIA) | **M2** (TV not preferred)                   |
 | 5   | **PC1 (JIN)**    | on         | on         | off        | nothing visible to FENNEC; TV if on     | **M1** (KVM passes EDID-state changes back) |
 
-### Workaround
+Follow-up cold boot with M1 moved to DP-3 (M2 still on DP-2, TV on HDMI-A-1):
+BIOS POSTed on **M1** ✅ — confirming DP-3 wins over DP-2.
 
-**Power M2 off before cold-booting FENNEC; power it back on after the GRUB
-menu / SDDM greeter appears on M1.** Test 2 confirms this is deterministic.
+### Solution
 
-Notes from the matrix:
+1. **Physical rewire (one-time):** moved M1's cable from the RTX 3080's DP-1
+   port to its DP-3 port. M2 stays on DP-2, TV stays on HDMI-A-1.
+2. **Repo follow-up:** renamed every `DP-1` to `DP-3` in
+   [hosts/FENNEC/home-manager/default.nix](hosts/FENNEC/home-manager/default.nix)
+   so the display profiles and SDDM monitor layout target the new live DRM
+   connector.
+3. **Result:** BIOS, GRUB, and SDDM greeter all show on M1 deterministically.
+   No monitor-power dance required.
 
-- **Tests 2 + 3** (symmetric) show NVIDIA picks the DP connector that has an
-  EDID; with both EDIDs present, it prefers DP-2 (M2).
-- **Test 4** shows HDMI-A-1 (TV) is **not** preferred over DP — leaving the
-  TV on does not change POST display.
-- **Tests 1 vs 5** (same monitor power, only KVM input differs) show the KVM
-  is propagating EDID-state changes back to FENNEC even when switched to
-  another PC. Not actionable for daily use, but explains why POST display
-  felt non-deterministic before this matrix.
+## NVIDIA POST display scan order
+
+The POST scan order on consumer NVIDIA cards is **highest-numbered DP first
+→ descending DPs → HDMI last**. Properties of this rule:
+
+- Hardcoded in VBIOS — not exposed in any motherboard BIOS option, NVIDIA
+  control panel, or `nvidia-smi` flag.
+- First connector returning EDID wins POST display.
+- Practical consequence: to put BIOS / GRUB on a chosen monitor, plug it into
+  the **highest-numbered DP** on the GPU.
+
+Evidence from the [boot-state test matrix](#boot-state-test-matrix) above:
+
+- DP-2 beat DP-1 when both had EDID (Test 1).
+- DP-3 beat DP-2 when all three DPs had EDID (post-rewire confirmation).
+- HDMI-A-1 lost to all DPs (Test 4 — TV on did not change POST display).
+
+**Caveat:** scan order is per-card / per-VBIOS. Verified on **NVIDIA RTX 3080
+(Ampere, GA102), PNY XLR8 Triple Fan**. Other Ampere SKUs are likely the same
+but not guaranteed. Verify with a 2-monitor test before relying on this rule
+on a different card.
+
+## How SDDM monitor layout interacts with wiring
+
+Two independent mechanisms put input/primary on M1 at the SDDM greeter. Both
+are in play after the rewire + rename:
+
+1. **GPU wiring** (deterministic, hardware-level): NVIDIA scan order picks
+   the highest-numbered DP with EDID. With M1 on DP-3, KWin's auto-arrangement
+   also tends to make the first-enumerated active output its primary — so
+   even without our SDDM module, focus would land on M1.
+2. **`custom.hmSddmMonitorLayout`** (declarative, software-level): emits
+   `kwinoutputconfig.json` for the SDDM user with `priority: 0` on M1's
+   connector and `disabledOutputs = [ "DP-2" "HDMI-A-1" ]`. KWin matches by
+   `connectorName`. **Critical:** the connector names in the rendered file
+   must match live DRM names — otherwise KWin silently falls back to
+   auto-arrangement.
+
+**Why the rename matters:** before the rename, the rendered file referenced
+`DP-1` (which no longer exists post-rewire) — KWin was falling back to
+auto-arrangement, and only the wiring was driving M1-focus behavior. After
+the rename, both layers cooperate: wiring guarantees POST/primary on M1, the
+SDDM module additionally blanks M2 and the TV at the greeter.
+
+**How to tell which is doing what:**
+
+- Greeter shows on M1 only (M2 + TV black) → our module is working.
+- All three monitors show the greeter but cursor/focus is on M1 → only
+  wiring is helping; check that connector names in
+  `/var/lib/sddm/.config/kwinoutputconfig.json` match `ls /sys/class/drm/`.
 
 ## OS-level mitigation for KVM window shuffle
 
