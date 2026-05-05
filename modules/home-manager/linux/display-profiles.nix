@@ -141,8 +141,12 @@ let
           Mark this output as the primary display (where the panel,
           launcher, and new windows appear by default). At most one
           output per profile should be primary; if multiple are set,
-          the last one applied wins. Default false leaves the primary
-          flag untouched on this output.
+          the last one applied wins. Default false leaves the priority
+          untouched on this output.
+
+          Internally maps to `kscreen-doctor output.<id>.priority.1`
+          (Plasma 6 syntax). The legacy `output.<id>.primary` form was
+          deprecated upstream.
         '';
       };
     };
@@ -552,11 +556,13 @@ let
             args+=("output.$output_id.brightness.$brightness_pct")
           fi
 
-          # Primary — mark as the primary output (panel/launcher anchor)
+          # Primary — mark as the primary output (panel/launcher anchor).
+          # Plasma 6 uses `priority.N` (N=1 = primary); the legacy
+          # `output.<id>.primary` arg was deprecated upstream.
           local primary
           primary=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].primary // false')
           if [ "$primary" = "true" ]; then
-            args+=("output.$output_id.primary")
+            args+=("output.$output_id.priority.1")
           fi
 
           log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness primary=$primary"
