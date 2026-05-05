@@ -383,7 +383,11 @@ let
         local scale
         scale=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].scale // 1')
 
-        awk "BEGIN { printf \"%d\", $logical_w / $scale }"
+        # Round to nearest integer (not truncate) so fractional scales like
+        # 1.7 don't leave a 1px gap/overlap with right-of neighbors. Plasma's
+        # own logical-extent calculation rounds (qRound), so matching that
+        # avoids QTBUG-129989-style fullscreen-screen-misresolution bugs.
+        awk "BEGIN { printf \"%.0f\", $logical_w / $scale }"
       }
 
       # Recursively resolve the absolute logical x-offset of an output by
@@ -422,7 +426,7 @@ let
           local anchor_x anchor_w
           anchor_x=$(calc_x_offset "$anchor" "$topology" "$profile_outputs" $((depth + 1)))
           anchor_w=$(calc_logical_width "$anchor" "$topology" "$profile_outputs")
-          awk "BEGIN { printf \"%d\", $anchor_x + $anchor_w }"
+          awk "BEGIN { printf \"%.0f\", $anchor_x + $anchor_w }"
           return
         fi
 
@@ -438,7 +442,7 @@ let
           local anchor_x self_w
           anchor_x=$(calc_x_offset "$anchor" "$topology" "$profile_outputs" $((depth + 1)))
           self_w=$(calc_logical_width "$connector" "$topology" "$profile_outputs")
-          awk "BEGIN { printf \"%d\", $anchor_x - $self_w }"
+          awk "BEGIN { printf \"%.0f\", $anchor_x - $self_w }"
           return
         fi
 
