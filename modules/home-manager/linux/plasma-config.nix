@@ -10,6 +10,8 @@
 #   - KRunner centered (Spotlight-style)
 #   - Single-click to open files/folders
 #   - No splash screen (Plymouth handles the boot splash)
+#   - Login starts with empty session (no app restore)
+#   - New windows open under the cursor (UnderMouse placement)
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/plasma-config.nix ];
@@ -137,6 +139,17 @@
         clickItemTo = "open"; # single-click to open (macOS default)
         splashScreen.theme = "None"; # Plymouth handles boot splash
       };
-    };
+      # ── Session ──────────────────────────────────────────────────────
+      # Login starts with no apps reopened — no remembered window/screen
+      # state from the previous session.
+      session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+
+      # ── KWin window placement ────────────────────────────────────────
+      # New windows open at the cursor position so they appear on whichever
+      # monitor you're currently working on. Note: apps that explicitly
+      # request a position (Brave, VS Code with "continue where you left
+      # off") still apply their own saved geometry — that's a per-app
+      # setting, not KWin's call.
+      configFile."kwinrc"."Windows".Placement = "UnderMouse";    };
   };
 }
