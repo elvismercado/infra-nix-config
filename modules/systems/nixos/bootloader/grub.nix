@@ -30,9 +30,14 @@
       description = ''
         GRUB EFI graphics mode. Use a comma-separated fallback chain
         for multi-monitor setups, e.g. "2560x1440,auto".
-        "auto" lets GRUB pick the best available mode.
+        "auto" lets GRUB pick the best available mode — often
+        800x600/1024x768, which makes the menu font look enormous on
+        high-DPI panels. Set per host to a real chain such as
+        "3840x2160,2560x1440,1920x1080,auto".
       '';
     };
+
+    custom.sysNixGrub.disableSplash = lib.mkEnableOption "disable the NixOS branded GRUB splash image (wordmark/snowflake)";
 
     custom.sysNixGrub.fontSize = lib.mkOption {
       type = lib.types.nullOr lib.types.int;
@@ -84,6 +89,11 @@
         # standard for GRUB; ships in pkgs.dejavu_fonts.
         font = "${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSansMono.ttf";
         fontSize = config.custom.sysNixGrub.fontSize;
+      }
+      // lib.optionalAttrs config.custom.sysNixGrub.disableSplash {
+        # Suppress NixOS's default branded splash (wordmark + snowflake).
+        # mkForce overrides the NixOS module's mkDefault assignment.
+        splashImage = lib.mkForce null;
       };
     };
   };
