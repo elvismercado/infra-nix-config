@@ -17,6 +17,18 @@ NixOS desktop — ASUS PRIME X570-PRO / NVIDIA RTX 3080
 | Storage 3   | Samsung 860 EVO 500 GB — SATA                                                          |
 | Storage 4   | Samsung 860 EVO 500 GB — SATA                                                          |
 
+## Displays
+
+| GPU output | Connection        | Sink                      | Notes                    |
+| ---------- | ----------------- | ------------------------- | ------------------------ |
+| DP-1       | KVM PC2 bottom DP | M1 (Gigabyte M27U)        | 4K, scale 1.7 in Plasma  |
+| DP-2       | KVM PC2 top DP    | M2 (Dell P2425, portrait) | rotated right, scale 1.0 |
+| HDMI-A-1   | Long HDMI direct  | TV (Samsung 55Q70R)       | EDID max mode 4096×2160  |
+
+BIOS POSTs on **M2** ⚠️ — see [DISPLAYS.md](../../DISPLAYS.md#open-issue--fennec-bios-posts-on-m2).
+
+For the shared KVM / monitor / TV topology, see [DISPLAYS.md](../../DISPLAYS.md).
+
 ## M.2 connectors
 
 | Slot  | Location                       | Lanes       | Connected to | Use                  |

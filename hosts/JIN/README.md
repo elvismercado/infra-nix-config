@@ -13,6 +13,15 @@ NixOS desktop — AMD Ryzen 9 / Radeon R7 430
 | Storage 1   | Crucial P2 1TB NVMe M.2 SSD (CT1000P2SSD8) — front M.2 (CPU)          |
 | Storage 2   | Crucial P2 1TB NVMe M.2 SSD (CT1000P2SSD8) — back M.2 (chipset)       |
 
+## Displays
+
+| GPU output | Connection        | Sink                      |
+| ---------- | ----------------- | ------------------------- |
+| DP-1       | KVM PC1 bottom DP | M1 (Gigabyte M27U)        |
+| DP-2       | KVM PC1 top DP    | M2 (Dell P2425, portrait) |
+
+BIOS POSTs on **M1** ✅. For the shared KVM / monitor / TV topology, see [DISPLAYS.md](../../DISPLAYS.md).
+
 ## M.2 connectors
 
 | Slot | Location      | Lanes       | Connected to | Use         |

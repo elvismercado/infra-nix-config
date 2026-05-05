@@ -8,6 +8,7 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 - [NIXOS.md](NIXOS.md) — NixOS system configuration, rebuild commands, adding hosts
 - [DARWIN.md](DARWIN.md) — macOS (nix-darwin) configuration, rebuild commands, adding hosts
 - [HOME-MANAGER.md](HOME-MANAGER.md) — User-level configuration (dotfiles, apps, shell), works across all systems
+- [DISPLAYS.md](DISPLAYS.md) — Shared monitor / KVM / TV topology and per-host display wiring
 
 ## Hosts
 
