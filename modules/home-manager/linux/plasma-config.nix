@@ -14,7 +14,6 @@
 #   - New windows open under the cursor (UnderMouse placement)
 #   - Desktop icons arranged top-to-bottom, left-aligned
 #   - Top + bottom panels pinned to screen index 0 (KScreen priority 1 = M1 on FENNEC)
-#   - KWin rule: Steam / Beeper / Vesktop / Ferdium / Solaar start minimized
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/plasma-config.nix ];
@@ -171,68 +170,6 @@
       # off") still apply their own saved geometry — that's a per-app
       # setting, not KWin's call.
       configFile."kwinrc"."Windows".Placement = "UnderMouse";
-
-      # ── KWin window rules ────────────────────────────────────────────
-      # Force tray-friendly Electron apps + Steam + Solaar to start
-      # minimized. Their CLI flags (--start-minimized / --hidden /
-      # -silent / --window=hide) aren't reliably honoured on Wayland,
-      # so a KWin rule is the only stable mechanism. Regex match
-      # (wmclassmatch=2) with case-flexible patterns absorbs the case
-      # drift between apps (e.g. "Vesktop" vs "vesktop").
-      #
-      # rule schema (kwinrulesrc):
-      #   wmclass         — pattern matched against window class
-      #   wmclasscomplete — false: match either WM_CLASS field
-      #   wmclassmatch    — 1 = substring, 2 = regex, 3 = exact
-      #   minimize        — true to enforce a minimized state
-      #   minimizerule    — 3 = Force (always apply, ignore user toggles
-      #                     for the initial state)
-      configFile."kwinrulesrc" = {
-        General = {
-          count = 5;
-          rules = "steam,beeper,vesktop,ferdium,solaar";
-        };
-        steam = {
-          Description = "Start Steam minimized";
-          wmclass = "^[Ss]team$";
-          wmclasscomplete = false;
-          wmclassmatch = 2;
-          minimize = true;
-          minimizerule = 3;
-        };
-        beeper = {
-          Description = "Start Beeper minimized";
-          wmclass = "[Bb]eeper";
-          wmclasscomplete = false;
-          wmclassmatch = 2;
-          minimize = true;
-          minimizerule = 3;
-        };
-        vesktop = {
-          Description = "Start Vesktop minimized";
-          wmclass = "[Vv]esktop";
-          wmclasscomplete = false;
-          wmclassmatch = 2;
-          minimize = true;
-          minimizerule = 3;
-        };
-        ferdium = {
-          Description = "Start Ferdium minimized";
-          wmclass = "[Ff]erdium";
-          wmclasscomplete = false;
-          wmclassmatch = 2;
-          minimize = true;
-          minimizerule = 3;
-        };
-        solaar = {
-          Description = "Start Solaar minimized";
-          wmclass = "[Ss]olaar";
-          wmclasscomplete = false;
-          wmclassmatch = 2;
-          minimize = true;
-          minimizerule = 3;
-        };
-      };
     };
   };
 }
