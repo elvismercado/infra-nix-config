@@ -259,14 +259,15 @@ in
   # flags are kept as defense in depth.
   # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing);
   # Sunshine autostarts via its systemd system service (custom.sysNixSunshine).
-  # Steam: -silent  — boots into tray, no main window.
+  #
+  # Before adding an entry: many apps (Steam, Ferdium, Discord clients, …)
+  # install their own ~/.config/autostart/<app>.desktop on first launch —
+  # declaring them here would collide with home-manager's symlink activation
+  # ("file already exists" errors). Run `ls ~/.config/autostart/
+  # /etc/xdg/autostart/` first; only add entries for apps not already
+  # covered. Steam and Ferdium are intentionally omitted for this reason.
   custom.hmAutostart.enable = true;
   custom.hmAutostart.entries = {
-    steam = {
-      name = "Steam";
-      exec = "steam -silent";
-      icon = "steam";
-    };
     vesktop = {
       name = "Vesktop";
       exec = "vesktop --start-minimized";
@@ -276,11 +277,6 @@ in
       name = "Beeper";
       exec = "beeper --hidden";
       icon = "beeper";
-    };
-    ferdium = {
-      name = "Ferdium";
-      exec = "ferdium --hidden";
-      icon = "ferdium";
     };
     solaar = {
       name = "Solaar";
