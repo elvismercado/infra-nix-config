@@ -42,9 +42,10 @@
 #   };
 #
 # Troubleshooting:
-#   - Layout missing after switch?  Check journalctl --user -t kwin-tiling
-#     for "no UUID for <connector>" warnings (monitor unplugged at switch
-#     time). Re-run `home-manager switch` once the monitor is connected.
+#   - Layout missing after switch?  Activation log appears inline during
+#     `nixos-rebuild switch` / `home-manager switch` (look for
+#     "[kwin-tiling] no UUID for <connector>" — monitor unplugged at
+#     switch time). Re-run the switch once the monitor is connected.
 #   - Confirm the value:
 #       UUID=$(kscreen-doctor -j | jq -r '.outputs[] | select(.name=="DP-2") | .id')
 #       kreadconfig6 --file kwintilerc --group Tiling --group "$UUID" --key tiles
@@ -146,11 +147,10 @@ in
         }:$PATH
 
         log() {
-          # systemd-cat tags so journalctl --user -t kwin-tiling filters cleanly.
-          if command -v systemd-cat >/dev/null 2>&1; then
-            echo "$*" | systemd-cat -t kwin-tiling -p info
-          fi
-          $VERBOSE_ECHO "kwin-tiling: $*"
+          # Activation runs during `home-manager switch` / `nixos-rebuild switch`,
+          # not under a systemd unit, so stderr is the right channel — the
+          # rebuild command echoes it inline. Matches display-profiles.nix.
+          echo "[kwin-tiling] $*" >&2
         }
 
         apply_layout() {
