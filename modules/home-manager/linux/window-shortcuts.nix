@@ -6,12 +6,14 @@
 # Linux (this module), macOS (Rectangle), and Windows (PowerToys).
 #
 # Shortcut scheme:
-#   Halves:   Meta+Alt + Arrow keys (Left/Right/Up/Down)
-#   Quarters: Meta+Alt + U (top-left), I (top-right),
-#                          J (bottom-left), K (bottom-right)
-#   Center:   Meta+Alt + C
-#   Maximize: Meta+Alt + Enter
-#   Restore:  Meta+Alt + Backspace
+#   Halves:        Meta+Alt + Arrow keys (Left/Right/Up/Down)
+#   Quarters:      Meta+Alt + U (top-left), I (top-right),
+#                              J (bottom-left), K (bottom-right)
+#   Center:        Meta+Alt + C
+#   Maximize:      Meta+Alt + Enter
+#   Restore:       Meta+Alt + Backspace
+#   Move screen:   Meta+Ctrl+Alt + Left/Right (cycle prev/next screen)
+#   Direct screen: Meta+Alt + 1/2/3 (target KWin screen 0/1/2)
 #
 # Note: KWin's defaults bind Meta+Alt+Arrow to "Switch Window"
 # (focus-switching between windows), and KDE Keyboard Layout Switcher
@@ -68,7 +70,15 @@
         "Window Move Center" = "Meta+Alt+C";
         "Window Maximize" = "Meta+Alt+Return";
         "Window Restore" = "Meta+Alt+Backspace";
-      };
+        # ── Move window across screens ─────────────────────────
+        # Cycle by KWin screen index (0, 1, 2, … wraps around).
+        "Window to Next Screen" = "Meta+Ctrl+Alt+Right";
+        "Window to Previous Screen" = "Meta+Ctrl+Alt+Left";
+        # Direct screen targets. KWin's screen index is its own ordering;
+        # confirm 1/2/3 → M1/M2/M3 mapping after first use and re-bind if needed.
+        "Window to Screen 0" = "Meta+Alt+1";
+        "Window to Screen 1" = "Meta+Alt+2";
+        "Window to Screen 2" = "Meta+Alt+3";      };
 
       # ── Unbind keyboard layout switcher conflict ────────────────────
       # KDE binds Meta+Alt+K to "Switch to Next Keyboard Layout",
