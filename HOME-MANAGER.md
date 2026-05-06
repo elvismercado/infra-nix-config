@@ -94,6 +94,8 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 | `home-manager/linux/display-profiles.nix`         | `custom.hmDisplayProfiles.enable`        |
 | `home-manager/linux/gaming.nix`                   | `custom.hmGaming.enable`                 |
 | `home-manager/linux/handbrake.nix`                | `custom.hmHandbrake.enable`              |
+| `home-manager/linux/kwin-tiling.nix`              | `custom.hmKwinTiling.enable`             |
+|                                                   | `custom.hmKwinTiling.layouts`            |
 | `home-manager/linux/linutil.nix`                  | `custom.hmLinutil.enable`                |
 | `home-manager/linux/nextcloud.nix`                | `custom.hmNextcloud.enable`              |
 | `home-manager/linux/packages.nix`                 | `custom.hmLinuxPackages.enable`          |

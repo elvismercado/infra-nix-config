@@ -84,6 +84,7 @@ in
     ../../../modules/home-manager/linux/display-profiles.nix
     ../../../modules/home-manager/linux/sddm-monitor-layout.nix
     ../../../modules/home-manager/linux/shutdown-disable-outputs.nix
+    ../../../modules/home-manager/linux/kwin-tiling.nix
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
@@ -138,6 +139,21 @@ in
   # parked — see TODO.md Backlog (decide: remove or upgrade)
   # custom.hmShutdownDisableOutputs.enable = true;
   # custom.hmShutdownDisableOutputs.connectors = [ "DP-2" ]; # disable DP-2 before shutdown for clean Plymouth splash
+
+  # KWin custom tile layouts — portrait M2 split into 3 stacked rows.
+  # UUID is auto-resolved from the connector at activation time.
+  custom.hmKwinTiling.enable = true;
+  custom.hmKwinTiling.layouts.m2 = {
+    connector = "DP-2";
+    tiles = {
+      layoutDirection = "vertical";
+      tiles = [
+        { height = 0.333; }
+        { height = 0.333; }
+        { height = 0.334; }
+      ];
+    };
+  };
 
   # Display profiles — 5 topologies covering M1's 2 hardware modes × M2 presence.
   # Match uses max resolution from DRM sysfs, so M1's hardware mode toggle

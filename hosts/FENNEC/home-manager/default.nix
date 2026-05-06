@@ -111,6 +111,7 @@ in
     # Linux / KDE Plasma
     ../../../modules/home-manager/linux/plasma-config.nix
     ../../../modules/home-manager/linux/sddm-monitor-layout.nix
+    ../../../modules/home-manager/linux/kwin-tiling.nix
 
     # Linux / Gaming
     ../../../modules/home-manager/linux/gaming.nix
@@ -156,6 +157,21 @@ in
     "DP-2"
     "HDMI-A-1"
   ]; # login screen on M1 only
+
+  # KWin custom tile layouts — portrait M2 split into 3 stacked rows.
+  # UUID is auto-resolved from the connector at activation time.
+  custom.hmKwinTiling.enable = true;
+  custom.hmKwinTiling.layouts.m2 = {
+    connector = "DP-2";
+    tiles = {
+      layoutDirection = "vertical";
+      tiles = [
+        { height = 0.333; }
+        { height = 0.333; }
+        { height = 0.334; }
+      ];
+    };
+  };
 
   # Display profiles — 7 topologies × M1's 2 hardware modes = 11 profiles.
   # Match uses max resolution from DRM sysfs, so M1's hardware mode toggle
