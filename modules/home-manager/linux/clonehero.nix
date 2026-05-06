@@ -95,14 +95,16 @@ let
 
       install -Dm755 "$gameDir/clonehero"      "$out/bin/clonehero"
       install -Dm644 "$gameDir/UnityPlayer.so" "$out/libexec/clonehero/UnityPlayer.so"
+      install -Dm644 "$gameDir/GameAssembly.so" "$out/libexec/clonehero/GameAssembly.so"
 
       mkdir -p "$out/share/clonehero"
       cp -r "$gameDir/clonehero_Data" "$out/share/clonehero/clonehero_Data"
 
-      # Unity expects clonehero_Data and UnityPlayer.so to sit next to
-      # the binary — symlink them into $out/bin.
+      # Unity expects clonehero_Data, UnityPlayer.so, and GameAssembly.so
+      # to sit next to the binary — symlink them into $out/bin.
       ln -s "$out/share/clonehero/clonehero_Data" "$out/bin/clonehero_Data"
       ln -s "$out/libexec/clonehero/UnityPlayer.so" "$out/bin/UnityPlayer.so"
+      ln -s "$out/libexec/clonehero/GameAssembly.so" "$out/bin/GameAssembly.so"
 
       if [ -f "$out/share/clonehero/clonehero_Data/Resources/UnityPlayer.png" ]; then
         install -Dm644 \
@@ -113,30 +115,34 @@ let
       runHook postInstall
     '';
 
-    # Some libs are dlopen'd from UnityPlayer.so without being in
-    # DT_NEEDED. Force-link them so autoPatchelfHook resolves RUNPATH
-    # (mirrors upstream nixpkgs derivation).
+    # Some libs are dlopen'd from UnityPlayer.so / GameAssembly.so
+    # without being in DT_NEEDED. Force-link them so autoPatchelfHook
+    # resolves RUNPATH (mirrors upstream nixpkgs derivation).
     postFixup = ''
-      patchelf \
-        --add-needed libasound.so.2 \
-        --add-needed libdbus-1.so.3 \
-        --add-needed libGL.so.1 \
-        --add-needed libpthread.so.0 \
-        --add-needed libudev.so.1 \
-        --add-needed libvulkan.so.1 \
-        --add-needed libwayland-client.so.0 \
-        --add-needed libwayland-cursor.so.0 \
-        --add-needed libwayland-egl.so.1 \
-        --add-needed libX11.so.6 \
-        --add-needed libXcursor.so.1 \
-        --add-needed libXext.so.6 \
-        --add-needed libXi.so.6 \
-        --add-needed libXinerama.so.1 \
-        --add-needed libxkbcommon.so.0 \
-        --add-needed libXrandr.so.2 \
-        --add-needed libXss.so.1 \
-        --add-needed libXxf86vm.so.1 \
-        "$out/libexec/clonehero/UnityPlayer.so"
+      for so in \
+        "$out/libexec/clonehero/UnityPlayer.so" \
+        "$out/libexec/clonehero/GameAssembly.so"; do
+        patchelf \
+          --add-needed libasound.so.2 \
+          --add-needed libdbus-1.so.3 \
+          --add-needed libGL.so.1 \
+          --add-needed libpthread.so.0 \
+          --add-needed libudev.so.1 \
+          --add-needed libvulkan.so.1 \
+          --add-needed libwayland-client.so.0 \
+          --add-needed libwayland-cursor.so.0 \
+          --add-needed libwayland-egl.so.1 \
+          --add-needed libX11.so.6 \
+          --add-needed libXcursor.so.1 \
+          --add-needed libXext.so.6 \
+          --add-needed libXi.so.6 \
+          --add-needed libXinerama.so.1 \
+          --add-needed libxkbcommon.so.0 \
+          --add-needed libXrandr.so.2 \
+          --add-needed libXss.so.1 \
+          --add-needed libXxf86vm.so.1 \
+          "$so"
+      done
     '';
 
     meta = with lib; {
