@@ -120,6 +120,7 @@ in
     ../../../modules/home-manager/linux/handbrake.nix
     ../../../modules/home-manager/linux/strawberry.nix
     ../../../modules/home-manager/linux/vesktop.nix
+    ../../../modules/home-manager/linux/clonehero.nix
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
@@ -273,6 +274,8 @@ in
   custom.hmHandbrake.enable = true;
   custom.hmStrawberry.enable = true;
   custom.hmVesktop.enable = true;
+  custom.hmCloneHero.enable = true;
+  custom.hmCloneHero.hash = "sha256-xy7/3SDNgKw67ikA7CtRVK2gNrfjqx4cTDeRUkkSBKo="; # v1.1.0.6085-final
 
   # Linux / Utilities
   custom.hmLinutil.enable = true;

@@ -95,8 +95,8 @@ modules/
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Brave, Fastfetch, fnm, Git,
                              #   mpv, pyenv, SSH, Starship, Syncthing, Thunderbird
-    linux/                   #   Aliases, Display profiles, Gaming, HandBrake, KWin tiling, LinUtil,
-                             #   Nextcloud, Packages, Plasma config, Shutdown disable outputs,
+    linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, HandBrake, KWin tiling,
+                             #   LinUtil, Nextcloud, Packages, Plasma config, Shutdown disable outputs,
                              #   Strawberry, Vesktop, VS Code, Window shortcuts
     darwin/                  #   Rectangle
 ```

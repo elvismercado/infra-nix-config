@@ -91,6 +91,9 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 |                                                   | `custom.hmAliasesNvidiaGpu.enable`       |
 | `home-manager/linux/autostart.nix`                | `custom.hmAutostart.enable`              |
 |                                                   | `custom.hmAutostart.entries`             |
+| `home-manager/linux/clonehero.nix`                | `custom.hmCloneHero.enable`              |
+|                                                   | `custom.hmCloneHero.version`             |
+|                                                   | `custom.hmCloneHero.hash`                |
 | `home-manager/linux/display-profiles.nix`         | `custom.hmDisplayProfiles.enable`        |
 | `home-manager/linux/gaming.nix`                   | `custom.hmGaming.enable`                 |
 | `home-manager/linux/handbrake.nix`                | `custom.hmHandbrake.enable`              |
