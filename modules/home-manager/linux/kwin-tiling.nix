@@ -9,10 +9,17 @@
 # This module declares those layouts in Nix without ever pasting a UUID:
 # host config keys layouts by DRM connector name (e.g. "DP-2"), and a
 # home-manager activation script resolves connector → UUID at switch
-# time via `kscreen-doctor -j` and writes the resulting Tiling section
-# with `kwriteconfig6`. Connectors that aren't currently plugged in are
-# logged and skipped, so first-install / hot-plug scenarios don't break
-# rebuilds.
+# time by reading KWin's own ~/.config/kwinoutputconfig.json (the
+# `outputs[].uuid` for the matching `connectorName`) and writes the
+# resulting Tiling section with `kwriteconfig6`. Connectors that aren't
+# currently present in that file are logged and skipped, so first-install
+# / hot-plug scenarios don't break rebuilds.
+#
+# Bootstrap caveat: kwinoutputconfig.json is created by KWin on first
+# session start. On a brand-new user account the very first
+# `home-manager switch` will skip all layouts (no file yet). Log into
+# KDE once, then re-run the switch — UUIDs are EDID-derived and stable
+# thereafter (survive reboots and cable swaps).
 #
 # Tile tree shape (becomes JSON via builtins.toJSON):
 #   {
@@ -44,10 +51,13 @@
 # Troubleshooting:
 #   - Layout missing after switch?  Activation log appears inline during
 #     `nixos-rebuild switch` / `home-manager switch` (look for
-#     "[kwin-tiling] no UUID for <connector>" — monitor unplugged at
-#     switch time). Re-run the switch once the monitor is connected.
+#     "[kwin-tiling] no UUID for <connector>" — either the monitor was
+#     unplugged at switch time, or KWin hasn't written its config yet on
+#     a fresh account; log in once and re-run the switch).
 #   - Confirm the value:
-#       UUID=$(kscreen-doctor -j | jq -r '.outputs[] | select(.name=="DP-2") | .id')
+#       UUID=$(jq -r --arg c DP-2 \
+#         '.[] | select(.name=="outputs") | .data[] | select(.connectorName==$c) | .uuid' \
+#         ~/.config/kwinoutputconfig.json)
 #       kreadconfig6 --file kwintilerc --group Tiling --group "$UUID" --key tiles
 #   - Apply without re-login: KWin re-reads kwintilerc on next layout
 #     change; easiest is logout/login or `loginctl terminate-session`.
@@ -116,7 +126,6 @@ in
     ];
 
     home.packages = with pkgs.kdePackages; [
-      libkscreen # kscreen-doctor
       kconfig # kwriteconfig6 / kreadconfig6
     ];
 
@@ -139,12 +148,13 @@ in
       ''
         export PATH=${
           lib.makeBinPath [
-            pkgs.kdePackages.libkscreen
             pkgs.kdePackages.kconfig
             pkgs.jq
             pkgs.coreutils
           ]
         }:$PATH
+
+        OUTPUT_CONFIG="$HOME/.config/kwinoutputconfig.json"
 
         log() {
           # Activation runs during `home-manager switch` / `nixos-rebuild switch`,
@@ -155,18 +165,21 @@ in
 
         apply_layout() {
           local name="$1" connector="$2" json_file="$3"
-          local outputs uuid tiles_json
+          local uuid tiles_json
 
-          outputs=$(kscreen-doctor -j 2>/dev/null) || {
-            log "kscreen-doctor failed; skipping layout '$name' ($connector)"
+          if [ ! -f "$OUTPUT_CONFIG" ]; then
+            log "$OUTPUT_CONFIG missing (KWin has never run for this user?); skipping layout '$name' ($connector)"
             return 0
-          }
+          fi
 
-          uuid=$(printf '%s' "$outputs" | jq -r --arg c "$connector" \
-            '.outputs[]? | select(.name == $c) | .id // empty')
+          # KWin keys outputs by EDID-derived uuid in kwinoutputconfig.json.
+          # That uuid is also what `[Tiling][<key>]` in kwintilerc expects.
+          uuid=$(jq -r --arg c "$connector" \
+            '.[] | select(.name == "outputs") | .data[]? | select(.connectorName == $c) | .uuid // empty' \
+            "$OUTPUT_CONFIG" 2>/dev/null)
 
           if [ -z "$uuid" ]; then
-            log "no UUID for $connector (monitor not connected?), skipping layout '$name'"
+            log "no UUID for $connector in kwinoutputconfig.json (monitor not currently known to KWin?), skipping layout '$name'"
             return 0
           fi
 
