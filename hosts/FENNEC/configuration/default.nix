@@ -13,9 +13,6 @@
     # Bootloader
     ../../../modules/systems/nixos/bootloader/grub.nix
     ../../../modules/systems/nixos/bootloader/grub-theme-sleek.nix
-    # Alternative GRUB themes — uncomment one (and disable sleek below) to compare repaint performance.
-    # ../../../modules/systems/nixos/bootloader/grub-theme-nixos.nix
-    # ../../../modules/systems/nixos/bootloader/grub-theme-breeze.nix
     # Bootloader
     # parked — see TODO.md Backlog (improve before re-enabling)
     # ../../../modules/systems/nixos/bootloader/plymouth.nix
@@ -71,14 +68,11 @@
   # Bootloader
   custom.sysNixGrub.enable = true;
   custom.sysNixGrub.timeout = 2; # dual-boot — short window; be ready at boot to pick Windows
-  custom.sysNixGrub.gfxmodeEfi = "3840x2160,2560x1440,1920x1200,1920x1080,auto"; # 4K → 1440p → 1200p → 1080p → auto fallback
+  # custom.sysNixGrub.gfxmodeEfi = "3840x2160,2560x1440,1920x1200,1920x1080,auto"; # 4K → 1440p → 1200p → 1080p → auto fallback
+  custom.sysNixGrub.gfxmodeEfi = "1920x1200,1920x1080,auto"; # 1200p → 1080p → auto fallback
   custom.sysNixGrub.fontSize = 32; # 4K-friendly font for menu + editor (`e` key)
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
-  # Alternative themes for debugging GRUB menu repaint performance at 4K.
-  # Enable only one theme at a time; disable sleek above before flipping.
-  # custom.sysNixGrubThemeNixos.enable = true;
-  # custom.sysNixGrubThemeBreeze.enable = true;
 
   # Plymouth — parked, see TODO.md Backlog (improve before re-enabling)
   # custom.sysNixPlymouth.enable = true;
