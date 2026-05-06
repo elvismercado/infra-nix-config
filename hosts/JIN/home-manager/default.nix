@@ -142,15 +142,23 @@ in
 
   # KWin custom tile layouts — portrait M2 split into 3 stacked rows.
   # UUID is auto-resolved from the connector at activation time.
+  # KWin requires the root to be horizontal; the vertical 3-row tree is
+  # wrapped in a single horizontal child with width = 1.
   custom.hmKwinTiling.enable = true;
   custom.hmKwinTiling.layouts.m2 = {
     connector = "DP-2";
     tiles = {
-      layoutDirection = "vertical";
+      layoutDirection = "horizontal";
       tiles = [
-        { height = 0.333; }
-        { height = 0.333; }
-        { height = 0.334; }
+        {
+          layoutDirection = "vertical";
+          width = 1;
+          tiles = [
+            { height = 0.333; }
+            { height = 0.333; }
+            { height = 0.334; }
+          ];
+        }
       ];
     };
   };
