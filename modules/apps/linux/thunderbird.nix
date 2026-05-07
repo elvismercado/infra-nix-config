@@ -22,8 +22,7 @@ let
   cfg = config.custom.appThunderbird;
 in
 {
-  options.custom.appThunderbird.enable =
-    lib.mkEnableOption "Thunderbird email client (nixpkgs binary + declarative profile)";
+  options.custom.appThunderbird.enable = lib.mkEnableOption "Thunderbird email client (nixpkgs binary + declarative profile)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

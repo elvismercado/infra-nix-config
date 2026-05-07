@@ -18,8 +18,7 @@ let
   cfg = config.custom.appSweetHome3d;
 in
 {
-  options.custom.appSweetHome3d.enable =
-    lib.mkEnableOption "Sweet Home 3D interior-design app (Homebrew cask, install-only)";
+  options.custom.appSweetHome3d.enable = lib.mkEnableOption "Sweet Home 3D interior-design app (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "sweet-home3d" ];

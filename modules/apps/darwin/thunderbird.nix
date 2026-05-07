@@ -27,8 +27,7 @@ let
   cfg = config.custom.appThunderbird;
 in
 {
-  options.custom.appThunderbird.enable =
-    lib.mkEnableOption "Thunderbird email client (Homebrew cask + hunspell dictionaries; install-only on HM side)";
+  options.custom.appThunderbird.enable = lib.mkEnableOption "Thunderbird email client (Homebrew cask + hunspell dictionaries; install-only on HM side)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "thunderbird" ];

@@ -61,8 +61,7 @@ let
   cfg = config.custom.appSteam;
 in
 {
-  options.custom.appSteam.enable =
-    lib.mkEnableOption "Steam with gaming tools (Proton, GameMode, Gamescope, Lutris, controller support)";
+  options.custom.appSteam.enable = lib.mkEnableOption "Steam with gaming tools (Proton, GameMode, Gamescope, Lutris, controller support)";
 
   config = lib.mkIf cfg.enable {
     programs.steam = {

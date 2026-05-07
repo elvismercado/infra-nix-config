@@ -22,8 +22,7 @@ let
   cfg = config.custom.appHandbrake;
 in
 {
-  options.custom.appHandbrake.enable =
-    lib.mkEnableOption "HandBrake video transcoder GUI (nixpkgs handbrake)";
+  options.custom.appHandbrake.enable = lib.mkEnableOption "HandBrake video transcoder GUI (nixpkgs handbrake)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

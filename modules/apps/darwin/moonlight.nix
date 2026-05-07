@@ -17,8 +17,7 @@ let
   cfg = config.custom.appMoonlight;
 in
 {
-  options.custom.appMoonlight.enable =
-    lib.mkEnableOption "Moonlight game/desktop streaming client (Homebrew cask, install-only)";
+  options.custom.appMoonlight.enable = lib.mkEnableOption "Moonlight game/desktop streaming client (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "moonlight" ];

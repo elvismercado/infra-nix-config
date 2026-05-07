@@ -28,8 +28,7 @@
 
 {
   options.custom.hmLibrewolf = {
-    enable =
-      lib.mkEnableOption "LibreWolf browser (privacy-hardened Firefox fork; nixpkgs binary on Linux, Homebrew cask on Darwin)";
+    enable = lib.mkEnableOption "LibreWolf browser (privacy-hardened Firefox fork; nixpkgs binary on Linux, Homebrew cask on Darwin)";
 
     settings = lib.mkOption {
       type = with lib.types; attrsOf (either bool (either int str));

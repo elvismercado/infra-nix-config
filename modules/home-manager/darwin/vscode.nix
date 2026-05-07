@@ -42,7 +42,6 @@ in
   imports = [ ../core/vscode.nix ];
 
   config = lib.mkIf cfg.enable {
-    home.file."Library/Application Support/Code/User/settings.json".text =
-      builtins.toJSON cfg.settings;
+    home.file."Library/Application Support/Code/User/settings.json".text = builtins.toJSON cfg.settings;
   };
 }

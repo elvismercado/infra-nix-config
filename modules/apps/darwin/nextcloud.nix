@@ -24,8 +24,7 @@ let
   cfg = config.custom.appNextcloud;
 in
 {
-  options.custom.appNextcloud.enable =
-    lib.mkEnableOption "Nextcloud desktop sync client (Homebrew cask + HM wrapper)";
+  options.custom.appNextcloud.enable = lib.mkEnableOption "Nextcloud desktop sync client (Homebrew cask + HM wrapper)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "nextcloud" ];

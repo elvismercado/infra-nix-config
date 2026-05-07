@@ -24,8 +24,7 @@ let
   cfg = config.custom.appBrave;
 in
 {
-  options.custom.appBrave.enable =
-    lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper)";
+  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "brave-browser" ];

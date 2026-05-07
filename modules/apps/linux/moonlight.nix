@@ -25,8 +25,7 @@ let
   cfg = config.custom.appMoonlight;
 in
 {
-  options.custom.appMoonlight.enable =
-    lib.mkEnableOption "Moonlight game/desktop streaming client (nixpkgs moonlight-qt, install-only)";
+  options.custom.appMoonlight.enable = lib.mkEnableOption "Moonlight game/desktop streaming client (nixpkgs moonlight-qt, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.moonlight-qt ];

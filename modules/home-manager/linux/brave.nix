@@ -31,9 +31,9 @@ in
     programs.brave = {
       enable = true;
 
-      nativeMessagingHosts =
-        lib.optionals ((userSettings.desktopEnvironment or null) == "kde-plasma")
-          [ pkgs.kdePackages.plasma-browser-integration ];
+      nativeMessagingHosts = lib.optionals ((userSettings.desktopEnvironment or null) == "kde-plasma") [
+        pkgs.kdePackages.plasma-browser-integration
+      ];
     };
   };
 }

@@ -21,8 +21,7 @@ let
   cfg = config.custom.appLocalsend;
 in
 {
-  options.custom.appLocalsend.enable =
-    lib.mkEnableOption "LocalSend (cross-platform file sharing — Homebrew cask, install-only)";
+  options.custom.appLocalsend.enable = lib.mkEnableOption "LocalSend (cross-platform file sharing — Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "localsend" ];

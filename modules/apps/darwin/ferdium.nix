@@ -17,8 +17,7 @@ let
   cfg = config.custom.appFerdium;
 in
 {
-  options.custom.appFerdium.enable =
-    lib.mkEnableOption "Ferdium multi-service web-app shell (Homebrew cask, install-only)";
+  options.custom.appFerdium.enable = lib.mkEnableOption "Ferdium multi-service web-app shell (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "ferdium" ];

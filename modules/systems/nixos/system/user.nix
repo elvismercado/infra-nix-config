@@ -47,7 +47,8 @@
         "wheel" # sudo access
         "video" # GPU and display device access
         "render" # GPU rendering (e.g. Vulkan, OpenCL)
-      ] ++ config.custom.sysNixUser.extraGroups;
+      ]
+      ++ config.custom.sysNixUser.extraGroups;
     };
 
     networking.hostName = userSettings.hostname;

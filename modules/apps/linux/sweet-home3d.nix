@@ -24,8 +24,7 @@ let
   cfg = config.custom.appSweetHome3d;
 in
 {
-  options.custom.appSweetHome3d.enable =
-    lib.mkEnableOption "Sweet Home 3D interior-design app (nixpkgs sweethome3d.application, install-only)";
+  options.custom.appSweetHome3d.enable = lib.mkEnableOption "Sweet Home 3D interior-design app (nixpkgs sweethome3d.application, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.sweethome3d.application ];

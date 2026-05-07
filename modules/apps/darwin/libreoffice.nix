@@ -22,8 +22,7 @@ let
   cfg = config.custom.appLibreoffice;
 in
 {
-  options.custom.appLibreoffice.enable =
-    lib.mkEnableOption "LibreOffice suite (Homebrew cask, install-only)";
+  options.custom.appLibreoffice.enable = lib.mkEnableOption "LibreOffice suite (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "libreoffice" ];

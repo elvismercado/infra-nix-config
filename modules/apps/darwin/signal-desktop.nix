@@ -23,8 +23,7 @@ let
   cfg = config.custom.appSignal;
 in
 {
-  options.custom.appSignal.enable =
-    lib.mkEnableOption "Signal Desktop (secure messaging — Homebrew cask, install-only)";
+  options.custom.appSignal.enable = lib.mkEnableOption "Signal Desktop (secure messaging — Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "signal" ];

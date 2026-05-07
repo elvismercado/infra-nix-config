@@ -16,9 +16,7 @@ let
 
   # Derive the list of unique systems from all host configurations
   allHosts = nixosHosts // darwinHosts // homeManagerHosts;
-  systems = nixpkgs.lib.unique (
-    map (host: host.userSettings.system) (builtins.attrValues allHosts)
-  );
+  systems = nixpkgs.lib.unique (map (host: host.userSettings.system) (builtins.attrValues allHosts));
 in
 {
   nixosConfigurations = import ./nixos.nix {

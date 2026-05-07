@@ -26,8 +26,7 @@ let
   cfg = config.custom.appLibrewolf;
 in
 {
-  options.custom.appLibrewolf.enable =
-    lib.mkEnableOption "LibreWolf browser (nixpkgs binary + declarative HM settings)";
+  options.custom.appLibrewolf.enable = lib.mkEnableOption "LibreWolf browser (nixpkgs binary + declarative HM settings)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

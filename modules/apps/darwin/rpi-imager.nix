@@ -21,8 +21,7 @@ let
   cfg = config.custom.appRpiImager;
 in
 {
-  options.custom.appRpiImager.enable =
-    lib.mkEnableOption "Raspberry Pi Imager (Homebrew cask, install-only)";
+  options.custom.appRpiImager.enable = lib.mkEnableOption "Raspberry Pi Imager (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "raspberry-pi-imager" ];

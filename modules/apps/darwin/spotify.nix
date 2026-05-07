@@ -23,8 +23,7 @@ let
   cfg = config.custom.appSpotify;
 in
 {
-  options.custom.appSpotify.enable =
-    lib.mkEnableOption "Spotify (music streaming — Homebrew cask, install-only)";
+  options.custom.appSpotify.enable = lib.mkEnableOption "Spotify (music streaming — Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "spotify" ];

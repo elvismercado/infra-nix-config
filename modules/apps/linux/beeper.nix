@@ -21,8 +21,7 @@ let
   cfg = config.custom.appBeeper;
 in
 {
-  options.custom.appBeeper.enable =
-    lib.mkEnableOption "Beeper unified-messaging client (nixpkgs unfree, install-only)";
+  options.custom.appBeeper.enable = lib.mkEnableOption "Beeper unified-messaging client (nixpkgs unfree, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.beeper ];

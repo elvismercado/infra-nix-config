@@ -23,6 +23,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmDiscord.enable =
-    lib.mkEnableOption "Discord client (vesktop preferred — Linux: nixpkgs; Darwin: Homebrew cask)";
+  options.custom.hmDiscord.enable = lib.mkEnableOption "Discord client (vesktop preferred — Linux: nixpkgs; Darwin: Homebrew cask)";
 }

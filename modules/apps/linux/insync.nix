@@ -22,8 +22,7 @@ let
   cfg = config.custom.appInsync;
 in
 {
-  options.custom.appInsync.enable =
-    lib.mkEnableOption "Insync (Google Drive / OneDrive / Dropbox sync — nixpkgs unfree, install-only)";
+  options.custom.appInsync.enable = lib.mkEnableOption "Insync (Google Drive / OneDrive / Dropbox sync — nixpkgs unfree, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.insync ];

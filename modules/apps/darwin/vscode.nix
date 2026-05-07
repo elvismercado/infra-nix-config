@@ -31,8 +31,7 @@ let
   cfg = config.custom.appVscode;
 in
 {
-  options.custom.appVscode.enable =
-    lib.mkEnableOption "Visual Studio Code (Homebrew cask binary + declarative HM settings)";
+  options.custom.appVscode.enable = lib.mkEnableOption "Visual Studio Code (Homebrew cask binary + declarative HM settings)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "visual-studio-code" ];

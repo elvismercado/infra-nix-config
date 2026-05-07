@@ -32,8 +32,7 @@ let
   cfg = config.custom.appMullvadVpn;
 in
 {
-  options.custom.appMullvadVpn.enable =
-    lib.mkEnableOption "Mullvad VPN (services.mullvad-vpn daemon + GUI/CLI client; rp_filter loose for WireGuard kill-switch)";
+  options.custom.appMullvadVpn.enable = lib.mkEnableOption "Mullvad VPN (services.mullvad-vpn daemon + GUI/CLI client; rp_filter loose for WireGuard kill-switch)";
 
   config = lib.mkIf cfg.enable {
     services.mullvad-vpn.enable = true;

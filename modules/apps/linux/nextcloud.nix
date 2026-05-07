@@ -23,8 +23,7 @@ let
   cfg = config.custom.appNextcloud;
 in
 {
-  options.custom.appNextcloud.enable =
-    lib.mkEnableOption "Nextcloud desktop sync client (nixpkgs services.nextcloud-client)";
+  options.custom.appNextcloud.enable = lib.mkEnableOption "Nextcloud desktop sync client (nixpkgs services.nextcloud-client)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

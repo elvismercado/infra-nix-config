@@ -78,7 +78,8 @@
         # confirm 1/2/3 → M1/M2/M3 mapping after first use and re-bind if needed.
         "Window to Screen 0" = "Meta+Alt+1";
         "Window to Screen 1" = "Meta+Alt+2";
-        "Window to Screen 2" = "Meta+Alt+3";      };
+        "Window to Screen 2" = "Meta+Alt+3";
+      };
 
       # ── Unbind keyboard layout switcher conflict ────────────────────
       # KDE binds Meta+Alt+K to "Switch to Next Keyboard Layout",

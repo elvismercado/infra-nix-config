@@ -32,10 +32,9 @@ nixpkgs.lib.genAttrs (builtins.attrNames nixosHosts) (
         };
         # plasma-manager input follows nixpkgs-stable / home-manager-stable.
         # Incompatible with channel = "unstable" hosts — see flake.nix.
-        home-manager.sharedModules =
-          nixpkgs.lib.optional
-            ((userSettings.desktopEnvironment or null) == "kde-plasma")
-            inputs.plasma-manager.homeModules.plasma-manager;
+        home-manager.sharedModules = nixpkgs.lib.optional (
+          (userSettings.desktopEnvironment or null) == "kde-plasma"
+        ) inputs.plasma-manager.homeModules.plasma-manager;
         home-manager.users.${userSettings.username}.imports = [
           nixosHosts.${hostName}.home
         ];

@@ -23,8 +23,7 @@ let
   cfg = config.custom.appLocalsend;
 in
 {
-  options.custom.appLocalsend.enable =
-    lib.mkEnableOption "LocalSend (cross-platform file sharing — nixpkgs binary, install-only)";
+  options.custom.appLocalsend.enable = lib.mkEnableOption "LocalSend (cross-platform file sharing — nixpkgs binary, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.localsend ];

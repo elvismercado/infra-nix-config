@@ -13,6 +13,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmHandbrake.enable =
-    lib.mkEnableOption "HandBrake video transcoder GUI (Linux: nixpkgs; Darwin: Homebrew cask)";
+  options.custom.hmHandbrake.enable = lib.mkEnableOption "HandBrake video transcoder GUI (Linux: nixpkgs; Darwin: Homebrew cask)";
 }

@@ -24,8 +24,7 @@ let
   cfg = config.custom.appMullvadVpn;
 in
 {
-  options.custom.appMullvadVpn.enable =
-    lib.mkEnableOption "Mullvad VPN (Homebrew cask, GUI + tray)";
+  options.custom.appMullvadVpn.enable = lib.mkEnableOption "Mullvad VPN (Homebrew cask, GUI + tray)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "mullvad-vpn" ];

@@ -35,7 +35,10 @@ in
     custom.sysNixNetworkTuning.enable = lib.mkEnableOption "network and I/O sysctl tuning";
 
     custom.sysNixNetworkTuning.congestionControl = lib.mkOption {
-      type = lib.types.enum [ "bbr" "cubic" ];
+      type = lib.types.enum [
+        "bbr"
+        "cubic"
+      ];
       default = "bbr";
       description = ''
         TCP congestion control algorithm.

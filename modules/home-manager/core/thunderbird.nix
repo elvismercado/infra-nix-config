@@ -30,6 +30,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmThunderbird.enable =
-    lib.mkEnableOption "Thunderbird email client (Linux: nixpkgs + declarative profile; Darwin: Homebrew cask, install-only on HM side)";
+  options.custom.hmThunderbird.enable = lib.mkEnableOption "Thunderbird email client (Linux: nixpkgs + declarative profile; Darwin: Homebrew cask, install-only on HM side)";
 }

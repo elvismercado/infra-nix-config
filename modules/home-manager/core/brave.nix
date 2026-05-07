@@ -23,6 +23,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmBrave.enable =
-    lib.mkEnableOption "Brave browser (Linux: nixpkgs + KDE Plasma integration; Darwin: Homebrew cask)";
+  options.custom.hmBrave.enable = lib.mkEnableOption "Brave browser (Linux: nixpkgs + KDE Plasma integration; Darwin: Homebrew cask)";
 }

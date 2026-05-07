@@ -23,8 +23,7 @@ let
   cfg = config.custom.appSteam;
 in
 {
-  options.custom.appSteam.enable =
-    lib.mkEnableOption "Steam (Homebrew cask, install-only)";
+  options.custom.appSteam.enable = lib.mkEnableOption "Steam (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "steam" ];

@@ -84,12 +84,14 @@ let
       };
 
       orientation = lib.mkOption {
-        type = lib.types.nullOr (lib.types.enum [
-          "normal"
-          "left"
-          "right"
-          "inverted"
-        ]);
+        type = lib.types.nullOr (
+          lib.types.enum [
+            "normal"
+            "left"
+            "right"
+            "inverted"
+          ]
+        );
         default = null;
         example = "right";
         description = ''
@@ -190,23 +192,19 @@ let
 
   # Generate the profile data as JSON for the script to consume
   profilesJson = builtins.toJSON (
-    lib.mapAttrs (
-      _name: profile: {
-        match = profile.match;
-        outputs = lib.mapAttrs (
-          _connector: out: {
-            inherit (out) enable;
-            resolution = out.resolution;
-            scale = out.scale;
-            refreshRate = out.refreshRate;
-            orientation = if out.orientation != null then orientationMap.${out.orientation} else null;
-            brightness = out.brightness;
-            position = out.position;
-            primary = out.primary;
-          }
-        ) profile.outputs;
-      }
-    ) cfg.profiles
+    lib.mapAttrs (_name: profile: {
+      match = profile.match;
+      outputs = lib.mapAttrs (_connector: out: {
+        inherit (out) enable;
+        resolution = out.resolution;
+        scale = out.scale;
+        refreshRate = out.refreshRate;
+        orientation = if out.orientation != null then orientationMap.${out.orientation} else null;
+        brightness = out.brightness;
+        position = out.position;
+        primary = out.primary;
+      }) profile.outputs;
+    }) cfg.profiles
   );
 
   # The polling script

@@ -22,8 +22,7 @@ let
   cfg = config.custom.appBrave;
 in
 {
-  options.custom.appBrave.enable =
-    lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration)";
+  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

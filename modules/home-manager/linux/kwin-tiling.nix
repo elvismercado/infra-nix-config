@@ -157,11 +157,9 @@ in
           jsonFile = pkgs.writeText "kwin-tiling-${name}.json" (builtins.toJSON l.tiles);
         }) cfg.layouts;
 
-        emitEntry =
-          e:
-          ''
-            apply_layout ${lib.escapeShellArg e.name} ${lib.escapeShellArg e.connector} ${e.jsonFile}
-          '';
+        emitEntry = e: ''
+          apply_layout ${lib.escapeShellArg e.name} ${lib.escapeShellArg e.connector} ${e.jsonFile}
+        '';
       in
       ''
         export PATH=${

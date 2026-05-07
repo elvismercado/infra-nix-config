@@ -17,8 +17,7 @@ let
   cfg = config.custom.appShotcut;
 in
 {
-  options.custom.appShotcut.enable =
-    lib.mkEnableOption "Shotcut video editor (Homebrew cask, install-only)";
+  options.custom.appShotcut.enable = lib.mkEnableOption "Shotcut video editor (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "shotcut" ];

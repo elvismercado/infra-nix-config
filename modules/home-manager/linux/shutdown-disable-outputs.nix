@@ -33,7 +33,7 @@ let
     name = "shutdown-disable-outputs";
     runtimeInputs = [
       pkgs.kdePackages.libkscreen
-      pkgs.glib           # gdbus
+      pkgs.glib # gdbus
       pkgs.gnused
       pkgs.gawk
       pkgs.coreutils

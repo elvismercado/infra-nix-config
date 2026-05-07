@@ -27,8 +27,7 @@ let
   cfg = config.custom.appYubicoAuthenticator;
 in
 {
-  options.custom.appYubicoAuthenticator.enable =
-    lib.mkEnableOption "Yubico Authenticator (OATH GUI + key management — Homebrew cask, install-only)";
+  options.custom.appYubicoAuthenticator.enable = lib.mkEnableOption "Yubico Authenticator (OATH GUI + key management — Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "yubico-authenticator" ];

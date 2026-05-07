@@ -17,8 +17,7 @@ let
   cfg = config.custom.appBeeper;
 in
 {
-  options.custom.appBeeper.enable =
-    lib.mkEnableOption "Beeper unified-messaging client (Homebrew cask, install-only)";
+  options.custom.appBeeper.enable = lib.mkEnableOption "Beeper unified-messaging client (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "beeper" ];

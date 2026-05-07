@@ -15,6 +15,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmSyncthing.enable =
-    lib.mkEnableOption "Syncthing continuous file synchronisation (Linux: services.syncthing + tray; Darwin: Homebrew cask)";
+  options.custom.hmSyncthing.enable = lib.mkEnableOption "Syncthing continuous file synchronisation (Linux: services.syncthing + tray; Darwin: Homebrew cask)";
 }

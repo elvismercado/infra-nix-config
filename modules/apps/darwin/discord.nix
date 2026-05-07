@@ -27,8 +27,7 @@ let
   cfg = config.custom.appDiscord;
 in
 {
-  options.custom.appDiscord.enable =
-    lib.mkEnableOption "Discord client (vesktop binary from Homebrew cask)";
+  options.custom.appDiscord.enable = lib.mkEnableOption "Discord client (vesktop binary from Homebrew cask)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "vesktop" ]; # vesktop preferred over discord — see core/discord.nix

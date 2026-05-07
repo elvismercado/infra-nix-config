@@ -20,8 +20,7 @@ let
   cfg = config.custom.appShotcut;
 in
 {
-  options.custom.appShotcut.enable =
-    lib.mkEnableOption "Shotcut video editor (nixpkgs, install-only)";
+  options.custom.appShotcut.enable = lib.mkEnableOption "Shotcut video editor (nixpkgs, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.shotcut ];

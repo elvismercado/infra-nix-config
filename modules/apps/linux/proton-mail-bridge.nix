@@ -21,8 +21,7 @@ let
   cfg = config.custom.appProtonmailBridge;
 in
 {
-  options.custom.appProtonmailBridge.enable =
-    lib.mkEnableOption "ProtonMail Bridge (nixpkgs protonmail-bridge-gui, install-only)";
+  options.custom.appProtonmailBridge.enable = lib.mkEnableOption "ProtonMail Bridge (nixpkgs protonmail-bridge-gui, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.protonmail-bridge-gui ];

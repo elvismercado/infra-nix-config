@@ -23,8 +23,7 @@ let
   cfg = config.custom.appSyncthing;
 in
 {
-  options.custom.appSyncthing.enable =
-    lib.mkEnableOption "Syncthing continuous file synchronisation (nixpkgs services.syncthing + tray)";
+  options.custom.appSyncthing.enable = lib.mkEnableOption "Syncthing continuous file synchronisation (nixpkgs services.syncthing + tray)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

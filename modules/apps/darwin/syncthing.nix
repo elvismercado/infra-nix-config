@@ -23,8 +23,7 @@ let
   cfg = config.custom.appSyncthing;
 in
 {
-  options.custom.appSyncthing.enable =
-    lib.mkEnableOption "Syncthing continuous file synchronisation (Homebrew cask syncthing-app)";
+  options.custom.appSyncthing.enable = lib.mkEnableOption "Syncthing continuous file synchronisation (Homebrew cask syncthing-app)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "syncthing-app" ];

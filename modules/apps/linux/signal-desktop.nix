@@ -25,8 +25,7 @@ let
   cfg = config.custom.appSignal;
 in
 {
-  options.custom.appSignal.enable =
-    lib.mkEnableOption "Signal Desktop (secure messaging — nixpkgs binary, install-only)";
+  options.custom.appSignal.enable = lib.mkEnableOption "Signal Desktop (secure messaging — nixpkgs binary, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.signal-desktop ];

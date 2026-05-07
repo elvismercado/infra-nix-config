@@ -25,8 +25,7 @@ let
   cfg = config.custom.appLibreoffice;
 in
 {
-  options.custom.appLibreoffice.enable =
-    lib.mkEnableOption "LibreOffice suite (nixpkgs binary, install-only)";
+  options.custom.appLibreoffice.enable = lib.mkEnableOption "LibreOffice suite (nixpkgs binary, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.libreoffice ];

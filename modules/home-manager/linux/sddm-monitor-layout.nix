@@ -79,9 +79,7 @@ in
         assertion = dpCfg.profiles ? ${cfg.profile};
         message = ''
           custom.hmSddmMonitorLayout.profile = "${cfg.profile}" but no such profile
-          exists in custom.hmDisplayProfiles.profiles. Available: ${
-            lib.concatStringsSep ", " (lib.attrNames dpCfg.profiles)
-          }
+          exists in custom.hmDisplayProfiles.profiles. Available: ${lib.concatStringsSep ", " (lib.attrNames dpCfg.profiles)}
         '';
       }
       {

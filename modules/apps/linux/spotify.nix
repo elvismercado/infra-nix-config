@@ -25,8 +25,7 @@ let
   cfg = config.custom.appSpotify;
 in
 {
-  options.custom.appSpotify.enable =
-    lib.mkEnableOption "Spotify (music streaming — nixpkgs binary, install-only)";
+  options.custom.appSpotify.enable = lib.mkEnableOption "Spotify (music streaming — nixpkgs binary, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.spotify ];

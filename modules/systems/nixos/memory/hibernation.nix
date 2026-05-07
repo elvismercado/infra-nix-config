@@ -42,11 +42,7 @@ let
   ) config.swapDevices;
 
   # Auto-derived resume device: first physical swap partition, or null.
-  autoResumeDevice =
-    if physicalSwap != [ ] then
-      (builtins.head physicalSwap).device
-    else
-      null;
+  autoResumeDevice = if physicalSwap != [ ] then (builtins.head physicalSwap).device else null;
 
   # Use explicit override if provided, otherwise auto-derived value.
   effectiveResumeDevice =

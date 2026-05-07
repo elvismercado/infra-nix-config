@@ -243,17 +243,18 @@
             Type = "oneshot";
             RemainAfterExit = true;
           };
-          script = lib.concatMapStringsSep "\n" (connector: ''
-            for card in /sys/class/drm/card*-${connector}; do
-              if [ -e "$card/status" ]; then
-                echo "detect" > "$card/status" 2>/dev/null || true
-                echo "Re-enabled $card"
-              fi
-            done
-          '') config.custom.sysNixPlymouth.bootDisabledOutputs
-          + ''
-            ${pkgs.udev}/bin/udevadm settle --timeout=5
-          '';
+          script =
+            lib.concatMapStringsSep "\n" (connector: ''
+              for card in /sys/class/drm/card*-${connector}; do
+                if [ -e "$card/status" ]; then
+                  echo "detect" > "$card/status" 2>/dev/null || true
+                  echo "Re-enabled $card"
+                fi
+              done
+            '') config.custom.sysNixPlymouth.bootDisabledOutputs
+            + ''
+              ${pkgs.udev}/bin/udevadm settle --timeout=5
+            '';
         };
 
     # Ensure the full Plymouth animation plays on fast-booting systems.
@@ -262,19 +263,25 @@
     # when Plymouth starts from the initramfs (the standalone-service
     # approach does NOT work with initramfs-based Plymouth).
     # https://wiki.archlinux.org/title/Plymouth#Slow_down_boot_to_show_the_full_animation
-    systemd.services.plymouth-quit = lib.mkIf (config.custom.sysNixPlymouth.minAnimationDuration != null) {
-      serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minAnimationDuration}";
-    };
+    systemd.services.plymouth-quit =
+      lib.mkIf (config.custom.sysNixPlymouth.minAnimationDuration != null)
+        {
+          serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minAnimationDuration}";
+        };
 
     # Ensure the Plymouth shutdown/reboot splash is visible on fast systems.
     # Same ExecStartPre approach as boot, applied to plymouth-poweroff and
     # plymouth-reboot services.
-    systemd.services.plymouth-poweroff = lib.mkIf (config.custom.sysNixPlymouth.minShutdownDuration != null) {
-      serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minShutdownDuration}";
-    };
-    systemd.services.plymouth-reboot = lib.mkIf (config.custom.sysNixPlymouth.minShutdownDuration != null) {
-      serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minShutdownDuration}";
-    };
+    systemd.services.plymouth-poweroff =
+      lib.mkIf (config.custom.sysNixPlymouth.minShutdownDuration != null)
+        {
+          serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minShutdownDuration}";
+        };
+    systemd.services.plymouth-reboot =
+      lib.mkIf (config.custom.sysNixPlymouth.minShutdownDuration != null)
+        {
+          serviceConfig.ExecStartPre = "${pkgs.coreutils}/bin/sleep ${toString config.custom.sysNixPlymouth.minShutdownDuration}";
+        };
 
     # Disable secondary outputs again before the shutdown/reboot splash.
     # The display manager re-enables all monitors, so outputs disabled during boot (via

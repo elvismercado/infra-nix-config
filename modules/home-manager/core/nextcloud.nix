@@ -13,6 +13,5 @@
 { lib, ... }:
 
 {
-  options.custom.hmNextcloud.enable =
-    lib.mkEnableOption "Nextcloud desktop sync client (Linux: nixpkgs service; Darwin: Homebrew cask)";
+  options.custom.hmNextcloud.enable = lib.mkEnableOption "Nextcloud desktop sync client (Linux: nixpkgs service; Darwin: Homebrew cask)";
 }

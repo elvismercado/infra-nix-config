@@ -19,8 +19,7 @@ let
   cfg = config.custom.appProtonmailBridge;
 in
 {
-  options.custom.appProtonmailBridge.enable =
-    lib.mkEnableOption "ProtonMail Bridge (Homebrew cask, install-only)";
+  options.custom.appProtonmailBridge.enable = lib.mkEnableOption "ProtonMail Bridge (Homebrew cask, install-only)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "proton-mail-bridge" ];

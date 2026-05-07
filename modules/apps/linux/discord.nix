@@ -25,8 +25,7 @@ let
   cfg = config.custom.appDiscord;
 in
 {
-  options.custom.appDiscord.enable =
-    lib.mkEnableOption "Discord client (vesktop binary from nixpkgs)";
+  options.custom.appDiscord.enable = lib.mkEnableOption "Discord client (vesktop binary from nixpkgs)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username} = {

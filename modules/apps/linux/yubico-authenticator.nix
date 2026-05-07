@@ -29,8 +29,7 @@ let
   cfg = config.custom.appYubicoAuthenticator;
 in
 {
-  options.custom.appYubicoAuthenticator.enable =
-    lib.mkEnableOption "Yubico Authenticator (OATH GUI + key management — nixpkgs binary, install-only)";
+  options.custom.appYubicoAuthenticator.enable = lib.mkEnableOption "Yubico Authenticator (OATH GUI + key management — nixpkgs binary, install-only)";
 
   config = lib.mkIf cfg.enable {
     home-manager.users.${userSettings.username}.home.packages = [ pkgs.yubioath-flutter ];

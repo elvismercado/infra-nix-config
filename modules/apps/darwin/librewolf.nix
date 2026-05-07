@@ -31,8 +31,7 @@ let
   cfg = config.custom.appLibrewolf;
 in
 {
-  options.custom.appLibrewolf.enable =
-    lib.mkEnableOption "LibreWolf browser (Homebrew cask + declarative HM settings via home.file)";
+  options.custom.appLibrewolf.enable = lib.mkEnableOption "LibreWolf browser (Homebrew cask + declarative HM settings via home.file)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "librewolf" ];

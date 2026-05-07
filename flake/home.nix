@@ -21,11 +21,10 @@ nixpkgs.lib.genAttrs (builtins.attrNames homeManagerHosts) (
       { nixpkgs.config.allowUnfree = true; }
       homeManagerHosts.${hostName}.home
     ]
-    ++ nixpkgs.lib.optional
-      ( builtins.match ".*linux.*" userSettings.system != null
-        && (userSettings.desktopEnvironment or null) == "kde-plasma"
-      )
-      inputs.plasma-manager.homeModules.plasma-manager;
+    ++ nixpkgs.lib.optional (
+      builtins.match ".*linux.*" userSettings.system != null
+      && (userSettings.desktopEnvironment or null) == "kde-plasma"
+    ) inputs.plasma-manager.homeModules.plasma-manager;
     extraSpecialArgs = {
       outputs = self.outputs;
       inherit inputs;

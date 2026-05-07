@@ -23,8 +23,7 @@ let
   cfg = config.custom.appHandbrake;
 in
 {
-  options.custom.appHandbrake.enable =
-    lib.mkEnableOption "HandBrake video transcoder GUI (Homebrew cask handbrake-app)";
+  options.custom.appHandbrake.enable = lib.mkEnableOption "HandBrake video transcoder GUI (Homebrew cask handbrake-app)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "handbrake-app" ];

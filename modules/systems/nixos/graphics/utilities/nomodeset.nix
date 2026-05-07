@@ -44,10 +44,12 @@
   config = lib.mkIf config.custom.sysNixNomodeset.enable {
 
     # Disable all GPU kernel mode-setting — forces EFI/VESA framebuffer
-    boot.kernelParams = [ "nomodeset" ]
-      ++ lib.optionals (config.custom.sysNixNomodeset.efifbMode != null) [
-        "video=efifb:${config.custom.sysNixNomodeset.efifbMode}"
-      ];
+    boot.kernelParams = [
+      "nomodeset"
+    ]
+    ++ lib.optionals (config.custom.sysNixNomodeset.efifbMode != null) [
+      "video=efifb:${config.custom.sysNixNomodeset.efifbMode}"
+    ];
 
     # Use the generic modesetting DDX (falls back to fbdev with nomodeset)
     services.xserver.videoDrivers = lib.mkDefault [ "modesetting" ];
