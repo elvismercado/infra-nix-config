@@ -2,7 +2,9 @@
 #
 # Enables `services.syncthing` with the system tray icon, non-overriding
 # device/folder semantics (so devices and folders added via the Web UI
-# persist across rebuilds), and opt-out of anonymous usage telemetry.
+# persist across rebuilds), and the shared cross-host policy: opt-out of
+# anonymous telemetry, no daemon self-upgrade (nix owns the binary), and
+# no auto-created `~/Sync` default folder on first launch.
 #
 # Internal once the Option 3 app façade is in use: imported by
 # `modules/apps/linux/syncthing.nix` (toggle `custom.appSyncthing.enable`).
@@ -32,9 +34,11 @@ in
       };
       overrideDevices = false; # If set to false, devices added via the web interface will persist and will have to be deleted manually.
       overrideFolders = false; # If set to false, folders added via the web interface will persist and will have to be deleted manually.
+      extraFlags = [ "--no-default-folder" ]; # skip auto-creating the ~/Sync "Default" folder on first launch
       settings.options = {
         urAccepted = -1; # Opt out of anonymous usage reporting (-1 = declined)
         localAnnounceEnabled = true;
+        autoUpgradeIntervalH = 0; # Disable daemon self-upgrade — nix owns the binary; channel-driven updates only
       };
     };
   };
