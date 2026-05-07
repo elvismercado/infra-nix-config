@@ -120,7 +120,7 @@ in
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
     ../../../modules/home-manager/linux/autostart.nix
-    ../../../modules/home-manager/linux/cameractrls.nix
+    ../../../modules/home-manager/linux/webcamoid.nix
   ];
 
   # Base
@@ -317,5 +317,5 @@ in
     };
   };
 
-  custom.hmCameractrls.enable = true;
+  custom.hmWebcamoid.enable = true;
 }

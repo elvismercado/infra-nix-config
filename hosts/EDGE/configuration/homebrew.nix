@@ -84,6 +84,8 @@
 
       # System & Hardware
       "appcleaner"
+      "g-hub" # Logitech G HUB — StreamCam tuning + G502 X profiles
+      "logi-options-plus" # Logitech Options+ — MX Anywhere 2S/3 (BT + Logi receiver)
       # `insync` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/insync.nix (toggle custom.appInsync.enable).
       # `libreoffice`, `localsend`, `raspberry-pi-imager`, and

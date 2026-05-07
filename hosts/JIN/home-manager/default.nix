@@ -90,7 +90,7 @@ in
 
     # Linux / Apps
     ../../../modules/home-manager/linux/strawberry.nix
-    ../../../modules/home-manager/linux/cameractrls.nix
+    ../../../modules/home-manager/linux/webcamoid.nix
   ];
 
   # Host
@@ -230,5 +230,5 @@ in
     };
   };
 
-  custom.hmCameractrls.enable = true;
+  custom.hmWebcamoid.enable = true;
 }
