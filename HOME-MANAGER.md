@@ -61,33 +61,35 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 
 **All platforms** (`home-manager/all/`):
 
-| Module                             | Option                        |
-| ---------------------------------- | ----------------------------- |
-| `home-manager/all/base.nix`        | `custom.hmBase.enable`        |
-|                                    | `custom.hmBase.editor`        |
-| `home-manager/all/aliases.nix`     | `custom.hmAliases.enable`     |
-| `home-manager/all/android.nix`     | `custom.hmAndroid.enable`     |
-| `home-manager/all/ansible.nix`     | `custom.hmAnsible.enable`     |
-| `home-manager/all/bash.nix`        | `custom.hmBash.enable`        |
-| `home-manager/all/brave.nix`       | `custom.hmBrave.enable`       |
-| `home-manager/all/fastfetch.nix`   | `custom.hmFastfetch.enable`   |
-| `home-manager/all/fnm.nix`         | `custom.hmFnm.enable`         |
-| `home-manager/all/git.nix`         | `custom.hmGit.enable`         |
-| `home-manager/all/mpv.nix`         | `custom.hmMpv.enable`         |
-| `home-manager/all/pyenv.nix`       | `custom.hmPyenv.enable`       |
-| `home-manager/all/ssh.nix`         | `custom.hmSsh.enable`         |
-| `home-manager/all/starship.nix`    | `custom.hmStarship.enable`    |
-|                                    | `custom.hmStarship.style`     |
-| `home-manager/all/syncthing.nix`   | `custom.hmSyncthing.enable`   |
-| `home-manager/all/thunderbird.nix` | `custom.hmThunderbird.enable` |
+| Module                           | Option                      |
+| -------------------------------- | --------------------------- |
+| `home-manager/all/base.nix`      | `custom.hmBase.enable`      |
+|                                  | `custom.hmBase.editor`      |
+| `home-manager/all/aliases.nix`   | `custom.hmAliases.enable`   |
+| `home-manager/all/android.nix`   | `custom.hmAndroid.enable`   |
+| `home-manager/all/ansible.nix`   | `custom.hmAnsible.enable`   |
+| `home-manager/all/bash.nix`      | `custom.hmBash.enable`      |
+| `home-manager/all/fastfetch.nix` | `custom.hmFastfetch.enable` |
+| `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`       |
+| `home-manager/all/git.nix`       | `custom.hmGit.enable`       |
+| `home-manager/all/mpv.nix`       | `custom.hmMpv.enable`       |
+| `home-manager/all/pyenv.nix`     | `custom.hmPyenv.enable`     |
+| `home-manager/all/ssh.nix`       | `custom.hmSsh.enable`       |
+| `home-manager/all/starship.nix`  | `custom.hmStarship.enable`  |
+|                                  | `custom.hmStarship.style`   |
+| `home-manager/all/syncthing.nix` | `custom.hmSyncthing.enable` |
 
 **Cross-platform core (internal — do not import from hosts)** (`home-manager/core/`):
 
 These files hold shared logic for split (Option 2) modules. Hosts import the matching `linux/` or `darwin/` wrapper instead, **or** — when a cross-layer app façade exists — enable the façade and let it pull the wrapper in. See [.github/instructions/cross-platform.instructions.md](.github/instructions/cross-platform.instructions.md).
 
-| Module                         | Option                   | Wrappers                                | App façade (preferred wiring)               |
-| ------------------------------ | ------------------------ | --------------------------------------- | ------------------------------------------- |
-| `home-manager/core/vscode.nix` | `custom.hmVscode.enable` | `linux/vscode.nix`, `darwin/vscode.nix` | `custom.appVscode.enable` (`modules/apps/`) |
+| Module                              | Option                        | Wrappers                                          | App façade (preferred wiring)                    |
+| ----------------------------------- | ----------------------------- | ------------------------------------------------- | ------------------------------------------------ |
+| `home-manager/core/brave.nix`       | `custom.hmBrave.enable`       | `linux/brave.nix`, `darwin/brave.nix`             | `custom.appBrave.enable` (`modules/apps/`)       |
+| `home-manager/core/librewolf.nix`   | `custom.hmLibrewolf.enable`   | `linux/librewolf.nix`, `darwin/librewolf.nix`     | `custom.appLibrewolf.enable` (`modules/apps/`)   |
+|                                     | `custom.hmLibrewolf.settings` |                                                   |                                                  |
+| `home-manager/core/thunderbird.nix` | `custom.hmThunderbird.enable` | `linux/thunderbird.nix`, `darwin/thunderbird.nix` | `custom.appThunderbird.enable` (`modules/apps/`) |
+| `home-manager/core/vscode.nix`      | `custom.hmVscode.enable`      | `linux/vscode.nix`, `darwin/vscode.nix`           | `custom.appVscode.enable` (`modules/apps/`)      |
 
 **Linux — KDE Plasma** (`home-manager/linux/`):
 
@@ -131,10 +133,26 @@ These files hold shared logic for split (Option 2) modules. Hosts import the mat
 
 Apps whose binary lives in a different layer than their config (typically a Homebrew cask on darwin + declarative HM settings) are wired through façade modules under `modules/apps/{darwin,linux}/`. The façade is a **system module** — import it from `hosts/<HOST>/configuration/default.nix`, NOT from `home-manager/default.nix`. The same toggle name is used on every OS, and the façade auto-pulls the matching home-manager wrapper into HM scope.
 
-| Façade                           | Option                    | Owns                                                                         |
-| -------------------------------- | ------------------------- | ---------------------------------------------------------------------------- |
-| `modules/apps/darwin/vscode.nix` | `custom.appVscode.enable` | `homebrew.casks += [ "visual-studio-code" ]` + HM darwin wrapper auto-import |
-| `modules/apps/linux/vscode.nix`  | `custom.appVscode.enable` | HM linux wrapper auto-import (no system-layer binary needed)                 |
+| Façade                                         | Option                                 | Owns                                                                                                                               |
+| ---------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `modules/apps/darwin/brave.nix`                | `custom.appBrave.enable`               | `homebrew.casks += [ "brave-browser" ]` + HM darwin wrapper auto-import                                                            |
+| `modules/apps/linux/brave.nix`                 | `custom.appBrave.enable`               | HM linux wrapper auto-import (Plasma integration when `desktopEnvironment = "kde-plasma"`)                                         |
+| `modules/apps/darwin/libreoffice.nix`          | `custom.appLibreoffice.enable`         | `homebrew.casks += [ "libreoffice" ]`                                                                                              |
+| `modules/apps/linux/libreoffice.nix`           | `custom.appLibreoffice.enable`         | `home.packages += [ pkgs.libreoffice ]`                                                                                            |
+| `modules/apps/darwin/librewolf.nix`            | `custom.appLibrewolf.enable`           | `homebrew.casks += [ "librewolf" ]` + HM darwin wrapper auto-import (cask deprecated Sep 2026 — revisit)                           |
+| `modules/apps/linux/librewolf.nix`             | `custom.appLibrewolf.enable`           | HM linux wrapper auto-import                                                                                                       |
+| `modules/apps/darwin/localsend.nix`            | `custom.appLocalsend.enable`           | `homebrew.casks += [ "localsend" ]`                                                                                                |
+| `modules/apps/linux/localsend.nix`             | `custom.appLocalsend.enable`           | `home.packages += [ pkgs.localsend ]`                                                                                              |
+| `modules/apps/darwin/rpi-imager.nix`           | `custom.appRpiImager.enable`           | `homebrew.casks += [ "raspberry-pi-imager" ]`                                                                                      |
+| `modules/apps/linux/rpi-imager.nix`            | `custom.appRpiImager.enable`           | `home.packages += [ pkgs.rpi-imager ]`                                                                                             |
+| `modules/apps/darwin/signal-desktop.nix`       | `custom.appSignal.enable`              | `homebrew.casks += [ "signal" ]`                                                                                                   |
+| `modules/apps/linux/signal-desktop.nix`        | `custom.appSignal.enable`              | `home.packages += [ pkgs.signal-desktop ]`                                                                                         |
+| `modules/apps/darwin/thunderbird.nix`          | `custom.appThunderbird.enable`         | `homebrew.casks += [ "thunderbird" ]` + HM darwin wrapper auto-import (HM-side install-only: hunspell dicts; cask owns the binary) |
+| `modules/apps/linux/thunderbird.nix`           | `custom.appThunderbird.enable`         | HM linux wrapper auto-import (`programs.thunderbird` + hunspell + dicts)                                                           |
+| `modules/apps/darwin/vscode.nix`               | `custom.appVscode.enable`              | `homebrew.casks += [ "visual-studio-code" ]` + HM darwin wrapper auto-import                                                       |
+| `modules/apps/linux/vscode.nix`                | `custom.appVscode.enable`              | HM linux wrapper auto-import (no system-layer binary needed)                                                                       |
+| `modules/apps/darwin/yubico-authenticator.nix` | `custom.appYubicoAuthenticator.enable` | `homebrew.casks += [ "yubico-authenticator" ]`                                                                                     |
+| `modules/apps/linux/yubico-authenticator.nix`  | `custom.appYubicoAuthenticator.enable` | `home.packages += [ pkgs.yubioath-flutter ]`                                                                                       |
 
 When an `app<Name>` façade exists, do NOT also set `custom.hm<Name>.enable` directly from a host — the façade handles it.
 
