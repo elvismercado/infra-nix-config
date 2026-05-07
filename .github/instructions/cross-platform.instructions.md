@@ -141,7 +141,7 @@ When OS divergence forces a split. **Single user-facing option** (defined in `co
     programs.<x>.package = null;  # Cask provides the binary
     #
     # (b) The HM `programs.<x>` module rejects `package = null` (e.g. it reads
-    #     `cfg.package.pname` to derive other options — vscode in HM 25.11):
+    #     `cfg.package.pname` to derive other options — vscode's HM module):
     #     bypass `programs.<x>` entirely and write config files via `home.file`,
     #     reusing a shared settings option declared in core.
     #
@@ -157,7 +157,7 @@ When the binary comes from a Homebrew cask, the darwin wrapper still needs to la
 
 1. **`programs.<x>.package = null`** — use when the upstream `programs.<x>` module accepts a null package (it then writes config but skips binary install). This is the lightest pattern: keep using `programs.<x>` for everything else (settings, extensions, profiles).
 
-2. **Bypass `programs.<x>` and write via `home.file`** — use when the upstream module rejects `package = null` (e.g., it dereferences `cfg.package.pname` for other options). Define a shared settings attrset in `core/<name>.nix` as a module option (`custom.hm<Name>.settings`, type `attrsOf anything`); the linux wrapper feeds it to `programs.<x>.<settings option>`, the darwin wrapper writes `home.file."Library/Application Support/<App>/settings.json".text = builtins.toJSON cfg.settings;`. Hosts can extend or override settings per-key via normal module-system merging. Canonical exemplar: VS Code (HM 25.11 rejects `programs.vscode.package = null`, so the darwin wrapper uses `home.file`).
+2. **Bypass `programs.<x>` and write via `home.file`** — use when the upstream module rejects `package = null` (e.g., it dereferences `cfg.package.pname` for other options). Define a shared settings attrset in `core/<name>.nix` as a module option (`custom.hm<Name>.settings`, type `attrsOf anything`); the linux wrapper feeds it to `programs.<x>.<settings option>`, the darwin wrapper writes `home.file."Library/Application Support/<App>/settings.json".text = builtins.toJSON cfg.settings;`. Hosts can extend or override settings per-key via normal module-system merging. Canonical exemplar: VS Code (HM's `programs.vscode` module rejects `package = null` — non-nullable `mkPackageOption` plus several `cfg.package.*` dereferences — so the darwin wrapper uses `home.file`).
 
 Both patterns satisfy the "never both nixpkgs + cask for the same app" rule — neither installs a nixpkgs binary on darwin.
 

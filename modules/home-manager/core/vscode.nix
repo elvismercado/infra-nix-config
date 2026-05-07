@@ -6,8 +6,8 @@
 #
 #   - Linux wrapper:  feeds `cfg.settings` to `programs.vscode.profiles.default.userSettings`
 #                     (HM installs nixpkgs vscode and writes ~/.config/Code/User/settings.json).
-#   - Darwin wrapper: bypasses `programs.vscode` entirely (HM 25.11 rejects
-#                     `programs.vscode.package = null`) and writes the same attrset
+#   - Darwin wrapper: bypasses `programs.vscode` entirely (HM's `programs.vscode`
+#                     rejects `package = null`) and writes the same attrset
 #                     directly to ~/Library/Application Support/Code/User/settings.json
 #                     via `home.file`. The Homebrew cask provides the binary.
 #

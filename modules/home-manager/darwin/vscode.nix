@@ -5,15 +5,18 @@
 # `programs.vscode` entirely and writes settings.json directly via `home.file`.
 #
 # Why bypass `programs.vscode`?
-#   In home-manager 25.11, `programs.vscode.package` is typed `package` (not
-#   `nullOr package`) and the module dereferences `cfg.package.pname` to derive
-#   `nameShort`, so `programs.vscode.package = null` fails to evaluate. We can't
-#   feed it the nixpkgs vscode build either, because that would install a second
-#   VS Code under /nix/store and shadow the cask binary on PATH (and violate
-#   "no GUI apps via nixpkgs on macOS"). So on darwin we drop `programs.vscode`
-#   altogether and write the same `cfg.settings` attrset that Linux feeds to
-#   `programs.vscode.profiles.default.userSettings` directly to the path the
-#   cask app reads at startup.
+#   The upstream HM `programs.vscode` module declares `package` via non-nullable
+#   `mkPackageOption pkgs "vscode" { ... }` and dereferences it several times
+#   (`cfg.package.pname`, `cfg.package.version`, `lib.getExe cfg.package`,
+#   `home.packages = [ cfg.package ]`). `programs.vscode.package = null` therefore
+#   fails both at type-check and at usage. This is a property of the module's
+#   shape, not of any specific HM release — it's the same on release-25.05,
+#   release-25.11, and master. We also can't feed it the nixpkgs vscode build,
+#   because that would install a second VS Code under /nix/store and shadow the
+#   cask binary on PATH (and violate "no GUI apps via nixpkgs on macOS"). So on
+#   darwin we drop `programs.vscode` altogether and write the same `cfg.settings`
+#   attrset that Linux feeds to `programs.vscode.profiles.default.userSettings`
+#   directly to the path the cask app reads at startup.
 #
 # Extensions: managed through the cask-installed VS Code Marketplace UI on macOS.
 # Nix-built extensions cannot be loaded by the cask binary, so we don't try.
