@@ -48,16 +48,20 @@
       # Media
       # `handbrake-app` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/handbrake.nix (toggle custom.appHandbrake.enable).
-      "moonlight"
-      "shotcut"
+      # `moonlight` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/moonlight.nix (toggle custom.appMoonlight.enable).
+      # `shotcut` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/shotcut.nix (toggle custom.appShotcut.enable).
       # `spotify` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/spotify.nix (toggle custom.appSpotify.enable).
       # `steam` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/steam.nix (toggle custom.appSteam.enable).
 
       # Productivity
-      "beeper"
-      "ferdium"
+      # `beeper` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/beeper.nix (toggle custom.appBeeper.enable).
+      # `ferdium` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/ferdium.nix (toggle custom.appFerdium.enable).
       # `nextcloud` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/nextcloud.nix (toggle custom.appNextcloud.enable).
       "orbstack"
@@ -69,8 +73,10 @@
       # modules/apps/darwin/thunderbird.nix (toggle custom.appThunderbird.enable).
 
       # Security & VPN
-      "mullvad-vpn"
-      "proton-mail-bridge"
+      # `mullvad-vpn` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/mullvad-vpn.nix (toggle custom.appMullvadVpn.enable).
+      # `proton-mail-bridge` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/proton-mail-bridge.nix (toggle custom.appProtonmailBridge.enable).
 
       # Development
       # `visual-studio-code` cask is owned by the Option 3 app façade
@@ -78,13 +84,15 @@
 
       # System & Hardware
       "appcleaner"
-      "insync"
+      # `insync` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/insync.nix (toggle custom.appInsync.enable).
       # `libreoffice`, `localsend`, `raspberry-pi-imager`, and
       # `yubico-authenticator` casks are owned by Option 3 app façades under
       # modules/apps/darwin/ (toggles custom.appLibreoffice.enable,
       # custom.appLocalsend.enable, custom.appRpiImager.enable,
       # custom.appYubicoAuthenticator.enable).
-      "sweet-home3d"
+      # `sweet-home3d` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/sweet-home3d.nix (toggle custom.appSweetHome3d.enable).
       "the-unarchiver"
       "unraid-usb-creator-next"
     ];

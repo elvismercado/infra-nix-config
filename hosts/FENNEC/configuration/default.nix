@@ -55,7 +55,6 @@
 
     # Services
     ../../../modules/systems/nixos/fwupd.nix
-    ../../../modules/systems/nixos/mullvad.nix
     ../../../modules/systems/nixos/postinstall.nix
 
     # Apps
@@ -71,6 +70,9 @@
     ../../../modules/apps/linux/handbrake.nix
     ../../../modules/apps/linux/discord.nix
     ../../../modules/apps/linux/steam.nix
+    ../../../modules/apps/linux/mullvad-vpn.nix
+    ../../../modules/apps/linux/beeper.nix
+    ../../../modules/apps/linux/ferdium.nix
   ];
 
   # Nix
@@ -132,7 +134,6 @@
 
   # Services
   custom.sysNixFwupd.enable = true;
-  custom.sysNixMullvad.enable = true;
   custom.sysNixPostinstall.enable = true;
 
   # Apps
@@ -148,4 +149,7 @@
   custom.appHandbrake.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
+  custom.appMullvadVpn.enable = true;
+  custom.appBeeper.enable = true;
+  custom.appFerdium.enable = true;
 }

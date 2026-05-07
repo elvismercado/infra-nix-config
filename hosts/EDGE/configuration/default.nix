@@ -47,6 +47,14 @@
     ../../../modules/apps/darwin/handbrake.nix
     ../../../modules/apps/darwin/discord.nix
     ../../../modules/apps/darwin/steam.nix
+    ../../../modules/apps/darwin/mullvad-vpn.nix
+    ../../../modules/apps/darwin/proton-mail-bridge.nix
+    ../../../modules/apps/darwin/insync.nix
+    ../../../modules/apps/darwin/beeper.nix
+    ../../../modules/apps/darwin/ferdium.nix
+    ../../../modules/apps/darwin/shotcut.nix
+    ../../../modules/apps/darwin/sweet-home3d.nix
+    ../../../modules/apps/darwin/moonlight.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -84,4 +92,12 @@
   custom.appHandbrake.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
+  custom.appMullvadVpn.enable = true;
+  custom.appProtonmailBridge.enable = true;
+  custom.appInsync.enable = true;
+  custom.appBeeper.enable = true;
+  custom.appFerdium.enable = true;
+  custom.appShotcut.enable = true;
+  custom.appSweetHome3d.enable = true;
+  custom.appMoonlight.enable = true;
 }

@@ -63,7 +63,6 @@
     ../../../modules/systems/nixos/printing.nix
     ../../../modules/systems/nixos/fwupd.nix
     ../../../modules/systems/nixos/docker.nix
-    ../../../modules/systems/nixos/mullvad.nix
     ../../../modules/systems/nixos/postinstall.nix
 
     # Apps
@@ -86,6 +85,14 @@
     ../../../modules/apps/linux/syncthing.nix
     ../../../modules/apps/linux/handbrake.nix
     ../../../modules/apps/linux/discord.nix
+    ../../../modules/apps/linux/mullvad-vpn.nix
+    ../../../modules/apps/linux/proton-mail-bridge.nix
+    ../../../modules/apps/linux/insync.nix
+    ../../../modules/apps/linux/beeper.nix
+    ../../../modules/apps/linux/ferdium.nix
+    ../../../modules/apps/linux/shotcut.nix
+    ../../../modules/apps/linux/sweet-home3d.nix
+    ../../../modules/apps/linux/moonlight.nix
   ];
 
   # Host
@@ -157,7 +164,6 @@
   custom.sysNixPrinting.enable = true;
   custom.sysNixFwupd.enable = true;
   custom.sysNixDocker.enable = true;
-  custom.sysNixMullvad.enable = true;
   custom.sysNixPostinstall.enable = true;
 
   # Apps
@@ -180,4 +186,12 @@
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
   custom.appDiscord.enable = true;
+  custom.appMullvadVpn.enable = true;
+  custom.appProtonmailBridge.enable = true;
+  custom.appInsync.enable = true;
+  custom.appBeeper.enable = true;
+  custom.appFerdium.enable = true;
+  custom.appShotcut.enable = true;
+  custom.appSweetHome3d.enable = true;
+  custom.appMoonlight.enable = true;
 }

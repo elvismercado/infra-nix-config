@@ -66,7 +66,6 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/printing.nix`                             | `custom.sysNixPrinting.enable`              |
 | `systems/nixos/fwupd.nix`                                | `custom.sysNixFwupd.enable`                 |
 | `systems/nixos/docker.nix`                               | `custom.sysNixDocker.enable`                |
-| `systems/nixos/mullvad.nix`                              | `custom.sysNixMullvad.enable`               |
 | `systems/nixos/postinstall.nix`                          | `custom.sysNixPostinstall.enable`           |
 | **Peripherals**                                          |                                             |
 | `systems/nixos/bluetooth.nix`                            | `custom.sysNixBluetooth.enable`             |

@@ -307,6 +307,11 @@ in
       exec = "ferdium --hidden";
       icon = "ferdium";
     };
+    mullvad-vpn = {
+      name = "Mullvad VPN";
+      exec = "mullvad-vpn";
+      icon = "mullvad-vpn";
+    };
     solaar = {
       name = "Solaar";
       exec = "solaar --window=hide";

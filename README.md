@@ -107,13 +107,17 @@ modules/
   apps/                      # Cross-layer app façades (single toggle owns both
                              #   the binary delivery and the matching home-manager
                              #   config). Imported from configuration/, NOT home-manager/.
-    darwin/                  #   Brave, Discord, HandBrake, LibreOffice, LibreWolf, LocalSend,
-                             #   Nextcloud, Raspberry Pi Imager, Signal, Spotify, Steam, Syncthing,
-                             #   Thunderbird, VS Code, Yubico Authenticator (cask + HM config)
-    linux/                   #   Brave, Discord, HandBrake, LibreOffice, LibreWolf, LocalSend,
-                             #   Nextcloud, Raspberry Pi Imager, Signal, Spotify, Steam, Syncthing,
-                             #   Thunderbird, VS Code, Yubico Authenticator (HM injection;
-                             #   Steam is system-level)
+    darwin/                  #   Beeper, Brave, Discord, Ferdium, HandBrake, Insync, LibreOffice,
+                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud,
+                             #   ProtonMail Bridge, Raspberry Pi Imager, Shotcut, Signal,
+                             #   Spotify, Steam, Sweet Home 3D, Syncthing, Thunderbird, VS Code,
+                             #   Yubico Authenticator (cask + HM config)
+    linux/                   #   Beeper, Brave, Discord, Ferdium, HandBrake, Insync, LibreOffice,
+                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud,
+                             #   ProtonMail Bridge, Raspberry Pi Imager, Shotcut, Signal,
+                             #   Spotify, Steam, Sweet Home 3D, Syncthing, Thunderbird, VS Code,
+                             #   Yubico Authenticator (HM injection; Steam and Mullvad VPN
+                             #   are system-level)
 ```
 
 ## Per-Host Settings
