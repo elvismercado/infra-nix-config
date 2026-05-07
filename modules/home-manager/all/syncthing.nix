@@ -19,9 +19,15 @@
 # The ONLY OS branch is the Linux KDE system tray icon: upstream HM puts an
 # `assertPlatform "...tray" pkgs lib.platforms.linux` on
 # `services.syncthing.tray.enable`, so it cannot be enabled on darwin. We
-# gate it on `pkgs.stdenv.hostPlatform.isLinux`. macOS users use the Web UI
-# shortcut as the entry point (no menubar icon — accepted trade-off; see
-# `.archive/syncthing-2026-05-08/` for the previous cask-based setup).
+# gate it on `userSettings.system` (NOT `pkgs.stdenv.hostPlatform`) because
+# the same flag also picks the matching `web-shortcuts` renderer at
+# `imports`-time — referencing `pkgs` from `imports` triggers an HM
+# infinite recursion (it forces `config` to be evaluated to provide
+# `_module.args.pkgs`, but `config` depends on `imports`). `userSettings`
+# arrives via `extraSpecialArgs` and is available before `config`.
+# macOS users use the Web UI shortcut as the entry point (no menubar icon
+# — accepted trade-off; see `.archive/syncthing-2026-05-08/` for the
+# previous cask-based setup).
 #
 # The matching `web-shortcuts.nix` wrapper is selected per OS so that the
 # right renderer (`.desktop` on Linux, `.webloc` on darwin) is in scope.
@@ -38,13 +44,17 @@
 {
   config,
   lib,
-  pkgs,
+  userSettings,
   ...
 }:
 
 let
   cfg = config.custom.hmSyncthing;
-  isLinux = pkgs.stdenv.hostPlatform.isLinux;
+  # Branch on userSettings.system (an extraSpecialArg) instead of
+  # pkgs.stdenv.hostPlatform — referencing `pkgs` from `imports` would
+  # require `config` (via `_module.args.pkgs`), which triggers an HM
+  # infinite recursion. `userSettings` is available before `config`.
+  isLinux = lib.hasSuffix "linux" userSettings.system;
 in
 {
   imports = [
