@@ -33,9 +33,13 @@
       "rectangle"
 
       # Browsers & Communication
-      "brave-browser"
+      # `brave-browser` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/brave.nix (toggle custom.appBrave.enable).
       "discord"
-      "librewolf" # deprecated in Homebrew Sep 2026 — revisit before then
+      # `librewolf` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/librewolf.nix (toggle custom.appLibrewolf.enable).
+      # Note: `librewolf` cask is deprecated in Homebrew Sep 2026 —
+      # revisit before then.
       # `signal` cask is owned by the Option 3 app façade
       # at modules/apps/darwin/signal-desktop.nix (toggle custom.appSignal.enable).
 
@@ -55,7 +59,8 @@
       "syncthing-app"
 
       # Email
-      "thunderbird"
+      # `thunderbird` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/thunderbird.nix (toggle custom.appThunderbird.enable).
 
       # Security & VPN
       "mullvad-vpn"

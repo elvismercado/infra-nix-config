@@ -98,7 +98,6 @@ in
     ../../../modules/home-manager/all/starship.nix
 
     # Apps
-    ../../../modules/home-manager/all/brave.nix
     ../../../modules/home-manager/all/mpv.nix
     ../../../modules/home-manager/linux/vscode.nix
     ../../../modules/home-manager/all/syncthing.nix
@@ -146,7 +145,6 @@ in
   custom.hmAliasesAmdCpu.enable = true;
 
   # Apps
-  custom.hmBrave.enable = true;
   custom.hmMpv.enable = true;
   custom.hmVscode.enable = true;
   custom.hmSyncthing.enable = true;

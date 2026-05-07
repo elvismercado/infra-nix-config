@@ -64,6 +64,9 @@
 
     # Gaming
     ../../../modules/systems/nixos/gaming/steam.nix
+
+    # Apps (cross-layer façades — see modules/apps/)
+    ../../../modules/apps/linux/brave.nix
   ];
 
   # Nix
@@ -134,4 +137,7 @@
 
   # Gaming
   custom.sysNixSteam.enable = true;
+
+  # Apps (cross-layer façades)
+  custom.appBrave.enable = true;
 }

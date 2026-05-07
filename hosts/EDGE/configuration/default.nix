@@ -38,6 +38,9 @@
     ../../../modules/apps/darwin/rpi-imager.nix
     ../../../modules/apps/darwin/localsend.nix
     ../../../modules/apps/darwin/yubico-authenticator.nix
+    ../../../modules/apps/darwin/brave.nix
+    ../../../modules/apps/darwin/librewolf.nix
+    ../../../modules/apps/darwin/thunderbird.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -66,4 +69,7 @@
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;
+  custom.appBrave.enable = true;
+  custom.appLibrewolf.enable = true;
+  custom.appThunderbird.enable = true;
 }

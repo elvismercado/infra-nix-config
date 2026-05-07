@@ -78,6 +78,9 @@
     ../../../modules/apps/linux/rpi-imager.nix
     ../../../modules/apps/linux/localsend.nix
     ../../../modules/apps/linux/yubico-authenticator.nix
+    ../../../modules/apps/linux/brave.nix
+    ../../../modules/apps/linux/librewolf.nix
+    ../../../modules/apps/linux/thunderbird.nix
   ];
 
   # Host
@@ -164,4 +167,7 @@
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;
+  custom.appBrave.enable = true;
+  custom.appLibrewolf.enable = true;
+  custom.appThunderbird.enable = true;
 }
