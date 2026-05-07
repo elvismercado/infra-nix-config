@@ -36,7 +36,8 @@
       "brave-browser"
       "discord"
       "librewolf" # deprecated in Homebrew Sep 2026 — revisit before then
-      "signal"
+      # `signal` cask is owned by the Option 3 app façade
+      # at modules/apps/darwin/signal-desktop.nix (toggle custom.appSignal.enable).
 
       # Media
       "handbrake-app"
@@ -67,13 +68,14 @@
       # System & Hardware
       "appcleaner"
       "insync"
-      "libreoffice"
-      "localsend"
-      "raspberry-pi-imager"
+      # `libreoffice`, `localsend`, `raspberry-pi-imager`, and
+      # `yubico-authenticator` casks are owned by Option 3 app façades under
+      # modules/apps/darwin/ (toggles custom.appLibreoffice.enable,
+      # custom.appLocalsend.enable, custom.appRpiImager.enable,
+      # custom.appYubicoAuthenticator.enable).
       "sweet-home3d"
       "the-unarchiver"
       "unraid-usb-creator-next"
-      "yubico-authenticator"
     ];
 
     # Mac App Store apps — App Store-only distribution

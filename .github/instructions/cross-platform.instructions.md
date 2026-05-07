@@ -258,6 +258,17 @@ custom.app<Name>.enable = true;
 - The Linux façade is often a thin forwarder — accepted as the price of OS-symmetric wiring.
 - Add an `app<Name>` façade only when binary and config cross layer boundaries (cask + HM-config). Pure-HM apps stay `hm*`; pure-system apps stay `sys*`.
 
+#### Install-only sub-pattern (no HM trio)
+
+When an app has **no settings worth managing declaratively** — it stores its profile in its own data directory and is configured entirely through the in-app UI — skip the `core/linux/darwin` HM trio entirely. The façade alone is enough:
+
+- `modules/apps/linux/<name>.nix` — declares `custom.app<Name>.enable`; on enable, adds the package directly to `home-manager.users.${userSettings.username}.home.packages`.
+- `modules/apps/darwin/<name>.nix` — declares `custom.app<Name>.enable`; on enable, adds the cask name directly to `homebrew.casks`.
+
+No `modules/home-manager/{core,linux,darwin}/<name>.nix` files at all. Saves two files and an option per app. Use this whenever the answer to "what would `programs.<name>` configure for us?" is "nothing useful" — Signal Desktop, LibreOffice, Raspberry Pi Imager, LocalSend, Yubico Authenticator are the canonical exemplars (see `modules/apps/{linux,darwin}/{signal-desktop,libreoffice,rpi-imager,localsend,yubico-authenticator}.nix`).
+
+The mkEnableOption description should end with `"… (install-only)"` so the toggle's nature is visible at a glance in host config and option docs. Promote an install-only façade to the full Option 3 trio later if/when the app grows declarative settings worth managing — the host-facing toggle name (`custom.app<Name>.enable`) doesn't change.
+
 ### Single option, many wrappers
 
 Even with three files, there is **one** option: `custom.hm<Name>.enable`. Defined in `core/`, exported transparently through both wrappers because they import core. Never split into per-OS variants like `custom.hm<Name>Linux.enable`.
