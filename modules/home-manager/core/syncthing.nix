@@ -11,7 +11,7 @@
 #   - No anonymous usage telemetry (Linux: settings.options.urAccepted = -1;
 #     Darwin: SUSendProfileInfo = 0).
 #   - No auto-created ~/Sync "Default" folder on first launch (Linux: daemon
-#     CLI flag --no-default-folder via services.syncthing.extraFlags;
+#     CLI flag --no-default-folder via services.syncthing.extraOptions;
 #     Darwin: same flag passed via the wrapper's Arguments plist key).
 #
 # Wrapper specifics:

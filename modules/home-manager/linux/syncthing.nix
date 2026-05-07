@@ -34,7 +34,7 @@ in
       };
       overrideDevices = false; # If set to false, devices added via the web interface will persist and will have to be deleted manually.
       overrideFolders = false; # If set to false, folders added via the web interface will persist and will have to be deleted manually.
-      extraFlags = [ "--no-default-folder" ]; # skip auto-creating the ~/Sync "Default" folder on first launch
+      extraOptions = [ "--no-default-folder" ]; # skip auto-creating the ~/Sync "Default" folder on first launch
       settings.options = {
         urAccepted = -1; # Opt out of anonymous usage reporting (-1 = declined)
         localAnnounceEnabled = true;
