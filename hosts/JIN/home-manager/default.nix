@@ -88,6 +88,11 @@ in
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
+    ../../../modules/home-manager/linux/autostart.nix
+
+    # Linux / Apps
+    ../../../modules/home-manager/linux/handbrake.nix
+    ../../../modules/home-manager/linux/strawberry.nix
 
     # Services
     ../../../modules/home-manager/linux/nextcloud.nix
@@ -201,6 +206,39 @@ in
 
   custom.hmNextcloud.enable = true;
   custom.hmSyncthing.enable = true;
+
+  # Linux / Apps
+  custom.hmHandbrake.enable = true;
+  custom.hmStrawberry.enable = true;
+
+  # Autostart — launch tray-friendly apps at login. Window state
+  # (start minimized) is enforced by KWin rules in custom.hmPlasmaConfig
+  # because the per-app flags below aren't reliably honoured on Wayland.
+  # The flags are kept as defense in depth.
+  # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing).
+  #
+  # Coexistence: many apps install their own ~/.config/autostart/<app>.desktop
+  # on first launch. The hmAutostart module compares content at activation:
+  # identical files are silently replaced with our symlink; differing files
+  # are backed up to <file>.pre-hm.<unix-ts> before we install ours.
+  custom.hmAutostart.enable = true;
+  custom.hmAutostart.entries = {
+    beeper = {
+      name = "Beeper";
+      exec = "beeper --hidden";
+      icon = "beeper";
+    };
+    ferdium = {
+      name = "Ferdium";
+      exec = "ferdium --hidden";
+      icon = "ferdium";
+    };
+    solaar = {
+      name = "Solaar";
+      exec = "solaar --window=hide";
+      icon = "solaar";
+    };
+  };
 
   # Packages
   custom.hmLinuxPackages.enable = true;

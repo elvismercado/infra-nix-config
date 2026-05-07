@@ -142,6 +142,9 @@ in
   custom.hmStarship.enable = true;
   custom.hmStarship.style = "pastel-powerline";
 
+  # AMD CPU diagnostic aliases (FENNEC = Ryzen 9 5900X)
+  custom.hmAliasesAmdCpu.enable = true;
+
   # Apps
   custom.hmBrave.enable = true;
   custom.hmMpv.enable = true;

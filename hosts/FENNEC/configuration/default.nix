@@ -41,12 +41,17 @@
     # Display
     ../../../modules/systems/nixos/display_manager/sddm.nix
     ../../../modules/systems/nixos/display_manager/sddm-monitor-layout.nix
+    ../../../modules/systems/nixos/display_manager/sddm-input-config.nix
     ../../../modules/systems/nixos/desktop_environment/kde_plasma.nix
 
     # Peripherals
     ../../../modules/systems/nixos/bluetooth.nix
     ../../../modules/systems/nixos/pipewire.nix
     ../../../modules/systems/nixos/mouse/logitech.nix
+
+    # Security
+    ../../../modules/systems/nixos/security/yubikey.nix
+    ../../../modules/systems/nixos/security/fprintd.nix
 
     # Services
     ../../../modules/systems/nixos/fwupd.nix
@@ -105,12 +110,18 @@
   # Display
   custom.sysNixSddm.enable = true;
   custom.sysNixSddmMonitorLayout.enable = true;
+  custom.sysNixSddmInputConfig.enable = true;
   custom.sysNixKdePlasma.enable = true;
 
   # Peripherals
   custom.sysNixBluetooth.enable = true;
   custom.sysNixPipewire.enable = true;
   custom.sysNixLogitechMouse.enable = true;
+
+  # Security
+  # Yubikey accessed via dock USB; fprintd uses FENNEC's onboard fingerprint reader.
+  custom.sysNixYubikey.enable = true;
+  custom.sysNixFprintd.enable = true;
 
   # Services
   custom.sysNixFwupd.enable = true;
