@@ -133,15 +133,25 @@ Use when ANY of: the package differs per OS, runtime semantics diverge meaningfu
   imports = [ ../core/<name>.nix ];
 
   config = lib.mkIf config.custom.hm<Name>.enable {
-    # Darwin-only additions (e.g., programs.<x>.package = null when a cask provides the binary)
+    # Darwin-only additions. Two common shapes:
+    #   - `programs.<x>.package = null` when the upstream HM module accepts it.
+    #   - `home.file."Library/Application Support/<App>/settings.json".text =
+    #        builtins.toJSON config.custom.hm<Name>.settings;` when it doesn't
+    #     (declare a `custom.hm<Name>.settings` option in core for the linux
+    #     wrapper to consume too — see vscode for the canonical example).
   };
 }
 ```
 
 ### Cask + module coexistence (darwin)
 
-When a darwin wrapper sets `programs.<x>.package = null`, home-manager writes config files but does NOT install a binary. This is intentional: the Homebrew cask provides the binary, the module provides declarative config.
+When a darwin wrapper combines a Homebrew cask (binary) with a home-manager module (declarative config), use one of two write mechanisms:
 
-**Preferred pattern:** wrap this combination in an Option 3 app façade (`modules/apps/darwin/<name>.nix`). The façade owns the cask declaration AND auto-imports the HM darwin wrapper under one toggle (`custom.app<Name>.enable`), so the cask and HM enable cannot drift out of sync. See [cross-platform.instructions.md](cross-platform.instructions.md) Option 3 for the full pattern. Canonical exemplar: `modules/apps/darwin/vscode.nix`.
+1. **`programs.<x>.package = null`** — if the upstream HM module accepts a null package. HM still writes config files but skips binary install.
+2. **Bypass `programs.<x>` and write via `home.file`** — if the upstream module rejects `package = null` (e.g., it dereferences `cfg.package.pname`). Declare a shared settings attrset in `core/<name>.nix` as a typed option (`custom.hm<Name>.settings`, `attrsOf anything`); the linux wrapper feeds it to `programs.<x>.<settings option>`, the darwin wrapper writes it via `home.file` to the cask's expected settings path. Canonical exemplar: VS Code.
+
+Neither pattern installs a nixpkgs binary on darwin, so neither violates the "no GUI apps via nixpkgs on macOS" rule. The cask is still the binary source.
+
+**Preferred wiring:** wrap this combination in an Option 3 app façade (`modules/apps/darwin/<name>.nix`). The façade owns the cask declaration AND auto-imports the HM darwin wrapper under one toggle (`custom.app<Name>.enable`), so the cask and HM enable cannot drift out of sync. See [cross-platform.instructions.md](cross-platform.instructions.md) Option 3.
 
 **Manual coexistence (legacy, discouraged):** if a façade is overkill for a one-off case, you may keep cask in `hosts/<HOST>/configuration/homebrew.nix` and the HM enable in `hosts/<HOST>/home-manager/default.nix` — but add cross-referencing inline comments on both sides so the coupling is discoverable. New cask-backed apps should use Option 3 instead of this manual approach.

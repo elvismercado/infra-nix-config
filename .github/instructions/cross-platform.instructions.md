@@ -134,17 +134,34 @@ When OS divergence forces a split. **Single user-facing option** (defined in `co
   imports = [ ../core/<name>.nix ];
 
   config = lib.mkIf config.custom.hm<Name>.enable {
-    # Darwin-only additions, e.g.:
+    # Darwin-only additions — pick whichever HM upstream supports:
+    #
+    # (a) The HM `programs.<x>` module accepts `package = null` (writes config
+    #     without installing a binary):
     programs.<x>.package = null;  # Cask provides the binary
+    #
+    # (b) The HM `programs.<x>` module rejects `package = null` (e.g. it reads
+    #     `cfg.package.pname` to derive other options — vscode in HM 25.11):
+    #     bypass `programs.<x>` entirely and write config files via `home.file`,
+    #     reusing a shared settings option declared in core.
+    #
+    #     home.file."Library/Application Support/<App>/settings.json".text =
+    #       builtins.toJSON config.custom.hm<Name>.settings;
   };
 }
 ```
 
 ### Cask + module coexistence (darwin)
 
-The `programs.<x>.package = null` pattern lets a darwin wrapper write config files (`~/Library/Application Support/<App>/...`) without installing a binary. This is the **canonical way to combine a Homebrew cask (binary delivery) with a home-manager module (declarative config)** on darwin — and it does NOT violate the "never both nixpkgs + cask for the same app" rule, because the module isn't installing a nixpkgs binary.
+When the binary comes from a Homebrew cask, the darwin wrapper still needs to land config files in the cask app's expected location (`~/Library/Application Support/<App>/...`) without installing a second copy from nixpkgs. There are **two patterns**, depending on what the upstream HM module allows:
 
-When using this pattern, **prefer Option 3 (app façade) over manual cask wiring**: a façade collapses cask + HM enable into one toggle and removes the foot-gun where enabling HM config without the cask leaves orphaned settings. Only fall back to manual coordination (cask in `homebrew.nix` + HM enable in `home-manager/default.nix`) for one-off cases where a façade is overkill — in that case, add cross-referencing inline comments on both sides.
+1. **`programs.<x>.package = null`** — use when the upstream `programs.<x>` module accepts a null package (it then writes config but skips binary install). This is the lightest pattern: keep using `programs.<x>` for everything else (settings, extensions, profiles).
+
+2. **Bypass `programs.<x>` and write via `home.file`** — use when the upstream module rejects `package = null` (e.g., it dereferences `cfg.package.pname` for other options). Define a shared settings attrset in `core/<name>.nix` as a module option (`custom.hm<Name>.settings`, type `attrsOf anything`); the linux wrapper feeds it to `programs.<x>.<settings option>`, the darwin wrapper writes `home.file."Library/Application Support/<App>/settings.json".text = builtins.toJSON cfg.settings;`. Hosts can extend or override settings per-key via normal module-system merging. Canonical exemplar: VS Code (HM 25.11 rejects `programs.vscode.package = null`, so the darwin wrapper uses `home.file`).
+
+Both patterns satisfy the "never both nixpkgs + cask for the same app" rule — neither installs a nixpkgs binary on darwin.
+
+Whichever pattern you choose, **prefer Option 3 (app façade) over manual cask wiring**: a façade collapses cask + HM enable into one toggle and removes the foot-gun where enabling HM config without the cask leaves orphaned settings. Only fall back to manual coordination (cask in `homebrew.nix` + HM enable in `home-manager/default.nix`) for one-off cases where a façade is overkill — in that case, add cross-referencing inline comments on both sides.
 
 ### Option 3 — App façade (cross-layer)
 
@@ -262,7 +279,7 @@ Even with three files, there is **one** option: `custom.hm<Name>.enable`. Define
 - Create per-OS option variants (`custom.hm<Name>Linux.enable`, `custom.hm<Name>Darwin.enable`).
 - Put nontrivial `pkgs.stdenv.isDarwin` branching in an `all/` module — that's the trigger to escalate to Option 2.
 - Promote a Linux-only or darwin-only module into `all/` just to "be tidy" — placement reflects actual portability, not aspiration.
-- Install a GUI app via nixpkgs on darwin when a Homebrew cask exists. Use `programs.<x>.package = null` + cask instead (Option 2 darwin wrapper).
+- Install a GUI app via nixpkgs on darwin when a Homebrew cask exists. Use `programs.<x>.package = null` (when supported) or a `home.file` write of a shared `cfg.settings` attrset (when not) — see "Cask + module coexistence".
 - Set `custom.hm<Name>.enable` directly from a host when an `app<Name>` façade exists. Use the façade.
 
 ### Future candidates (not yet refactored)
