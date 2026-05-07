@@ -90,9 +90,7 @@ in
 
     # Linux / Apps
     ../../../modules/home-manager/linux/strawberry.nix
-
-    # Packages
-    ../../../modules/home-manager/linux/packages.nix
+    ../../../modules/home-manager/linux/cameractrls.nix
   ];
 
   # Host
@@ -232,6 +230,5 @@ in
     };
   };
 
-  # Packages
-  custom.hmLinuxPackages.enable = true;
+  custom.hmCameractrls.enable = true;
 }

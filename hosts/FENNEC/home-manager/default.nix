@@ -120,9 +120,7 @@ in
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
     ../../../modules/home-manager/linux/autostart.nix
-
-    # Packages
-    ../../../modules/home-manager/linux/packages.nix
+    ../../../modules/home-manager/linux/cameractrls.nix
   ];
 
   # Base
@@ -319,6 +317,5 @@ in
     };
   };
 
-  # Packages
-  custom.hmLinuxPackages.enable = true;
+  custom.hmCameractrls.enable = true;
 }
