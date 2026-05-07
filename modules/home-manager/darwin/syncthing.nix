@@ -19,9 +19,20 @@ let
   cfg = config.custom.hmSyncthing;
 in
 {
-  imports = [ ../core/syncthing.nix ];
+  imports = [
+    ../core/syncthing.nix
+    ./web-shortcuts.nix
+  ];
 
   config = lib.mkIf cfg.enable {
     # Cask provides the binary + daemon + autostart; nothing to wire here.
+
+    # Clickable ~/Desktop/syncthing.webloc launcher for the Web UI.
+    custom.hmWebShortcuts.enable = true;
+    custom.hmWebShortcuts.entries.syncthing = {
+      name = "Syncthing Web UI";
+      url = "http://127.0.0.1:8384";
+      comment = "Syncthing web interface";
+    };
   };
 }

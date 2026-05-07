@@ -82,17 +82,18 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 
 These files hold shared logic for split (Option 2) modules. Hosts import the matching `linux/` or `darwin/` wrapper instead, **or** — when a cross-layer app façade exists — enable the façade and let it pull the wrapper in. See [.github/instructions/cross-platform.instructions.md](.github/instructions/cross-platform.instructions.md).
 
-| Module                              | Option                        | Wrappers                                          | App façade (preferred wiring)                    |
-| ----------------------------------- | ----------------------------- | ------------------------------------------------- | ------------------------------------------------ |
-| `home-manager/core/brave.nix`       | `custom.hmBrave.enable`       | `linux/brave.nix`, `darwin/brave.nix`             | `custom.appBrave.enable` (`modules/apps/`)       |
-| `home-manager/core/discord.nix`     | `custom.hmDiscord.enable`     | `linux/discord.nix`, `darwin/discord.nix`         | `custom.appDiscord.enable` (`modules/apps/`)     |
-| `home-manager/core/handbrake.nix`   | `custom.hmHandbrake.enable`   | `linux/handbrake.nix`, `darwin/handbrake.nix`     | `custom.appHandbrake.enable` (`modules/apps/`)   |
-| `home-manager/core/librewolf.nix`   | `custom.hmLibrewolf.enable`   | `linux/librewolf.nix`, `darwin/librewolf.nix`     | `custom.appLibrewolf.enable` (`modules/apps/`)   |
-|                                     | `custom.hmLibrewolf.settings` |                                                   |                                                  |
-| `home-manager/core/nextcloud.nix`   | `custom.hmNextcloud.enable`   | `linux/nextcloud.nix`, `darwin/nextcloud.nix`     | `custom.appNextcloud.enable` (`modules/apps/`)   |
-| `home-manager/core/syncthing.nix`   | `custom.hmSyncthing.enable`   | `linux/syncthing.nix`, `darwin/syncthing.nix`     | `custom.appSyncthing.enable` (`modules/apps/`)   |
-| `home-manager/core/thunderbird.nix` | `custom.hmThunderbird.enable` | `linux/thunderbird.nix`, `darwin/thunderbird.nix` | `custom.appThunderbird.enable` (`modules/apps/`) |
-| `home-manager/core/vscode.nix`      | `custom.hmVscode.enable`      | `linux/vscode.nix`, `darwin/vscode.nix`           | `custom.appVscode.enable` (`modules/apps/`)      |
+| Module                                | Option                                                               | Wrappers                                              | App façade (preferred wiring)                    |
+| ------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------ |
+| `home-manager/core/brave.nix`         | `custom.hmBrave.enable`                                              | `linux/brave.nix`, `darwin/brave.nix`                 | `custom.appBrave.enable` (`modules/apps/`)       |
+| `home-manager/core/discord.nix`       | `custom.hmDiscord.enable`                                            | `linux/discord.nix`, `darwin/discord.nix`             | `custom.appDiscord.enable` (`modules/apps/`)     |
+| `home-manager/core/handbrake.nix`     | `custom.hmHandbrake.enable`                                          | `linux/handbrake.nix`, `darwin/handbrake.nix`         | `custom.appHandbrake.enable` (`modules/apps/`)   |
+| `home-manager/core/librewolf.nix`     | `custom.hmLibrewolf.enable`                                          | `linux/librewolf.nix`, `darwin/librewolf.nix`         | `custom.appLibrewolf.enable` (`modules/apps/`)   |
+|                                       | `custom.hmLibrewolf.settings`                                        |                                                       |                                                  |
+| `home-manager/core/nextcloud.nix`     | `custom.hmNextcloud.enable`                                          | `linux/nextcloud.nix`, `darwin/nextcloud.nix`         | `custom.appNextcloud.enable` (`modules/apps/`)   |
+| `home-manager/core/syncthing.nix`     | `custom.hmSyncthing.enable`                                          | `linux/syncthing.nix`, `darwin/syncthing.nix`         | `custom.appSyncthing.enable` (`modules/apps/`)   |
+| `home-manager/core/thunderbird.nix`   | `custom.hmThunderbird.enable`                                        | `linux/thunderbird.nix`, `darwin/thunderbird.nix`     | `custom.appThunderbird.enable` (`modules/apps/`) |
+| `home-manager/core/vscode.nix`        | `custom.hmVscode.enable`                                             | `linux/vscode.nix`, `darwin/vscode.nix`               | `custom.appVscode.enable` (`modules/apps/`)      |
+| `home-manager/core/web-shortcuts.nix` | `custom.hmWebShortcuts.enable` <br/> `custom.hmWebShortcuts.entries` | `linux/web-shortcuts.nix`, `darwin/web-shortcuts.nix` | — (helper consumed by app modules)               |
 
 **Linux — KDE Plasma** (`home-manager/linux/`):
 
@@ -120,16 +121,18 @@ These files hold shared logic for split (Option 2) modules. Hosts import the mat
 | `home-manager/linux/shutdown-disable-outputs.nix` | `custom.hmShutdownDisableOutputs.enable`                                                                                                                           |
 | `home-manager/linux/strawberry.nix`               | `custom.hmStrawberry.enable`                                                                                                                                       |
 | `home-manager/linux/syncthing.nix`                | `custom.hmSyncthing.enable` (wrapper for `core/syncthing.nix`; auto-imported by `modules/apps/linux/syncthing.nix` — prefer enabling `custom.appSyncthing.enable`) |
+| `home-manager/linux/web-shortcuts.nix`            | `custom.hmWebShortcuts.enable` (wrapper for `core/web-shortcuts.nix`; renders `~/Desktop/<key>.desktop` launchers — typically flipped by app wrappers)             |
 | `home-manager/linux/discord.nix`                  | `custom.hmDiscord.enable` (wrapper for `core/discord.nix`; auto-imported by `modules/apps/linux/discord.nix` — prefer enabling `custom.appDiscord.enable`)         |
 | `home-manager/linux/window-shortcuts.nix`         | `custom.hmWindowShortcuts.enable`                                                                                                                                  |
 
 **macOS** (`home-manager/darwin/`):
 
-| Module                              | Option                                                                                                                                                  |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `home-manager/darwin/aliases.nix`   | `custom.hmDarwinAliases.enable`                                                                                                                         |
-| `home-manager/darwin/rectangle.nix` | `custom.hmRectangle.enable`                                                                                                                             |
-| `home-manager/darwin/vscode.nix`    | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/darwin/vscode.nix` — prefer enabling `custom.appVscode.enable`) |
+| Module                                  | Option                                                                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `home-manager/darwin/aliases.nix`       | `custom.hmDarwinAliases.enable`                                                                                                                         |
+| `home-manager/darwin/rectangle.nix`     | `custom.hmRectangle.enable`                                                                                                                             |
+| `home-manager/darwin/vscode.nix`        | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/darwin/vscode.nix` — prefer enabling `custom.appVscode.enable`) |
+| `home-manager/darwin/web-shortcuts.nix` | `custom.hmWebShortcuts.enable` (wrapper for `core/web-shortcuts.nix`; renders `~/Desktop/<key>.webloc` launchers — typically flipped by app wrappers)   |
 
 > `systems/shared/ssh-server.nix` (`custom.sysSshServer.enable`) is a **system** module — use it in `configuration/default.nix`, not in `home-manager/default.nix`.
 

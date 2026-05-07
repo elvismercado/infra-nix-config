@@ -24,7 +24,10 @@ let
   cfg = config.custom.hmSyncthing;
 in
 {
-  imports = [ ../core/syncthing.nix ];
+  imports = [
+    ../core/syncthing.nix
+    ./web-shortcuts.nix
+  ];
 
   config = lib.mkIf cfg.enable {
     services.syncthing = {
@@ -40,6 +43,14 @@ in
         localAnnounceEnabled = true;
         autoUpgradeIntervalH = 0; # Disable daemon self-upgrade — nix owns the binary; channel-driven updates only
       };
+    };
+
+    # Clickable ~/Desktop/syncthing.desktop launcher for the Web UI.
+    custom.hmWebShortcuts.enable = true;
+    custom.hmWebShortcuts.entries.syncthing = {
+      name = "Syncthing Web UI";
+      url = "http://127.0.0.1:8384";
+      comment = "Syncthing web interface";
     };
   };
 }
