@@ -89,12 +89,7 @@ in
     ../../../modules/home-manager/linux/autostart.nix
 
     # Linux / Apps
-    ../../../modules/home-manager/linux/handbrake.nix
     ../../../modules/home-manager/linux/strawberry.nix
-
-    # Services
-    ../../../modules/home-manager/linux/nextcloud.nix
-    ../../../modules/home-manager/all/syncthing.nix
 
     # Packages
     ../../../modules/home-manager/linux/packages.nix
@@ -200,11 +195,7 @@ in
     };
   };
 
-  custom.hmNextcloud.enable = true;
-  custom.hmSyncthing.enable = true;
-
   # Linux / Apps
-  custom.hmHandbrake.enable = true;
   custom.hmStrawberry.enable = true;
 
   # Autostart — launch tray-friendly apps at login. Window state

@@ -81,6 +81,11 @@
     ../../../modules/apps/linux/brave.nix
     ../../../modules/apps/linux/librewolf.nix
     ../../../modules/apps/linux/thunderbird.nix
+    ../../../modules/apps/linux/spotify.nix
+    ../../../modules/apps/linux/nextcloud.nix
+    ../../../modules/apps/linux/syncthing.nix
+    ../../../modules/apps/linux/handbrake.nix
+    ../../../modules/apps/linux/discord.nix
   ];
 
   # Host
@@ -170,4 +175,9 @@
   custom.appBrave.enable = true;
   custom.appLibrewolf.enable = true;
   custom.appThunderbird.enable = true;
+  custom.appSpotify.enable = true;
+  custom.appNextcloud.enable = true;
+  custom.appSyncthing.enable = true;
+  custom.appHandbrake.enable = true;
+  custom.appDiscord.enable = true;
 }

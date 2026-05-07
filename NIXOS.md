@@ -75,8 +75,6 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/memory/zram.nix`                          | `custom.sysNixZram.enable`                  |
 | `systems/nixos/memory/earlyoom.nix`                      | `custom.sysNixEarlyoom.enable`              |
 | `systems/nixos/memory/hibernation.nix`                   | `custom.sysNixHibernate.enable`             |
-| **Gaming**                                               |                                             |
-| `systems/nixos/gaming/steam.nix`                         | `custom.sysNixSteam.enable`                 |
 | **Bootloader**                                           |                                             |
 | `systems/nixos/bootloader/grub.nix`                      | `custom.sysNixGrub.enable`                  |
 | `systems/nixos/bootloader/grub-theme-sleek.nix`          | `custom.sysNixGrubThemeSleek.enable`        |

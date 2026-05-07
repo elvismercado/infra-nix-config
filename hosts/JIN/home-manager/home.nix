@@ -11,17 +11,16 @@
   home.homeDirectory = "/home/${userSettings.username}";
   home.stateVersion = "25.11";
 
-  # JIN-only packages — tray apps + GUI utilities that don't belong on FENNEC.
-  # Kept as raw home.packages (no module) until any of them grow declarative
-  # config worth abstracting.
+  # JIN-only packages — GUI utilities that don't belong on FENNEC and don't
+  # warrant a façade yet.
   #
-  # signal-desktop / librewolf / libreoffice / rpi-imager / localsend /
-  # yubioath-flutter / brave / thunderbird were lifted into Option 3 façades
-  # under modules/apps/ — see hosts/JIN/configuration/default.nix "Apps
-  # (cross-layer façades)" section.
+  # Lifted into Option 3 façades under modules/apps/ — see
+  # hosts/JIN/configuration/default.nix "Apps (cross-layer façades)":
+  #   signal-desktop, librewolf, libreoffice, rpi-imager, localsend,
+  #   yubico-authenticator, brave, thunderbird, spotify, nextcloud,
+  #   syncthing, handbrake, discord (vesktop).
   home.packages = with pkgs; [
     protonmail-bridge-gui # ProtonMail bridge
     insync # Google Drive, OneDrive, and Dropbox
-    yubikey-manager # YubiKey CLI
   ];
 }

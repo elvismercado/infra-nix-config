@@ -1,6 +1,13 @@
-# Nextcloud desktop client
+# Nextcloud — Linux wrapper for the cross-platform nextcloud core module.
 #
-# Usage:
+# Enables `services.nextcloud-client` — the systemd user service that runs
+# the desktop sync client with tray icon and autostart.
+#
+# Internal once the Option 3 app façade is in use: imported by
+# `modules/apps/linux/nextcloud.nix` (toggle `custom.appNextcloud.enable`).
+# Hosts should normally not import this file directly.
+#
+# Usage (rare — prefer the app façade):
 #   imports = [ ../../../modules/home-manager/linux/nextcloud.nix ];
 #   custom.hmNextcloud.enable = true;
 
@@ -10,12 +17,13 @@
   ...
 }:
 
+let
+  cfg = config.custom.hmNextcloud;
+in
 {
-  options = {
-    custom.hmNextcloud.enable = lib.mkEnableOption "Nextcloud desktop sync client";
-  };
+  imports = [ ../core/nextcloud.nix ];
 
-  config = lib.mkIf config.custom.hmNextcloud.enable {
+  config = lib.mkIf cfg.enable {
     services.nextcloud-client = {
       enable = true;
     };

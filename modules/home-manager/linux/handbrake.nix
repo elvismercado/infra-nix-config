@@ -1,8 +1,12 @@
-# HandBrake — video transcoder
+# HandBrake — Linux wrapper for the cross-platform handbrake core module.
 #
-# GUI tool for converting video files and ripping DVDs.
+# Installs `pkgs.handbrake` (the GUI transcoder) into home.packages.
 #
-# Usage:
+# Internal once the Option 3 app façade is in use: imported by
+# `modules/apps/linux/handbrake.nix` (toggle `custom.appHandbrake.enable`).
+# Hosts should normally not import this file directly.
+#
+# Usage (rare — prefer the app façade):
 #   imports = [ ../../../modules/home-manager/linux/handbrake.nix ];
 #   custom.hmHandbrake.enable = true;
 
@@ -13,12 +17,13 @@
   ...
 }:
 
+let
+  cfg = config.custom.hmHandbrake;
+in
 {
-  options = {
-    custom.hmHandbrake.enable = lib.mkEnableOption "HandBrake video transcoder GUI";
-  };
+  imports = [ ../core/handbrake.nix ];
 
-  config = lib.mkIf config.custom.hmHandbrake.enable {
+  config = lib.mkIf cfg.enable {
     home.packages = [
       pkgs.handbrake
     ];

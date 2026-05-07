@@ -62,11 +62,15 @@
     ../../../modules/systems/nixos/apps/coolercontrol.nix
     ../../../modules/systems/nixos/apps/sunshine.nix
 
-    # Gaming
-    ../../../modules/systems/nixos/gaming/steam.nix
-
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/linux/brave.nix
+    ../../../modules/apps/linux/librewolf.nix
+    ../../../modules/apps/linux/localsend.nix
+    ../../../modules/apps/linux/vscode.nix
+    ../../../modules/apps/linux/syncthing.nix
+    ../../../modules/apps/linux/handbrake.nix
+    ../../../modules/apps/linux/discord.nix
+    ../../../modules/apps/linux/steam.nix
   ];
 
   # Nix
@@ -135,9 +139,13 @@
   custom.sysNixCoolercontrol.enable = true;
   custom.sysNixSunshine.enable = true;
 
-  # Gaming
-  custom.sysNixSteam.enable = true;
-
   # Apps (cross-layer façades)
   custom.appBrave.enable = true;
+  custom.appLibrewolf.enable = true;
+  custom.appLocalsend.enable = true;
+  custom.appVscode.enable = true;
+  custom.appSyncthing.enable = true;
+  custom.appHandbrake.enable = true;
+  custom.appDiscord.enable = true;
+  custom.appSteam.enable = true;
 }

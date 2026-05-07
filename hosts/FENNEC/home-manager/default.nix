@@ -99,8 +99,6 @@ in
 
     # Apps
     ../../../modules/home-manager/all/mpv.nix
-    ../../../modules/home-manager/linux/vscode.nix
-    ../../../modules/home-manager/all/syncthing.nix
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
@@ -116,9 +114,7 @@ in
     ../../../modules/home-manager/linux/gaming.nix
 
     # Linux / Apps
-    ../../../modules/home-manager/linux/handbrake.nix
     ../../../modules/home-manager/linux/strawberry.nix
-    ../../../modules/home-manager/linux/vesktop.nix
     ../../../modules/home-manager/linux/clonehero.nix
 
     # Linux / Utilities
@@ -146,8 +142,6 @@ in
 
   # Apps
   custom.hmMpv.enable = true;
-  custom.hmVscode.enable = true;
-  custom.hmSyncthing.enable = true;
 
   # Linux
   custom.hmLinuxAliases.enable = true;
@@ -272,9 +266,7 @@ in
   custom.hmGaming.enable = true;
 
   # Linux / Apps
-  custom.hmHandbrake.enable = true;
   custom.hmStrawberry.enable = true;
-  custom.hmVesktop.enable = true;
   custom.hmCloneHero.enable = true;
   custom.hmCloneHero.hash = "sha256-xy7/3SDNgKw67ikA7CtRVK2gNrfjqx4cTDeRUkkSBKo="; # v1.1.0.6085-final
 

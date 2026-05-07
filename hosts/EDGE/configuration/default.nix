@@ -41,6 +41,12 @@
     ../../../modules/apps/darwin/brave.nix
     ../../../modules/apps/darwin/librewolf.nix
     ../../../modules/apps/darwin/thunderbird.nix
+    ../../../modules/apps/darwin/spotify.nix
+    ../../../modules/apps/darwin/nextcloud.nix
+    ../../../modules/apps/darwin/syncthing.nix
+    ../../../modules/apps/darwin/handbrake.nix
+    ../../../modules/apps/darwin/discord.nix
+    ../../../modules/apps/darwin/steam.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -72,4 +78,10 @@
   custom.appBrave.enable = true;
   custom.appLibrewolf.enable = true;
   custom.appThunderbird.enable = true;
+  custom.appSpotify.enable = true;
+  custom.appNextcloud.enable = true;
+  custom.appSyncthing.enable = true;
+  custom.appHandbrake.enable = true;
+  custom.appDiscord.enable = true;
+  custom.appSteam.enable = true;
 }

@@ -35,7 +35,9 @@
       # Browsers & Communication
       # `brave-browser` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/brave.nix (toggle custom.appBrave.enable).
-      "discord"
+      # `vesktop` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/discord.nix (toggle custom.appDiscord.enable) —
+      # vesktop is preferred over the upstream `discord` cask.
       # `librewolf` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/librewolf.nix (toggle custom.appLibrewolf.enable).
       # Note: `librewolf` cask is deprecated in Homebrew Sep 2026 —
@@ -44,19 +46,23 @@
       # at modules/apps/darwin/signal-desktop.nix (toggle custom.appSignal.enable).
 
       # Media
-      "handbrake-app"
+      # `handbrake-app` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/handbrake.nix (toggle custom.appHandbrake.enable).
       "moonlight"
       "shotcut"
-      "spotify"
-      "steam"
-      "vlc"
+      # `spotify` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/spotify.nix (toggle custom.appSpotify.enable).
+      # `steam` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/steam.nix (toggle custom.appSteam.enable).
 
       # Productivity
       "beeper"
       "ferdium"
-      "nextcloud"
+      # `nextcloud` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/nextcloud.nix (toggle custom.appNextcloud.enable).
       "orbstack"
-      "syncthing-app"
+      # `syncthing-app` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/syncthing.nix (toggle custom.appSyncthing.enable).
 
       # Email
       # `thunderbird` cask is owned by the Option 3 app façade at

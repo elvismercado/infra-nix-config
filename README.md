@@ -78,7 +78,6 @@ modules/
       cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
       desktop_environment/   #   KDE Plasma, COSMIC
       display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
-      gaming/                #   Steam, Proton, GameMode, Gamescope, Lutris
       graphics/              #   AMD, Intel Arc, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom
       memory/                #   zram, earlyoom, hibernation
@@ -94,22 +93,27 @@ modules/
     shared/                  # Cross-platform modules (bash, fonts, garbage, packages, ssh)
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Fastfetch, fnm, Git,
-                             #   mpv, pyenv, SSH, Starship, Syncthing
+                             #   mpv, pyenv, SSH, Starship
     core/                    #   Shared cross-platform logic for split (Option 2) modules.
                              #   Internal — never imported by hosts; only by linux/ and darwin/ wrappers.
-                             #   (Brave, LibreWolf, Thunderbird, VS Code)
-    linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, HandBrake, KWin tiling,
-                             #   LinUtil, Nextcloud, Packages, Plasma config, Shutdown disable outputs,
-                             #   Strawberry, Vesktop, Window shortcuts, plus wrappers
-                             #   (Brave, LibreWolf, Thunderbird, VS Code)
-    darwin/                  #   Rectangle, plus wrappers (Brave, LibreWolf, Thunderbird, VS Code)
+                             #   (Brave, Discord, HandBrake, LibreWolf, Nextcloud, Syncthing,
+                             #   Thunderbird, VS Code)
+    linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, KWin tiling,
+                             #   LinUtil, Packages, Plasma config, Shutdown disable outputs,
+                             #   Strawberry, Window shortcuts, plus wrappers (Brave, Discord,
+                             #   HandBrake, LibreWolf, Nextcloud, Syncthing, Thunderbird, VS Code)
+    darwin/                  #   Rectangle, plus wrappers (Brave, Discord, HandBrake, LibreWolf,
+                             #   Nextcloud, Syncthing, Thunderbird, VS Code)
   apps/                      # Cross-layer app façades (single toggle owns both
                              #   the binary delivery and the matching home-manager
                              #   config). Imported from configuration/, NOT home-manager/.
-    darwin/                  #   Brave, LibreOffice, LibreWolf, LocalSend, Raspberry Pi Imager,
-                             #   Signal, Thunderbird, VS Code, Yubico Authenticator (cask + HM config)
-    linux/                   #   Brave, LibreOffice, LibreWolf, LocalSend, Raspberry Pi Imager,
-                             #   Signal, Thunderbird, VS Code, Yubico Authenticator (HM injection)
+    darwin/                  #   Brave, Discord, HandBrake, LibreOffice, LibreWolf, LocalSend,
+                             #   Nextcloud, Raspberry Pi Imager, Signal, Spotify, Steam, Syncthing,
+                             #   Thunderbird, VS Code, Yubico Authenticator (cask + HM config)
+    linux/                   #   Brave, Discord, HandBrake, LibreOffice, LibreWolf, LocalSend,
+                             #   Nextcloud, Raspberry Pi Imager, Signal, Spotify, Steam, Syncthing,
+                             #   Thunderbird, VS Code, Yubico Authenticator (HM injection;
+                             #   Steam is system-level)
 ```
 
 ## Per-Host Settings
