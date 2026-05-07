@@ -51,6 +51,7 @@ in
       name = "Syncthing Web UI";
       url = "http://127.0.0.1:8384";
       comment = "Syncthing web interface";
+      icon = "syncthing"; # provided by pkgs.syncthing — falls back to default if missing from the icon theme
     };
   };
 }

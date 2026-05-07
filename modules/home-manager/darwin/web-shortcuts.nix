@@ -26,8 +26,10 @@
 let
   cfg = config.custom.hmWebShortcuts;
 
-  mkWebloc = key: entry: {
-    name = "Desktop/${key}.webloc";
+  # macOS Finder shows the filename (minus extension) as the visible label,
+  # so use the entry's display `name` for the filename. Spaces are fine.
+  mkWebloc = _key: entry: {
+    name = "Desktop/${entry.name}.webloc";
     value = {
       text = ''
         <?xml version="1.0" encoding="UTF-8"?>

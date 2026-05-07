@@ -31,7 +31,15 @@
               name = lib.mkOption {
                 type = lib.types.str;
                 default = name;
-                description = "Display name shown for the shortcut.";
+                description = ''
+                  Display name shown for the shortcut.
+
+                  - Linux: written to the `Name=` field of the `.desktop`
+                    entry; the on-disk filename uses the attribute key.
+                  - Darwin: also used as the on-disk filename of the
+                    `.webloc` (since macOS Finder shows the filename, minus
+                    extension, as the visible label).
+                '';
               };
 
               url = lib.mkOption {
