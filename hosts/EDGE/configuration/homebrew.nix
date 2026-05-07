@@ -24,7 +24,8 @@
 
     # CLI/GUI tools without a cask equivalent
     brews = [
-      "mpv" # CLI/GUI media player
+      # mpv is provided by the home-manager module `custom.hmMpv` (modules/home-manager/all/mpv.nix).
+      # Run `brew uninstall mpv` once after the next switch to drop the legacy brew install.
     ];
 
     casks = [
@@ -60,7 +61,8 @@
       "proton-mail-bridge"
 
       # Development
-      "visual-studio-code"
+      # `visual-studio-code` cask is owned by the Option 3 app façade
+      # at modules/apps/darwin/vscode.nix (toggle custom.appVscode.enable).
 
       # System & Hardware
       "appcleaner"

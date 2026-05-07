@@ -61,63 +61,84 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 
 **All platforms** (`home-manager/all/`):
 
-| Module                           | Option                      |
-| -------------------------------- | --------------------------- |
-| `home-manager/all/base.nix`      | `custom.hmBase.enable`      |
-|                                  | `custom.hmBase.editor`      |
-| `home-manager/all/aliases.nix`   | `custom.hmAliases.enable`   |
-| `home-manager/all/android.nix`   | `custom.hmAndroid.enable`   |
-| `home-manager/all/ansible.nix`   | `custom.hmAnsible.enable`   |
-| `home-manager/all/bash.nix`      | `custom.hmBash.enable`      |
-| `home-manager/all/brave.nix`     | `custom.hmBrave.enable`     |
-| `home-manager/all/fastfetch.nix` | `custom.hmFastfetch.enable` |
-| `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`       |
-| `home-manager/all/git.nix`       | `custom.hmGit.enable`       |
-| `home-manager/all/mpv.nix`       | `custom.hmMpv.enable`       |
-
-| `home-manager/all/pyenv.nix` | `custom.hmPyenv.enable` |
-| `home-manager/all/ssh.nix` | `custom.hmSsh.enable` |
-| `home-manager/all/starship.nix` | `custom.hmStarship.enable` |
-| | `custom.hmStarship.style` |
-| `home-manager/all/syncthing.nix` | `custom.hmSyncthing.enable` |
+| Module                             | Option                        |
+| ---------------------------------- | ----------------------------- |
+| `home-manager/all/base.nix`        | `custom.hmBase.enable`        |
+|                                    | `custom.hmBase.editor`        |
+| `home-manager/all/aliases.nix`     | `custom.hmAliases.enable`     |
+| `home-manager/all/android.nix`     | `custom.hmAndroid.enable`     |
+| `home-manager/all/ansible.nix`     | `custom.hmAnsible.enable`     |
+| `home-manager/all/bash.nix`        | `custom.hmBash.enable`        |
+| `home-manager/all/brave.nix`       | `custom.hmBrave.enable`       |
+| `home-manager/all/fastfetch.nix`   | `custom.hmFastfetch.enable`   |
+| `home-manager/all/fnm.nix`         | `custom.hmFnm.enable`         |
+| `home-manager/all/git.nix`         | `custom.hmGit.enable`         |
+| `home-manager/all/mpv.nix`         | `custom.hmMpv.enable`         |
+| `home-manager/all/pyenv.nix`       | `custom.hmPyenv.enable`       |
+| `home-manager/all/ssh.nix`         | `custom.hmSsh.enable`         |
+| `home-manager/all/starship.nix`    | `custom.hmStarship.enable`    |
+|                                    | `custom.hmStarship.style`     |
+| `home-manager/all/syncthing.nix`   | `custom.hmSyncthing.enable`   |
 | `home-manager/all/thunderbird.nix` | `custom.hmThunderbird.enable` |
+
+**Cross-platform core (internal — do not import from hosts)** (`home-manager/core/`):
+
+These files hold shared logic for split (Option 2) modules. Hosts import the matching `linux/` or `darwin/` wrapper instead, **or** — when a cross-layer app façade exists — enable the façade and let it pull the wrapper in. See [.github/instructions/cross-platform.instructions.md](.github/instructions/cross-platform.instructions.md).
+
+| Module                         | Option                   | Wrappers                                | App façade (preferred wiring)               |
+| ------------------------------ | ------------------------ | --------------------------------------- | ------------------------------------------- |
+| `home-manager/core/vscode.nix` | `custom.hmVscode.enable` | `linux/vscode.nix`, `darwin/vscode.nix` | `custom.appVscode.enable` (`modules/apps/`) |
 
 **Linux — KDE Plasma** (`home-manager/linux/`):
 
-| Module                                            | Option                                   |
-| ------------------------------------------------- | ---------------------------------------- |
-| `home-manager/linux/aliases.nix`                  | `custom.hmLinuxAliases.enable`           |
-|                                                   | `custom.hmAliasesAmdCpu.enable`          |
-|                                                   | `custom.hmAliasesNvidiaGpu.enable`       |
-| `home-manager/linux/autostart.nix`                | `custom.hmAutostart.enable`              |
-|                                                   | `custom.hmAutostart.entries`             |
-| `home-manager/linux/clonehero.nix`                | `custom.hmCloneHero.enable`              |
-|                                                   | `custom.hmCloneHero.version`             |
-|                                                   | `custom.hmCloneHero.hash`                |
-| `home-manager/linux/display-profiles.nix`         | `custom.hmDisplayProfiles.enable`        |
-| `home-manager/linux/gaming.nix`                   | `custom.hmGaming.enable`                 |
-| `home-manager/linux/handbrake.nix`                | `custom.hmHandbrake.enable`              |
-| `home-manager/linux/kwin-tiling.nix`              | `custom.hmKwinTiling.enable`             |
-|                                                   | `custom.hmKwinTiling.layouts`            |
-| `home-manager/linux/linutil.nix`                  | `custom.hmLinutil.enable`                |
-| `home-manager/linux/nextcloud.nix`                | `custom.hmNextcloud.enable`              |
-| `home-manager/linux/packages.nix`                 | `custom.hmLinuxPackages.enable`          |
-| `home-manager/linux/vscode.nix`                   | `custom.hmVscode.enable`                 |
-| `home-manager/linux/plasma-config.nix`            | `custom.hmPlasmaConfig.enable`           |
-| `home-manager/linux/sddm-monitor-layout.nix`      | `custom.hmSddmMonitorLayout.enable`      |
-| `home-manager/linux/shutdown-disable-outputs.nix` | `custom.hmShutdownDisableOutputs.enable` |
-| `home-manager/linux/strawberry.nix`               | `custom.hmStrawberry.enable`             |
-| `home-manager/linux/vesktop.nix`                  | `custom.hmVesktop.enable`                |
-| `home-manager/linux/window-shortcuts.nix`         | `custom.hmWindowShortcuts.enable`        |
+| Module                                            | Option                                                                                                                                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `home-manager/linux/aliases.nix`                  | `custom.hmLinuxAliases.enable`                                                                                                                         |
+|                                                   | `custom.hmAliasesAmdCpu.enable`                                                                                                                        |
+|                                                   | `custom.hmAliasesNvidiaGpu.enable`                                                                                                                     |
+| `home-manager/linux/autostart.nix`                | `custom.hmAutostart.enable`                                                                                                                            |
+|                                                   | `custom.hmAutostart.entries`                                                                                                                           |
+| `home-manager/linux/clonehero.nix`                | `custom.hmCloneHero.enable`                                                                                                                            |
+|                                                   | `custom.hmCloneHero.version`                                                                                                                           |
+|                                                   | `custom.hmCloneHero.hash`                                                                                                                              |
+| `home-manager/linux/display-profiles.nix`         | `custom.hmDisplayProfiles.enable`                                                                                                                      |
+| `home-manager/linux/gaming.nix`                   | `custom.hmGaming.enable`                                                                                                                               |
+| `home-manager/linux/handbrake.nix`                | `custom.hmHandbrake.enable`                                                                                                                            |
+| `home-manager/linux/kwin-tiling.nix`              | `custom.hmKwinTiling.enable`                                                                                                                           |
+|                                                   | `custom.hmKwinTiling.layouts`                                                                                                                          |
+| `home-manager/linux/linutil.nix`                  | `custom.hmLinutil.enable`                                                                                                                              |
+| `home-manager/linux/nextcloud.nix`                | `custom.hmNextcloud.enable`                                                                                                                            |
+| `home-manager/linux/packages.nix`                 | `custom.hmLinuxPackages.enable`                                                                                                                        |
+| `home-manager/linux/vscode.nix`                   | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/linux/vscode.nix` — prefer enabling `custom.appVscode.enable`) |
+| `home-manager/linux/plasma-config.nix`            | `custom.hmPlasmaConfig.enable`                                                                                                                         |
+| `home-manager/linux/sddm-monitor-layout.nix`      | `custom.hmSddmMonitorLayout.enable`                                                                                                                    |
+| `home-manager/linux/shutdown-disable-outputs.nix` | `custom.hmShutdownDisableOutputs.enable`                                                                                                               |
+| `home-manager/linux/strawberry.nix`               | `custom.hmStrawberry.enable`                                                                                                                           |
+| `home-manager/linux/vesktop.nix`                  | `custom.hmVesktop.enable`                                                                                                                              |
+| `home-manager/linux/window-shortcuts.nix`         | `custom.hmWindowShortcuts.enable`                                                                                                                      |
 
 **macOS** (`home-manager/darwin/`):
 
-| Module                              | Option                          |
-| ----------------------------------- | ------------------------------- |
-| `home-manager/darwin/aliases.nix`   | `custom.hmDarwinAliases.enable` |
-| `home-manager/darwin/rectangle.nix` | `custom.hmRectangle.enable`     |
+| Module                              | Option                                                                                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `home-manager/darwin/aliases.nix`   | `custom.hmDarwinAliases.enable`                                                                                                                         |
+| `home-manager/darwin/rectangle.nix` | `custom.hmRectangle.enable`                                                                                                                             |
+| `home-manager/darwin/vscode.nix`    | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/darwin/vscode.nix` — prefer enabling `custom.appVscode.enable`) |
 
 > `systems/shared/ssh-server.nix` (`custom.sysSshServer.enable`) is a **system** module — use it in `configuration/default.nix`, not in `home-manager/default.nix`.
+
+### Cross-Layer App Façades
+
+Apps whose binary lives in a different layer than their config (typically a Homebrew cask on darwin + declarative HM settings) are wired through façade modules under `modules/apps/{darwin,linux}/`. The façade is a **system module** — import it from `hosts/<HOST>/configuration/default.nix`, NOT from `home-manager/default.nix`. The same toggle name is used on every OS, and the façade auto-pulls the matching home-manager wrapper into HM scope.
+
+| Façade                           | Option                    | Owns                                                                         |
+| -------------------------------- | ------------------------- | ---------------------------------------------------------------------------- |
+| `modules/apps/darwin/vscode.nix` | `custom.appVscode.enable` | `homebrew.casks += [ "visual-studio-code" ]` + HM darwin wrapper auto-import |
+| `modules/apps/linux/vscode.nix`  | `custom.appVscode.enable` | HM linux wrapper auto-import (no system-layer binary needed)                 |
+
+When an `app<Name>` façade exists, do NOT also set `custom.hm<Name>.enable` directly from a host — the façade handles it.
+
+See [.github/instructions/cross-platform.instructions.md](.github/instructions/cross-platform.instructions.md) Option 3 for the full pattern.
 
 ## Adding Home Manager Config for a New Host
 

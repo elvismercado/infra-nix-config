@@ -30,6 +30,9 @@
 
     # Shared
     ../../../modules/systems/shared/bash.nix
+
+    # Apps (cross-layer façades — see modules/apps/)
+    ../../../modules/apps/darwin/vscode.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -50,4 +53,7 @@
 
   # Shared
   custom.sysBashCompletion.enable = true;
+
+  # Apps (cross-layer façades)
+  custom.appVscode.enable = true; # cask + HM settings; see modules/apps/darwin/vscode.nix
 }

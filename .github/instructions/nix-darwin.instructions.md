@@ -1,5 +1,5 @@
 ---
-applyTo: "hosts/*/configuration/**,modules/systems/darwin/**,flake/darwin.nix"
+applyTo: "hosts/*/configuration/**,modules/systems/darwin/**,modules/apps/darwin/**,flake/darwin.nix"
 description: "nix-darwin specific constraints and gotchas"
 ---
 

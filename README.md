@@ -95,10 +95,18 @@ modules/
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Brave, Fastfetch, fnm, Git,
                              #   mpv, pyenv, SSH, Starship, Syncthing, Thunderbird
+    core/                    #   Shared cross-platform logic for split (Option 2) modules.
+                             #   Internal — never imported by hosts; only by linux/ and darwin/ wrappers.
+                             #   (e.g. vscode)
     linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, HandBrake, KWin tiling,
                              #   LinUtil, Nextcloud, Packages, Plasma config, Shutdown disable outputs,
-                             #   Strawberry, Vesktop, VS Code, Window shortcuts
-    darwin/                  #   Rectangle
+                             #   Strawberry, Vesktop, VS Code (wrapper), Window shortcuts
+    darwin/                  #   Rectangle, VS Code (wrapper)
+  apps/                      # Cross-layer app façades (single toggle owns both
+                             #   the binary delivery and the matching home-manager
+                             #   config). Imported from configuration/, NOT home-manager/.
+    darwin/                  #   VS Code (cask + HM config)
+    linux/                   #   VS Code (HM injection)
 ```
 
 ## Per-Host Settings

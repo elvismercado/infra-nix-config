@@ -55,3 +55,93 @@ To also show icons on the **KDE desktop surface**, add `home.file."Desktop/<name
 ### Bash Shell Hooks (profileExtra vs initExtra)
 
 Linux terminal emulators (Konsole, GNOME Terminal) open interactive-only shells — `profileExtra` is skipped. Only `initExtra` and `bashrcExtra` run. Place startup commands (like fastfetch) in `initExtra`, not `profileExtra`. macOS Terminal.app and SSH sessions are login shells and run all hooks.
+
+## Cross-Platform Modules: Option 1 vs Option 2
+
+When a home-manager module needs to run on both Linux and macOS, use the simplest pattern that works. The full strategy lives in [.github/instructions/cross-platform.instructions.md](cross-platform.instructions.md); the short version:
+
+### Option 1 — single `all/<name>.nix` (default)
+
+Use when home-manager upstream (`programs.<x>`) is cross-platform AND there is no Homebrew-cask conflict on darwin. The module is identical for every host.
+
+Canonical exemplar: [modules/home-manager/all/mpv.nix](../../modules/home-manager/all/mpv.nix).
+
+```nix
+# modules/home-manager/all/<name>.nix
+{ config, lib, ... }:
+{
+  options.custom.hm<Name>.enable = lib.mkEnableOption "<description>";
+
+  config = lib.mkIf config.custom.hm<Name>.enable {
+    programs.<x>.enable = true;
+  };
+}
+```
+
+### Option 2 — `core/` + `linux/` + `darwin/` trio
+
+Use when ANY of: the package differs per OS, runtime semantics diverge meaningfully, or `pkgs.stdenv.isDarwin` branches in an `all/` file would exceed ~5 lines. Canonical exemplar: VS Code (`core/vscode.nix` + `linux/vscode.nix` + `darwin/vscode.nix`).
+
+> **If the darwin variant needs a Homebrew cask for the binary, escalate further to Option 3 (app façade) — see [cross-platform.instructions.md](cross-platform.instructions.md). The Option 2 trio stays in place but its `custom.hm<Name>.enable` becomes internal; hosts wire `custom.app<Name>.enable` from `configuration/default.nix` instead.**
+
+**Rules:**
+
+- The `core/` file defines the option (`custom.hm<Name>.enable`) and all shared config. **Hosts must NEVER import from `core/`.**
+- `linux/<name>.nix` and `darwin/<name>.nix` import the core file and add only OS-specific config inside `lib.mkIf cfg.enable`.
+- One option for the user, regardless of OS — never `custom.hm<Name>Linux.enable` / `custom.hm<Name>Darwin.enable`.
+- `core/<name>.nix` header MUST contain: `Internal — do not import from hosts. Imported by linux/<name>.nix and darwin/<name>.nix.`
+
+```nix
+# modules/home-manager/core/<name>.nix
+# Internal — do not import from hosts. Imported by linux/<name>.nix and darwin/<name>.nix.
+{ config, lib, ... }:
+{
+  options.custom.hm<Name>.enable = lib.mkEnableOption "<description>";
+
+  config = lib.mkIf config.custom.hm<Name>.enable {
+    # All shared config here
+  };
+}
+```
+
+```nix
+# modules/home-manager/linux/<name>.nix
+# Linux wrapper for the cross-platform <name> core module.
+#
+# Usage:
+#   imports = [ ../../../modules/home-manager/linux/<name>.nix ];
+#   custom.hm<Name>.enable = true;
+{ config, lib, ... }:
+{
+  imports = [ ../core/<name>.nix ];
+
+  config = lib.mkIf config.custom.hm<Name>.enable {
+    # Linux-only additions (often empty)
+  };
+}
+```
+
+```nix
+# modules/home-manager/darwin/<name>.nix
+# Darwin wrapper for the cross-platform <name> core module.
+#
+# Usage:
+#   imports = [ ../../../modules/home-manager/darwin/<name>.nix ];
+#   custom.hm<Name>.enable = true;
+{ config, lib, ... }:
+{
+  imports = [ ../core/<name>.nix ];
+
+  config = lib.mkIf config.custom.hm<Name>.enable {
+    # Darwin-only additions (e.g., programs.<x>.package = null when a cask provides the binary)
+  };
+}
+```
+
+### Cask + module coexistence (darwin)
+
+When a darwin wrapper sets `programs.<x>.package = null`, home-manager writes config files but does NOT install a binary. This is intentional: the Homebrew cask provides the binary, the module provides declarative config.
+
+**Preferred pattern:** wrap this combination in an Option 3 app façade (`modules/apps/darwin/<name>.nix`). The façade owns the cask declaration AND auto-imports the HM darwin wrapper under one toggle (`custom.app<Name>.enable`), so the cask and HM enable cannot drift out of sync. See [cross-platform.instructions.md](cross-platform.instructions.md) Option 3 for the full pattern. Canonical exemplar: `modules/apps/darwin/vscode.nix`.
+
+**Manual coexistence (legacy, discouraged):** if a façade is overkill for a one-off case, you may keep cask in `hosts/<HOST>/configuration/homebrew.nix` and the HM enable in `hosts/<HOST>/home-manager/default.nix` — but add cross-referencing inline comments on both sides so the coupling is discoverable. New cask-backed apps should use Option 3 instead of this manual approach.

@@ -1,5 +1,5 @@
 ---
-applyTo: "hosts/*/configuration/**,modules/systems/nixos/**,flake/nixos.nix,scripts/nixos/**"
+applyTo: "hosts/*/configuration/**,modules/systems/nixos/**,modules/apps/linux/**,flake/nixos.nix,scripts/nixos/**"
 description: "NixOS system configuration constraints and conventions"
 ---
 

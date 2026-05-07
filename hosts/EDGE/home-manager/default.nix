@@ -25,6 +25,7 @@
 
     # Apps
     ../../../modules/home-manager/all/android.nix
+    ../../../modules/home-manager/all/mpv.nix
 
     # macOS
     ../../../modules/home-manager/darwin/rectangle.nix
@@ -48,6 +49,7 @@
 
   # Apps
   custom.hmAndroid.enable = true; # adb/scrcpy used on macOS for device work
+  custom.hmMpv.enable = true;
 
   # macOS
   custom.hmRectangle.enable = true;
