@@ -12,7 +12,18 @@
 #   - No anonymous usage telemetry       — settings.options.urAccepted = -1.
 #   - No daemon self-upgrade             — settings.options.autoUpgradeIntervalH = 0;
 #                                          nix owns the binary (channel-driven).
-#   - No auto-created `~/Sync` folder    — extraOptions += [ "--no-default-folder" ].
+#   - No auto-created `~/Sync` folder    — relies on HM's `merge-syncthing-config`
+#                                          pre-seeding `config.xml` from
+#                                          `services.syncthing.settings` before the
+#                                          daemon's first launch. Syncthing v2.0
+#                                          removed the `--no-default-folder` CLI
+#                                          flag (passing it now exits with code 80
+#                                          and launchd/systemd throttle the unit);
+#                                          since we manage folders per-host via
+#                                          the Web UI and `settings.folders` stays
+#                                          empty, the merged config has no folders
+#                                          and the daemon won't fabricate "Default"
+#                                          on a fresh install either.
 #   - Web UI desktop shortcut            — clickable launcher for http://127.0.0.1:8384
 #                                          via the cross-platform web-shortcuts helper.
 #
@@ -70,7 +81,11 @@ in
       tray.enable = isLinux; # upstream HM gates this to platforms.linux
       overrideDevices = false; # devices added via the Web UI persist; must be removed manually
       overrideFolders = false; # folders added via the Web UI persist; must be removed manually
-      extraOptions = [ "--no-default-folder" ]; # skip auto-creating the ~/Sync "Default" folder on first launch
+      # NB: do NOT add `--no-default-folder` to extraOptions — syncthing v2.0
+      # removed the flag and rejects it with exit code 80 (launchd/systemd then
+      # throttle the unit and the daemon never opens 8384). Default-folder
+      # suppression on fresh installs is handled by HM's `merge-syncthing-config`
+      # pre-seeding `config.xml` from `settings` (folders stay empty here).
       settings.options = {
         urAccepted = -1; # opt out of anonymous usage reporting (-1 = declined)
         localAnnounceEnabled = true;
