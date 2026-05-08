@@ -60,6 +60,6 @@
       # Official Nix formatter, available through 'nix fmt'
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
-      inherit (configurations) nixosConfigurations darwinConfigurations homeConfigurations;
+      inherit (configurations) nixosConfigurations darwinConfigurations homeConfigurations metadata;
     };
 }

@@ -66,6 +66,12 @@ let
   # require `config` (via `_module.args.pkgs`), which triggers an HM
   # infinite recursion. `userSettings` is available before `config`.
   isLinux = lib.hasSuffix "linux" userSettings.system;
+
+  # Declarative peer cluster — derived from per-host `metadata.nix` files
+  # via the shared `flake/metadata.nix` loader. Self is filtered out by
+  # hostname; peers with no captured `syncthing.id` are skipped (they
+  # stage in metadata as commented-out IDs and appear here once filled in).
+  peers = import ./syncthing-peers.nix { inherit lib userSettings; };
 in
 {
   imports = [
@@ -90,7 +96,9 @@ in
         urAccepted = -1; # opt out of anonymous usage reporting (-1 = declined)
         localAnnounceEnabled = true;
         autoUpgradeIntervalH = 0; # disable daemon self-upgrade — nix owns the binary; channel-driven updates only
+        deviceName = userSettings.hostname; # show the canonical hostname in the Web UI / cluster
       };
+      settings.devices = peers;
     };
 
     # Clickable ~/Desktop launcher for the Web UI (renders .desktop on

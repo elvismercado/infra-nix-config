@@ -14,6 +14,13 @@ let
     homeManagerHosts
     ;
 
+  # Per-host cross-host metadata (auto-discovered from `hosts/*/metadata.nix`).
+  # Loaded here so any syntax error surfaces at flake eval time. Exposed
+  # as a flake attribute (`nix eval .#metadata.all`) for ad-hoc inspection
+  # and for repo-level consumers; module consumers (e.g. syncthing peers)
+  # import it directly from `flake/metadata.nix`.
+  metadata = import ./metadata.nix { inherit (nixpkgs) lib; };
+
   # Derive the list of unique systems from all host configurations
   allHosts = nixosHosts // darwinHosts // homeManagerHosts;
   systems = nixpkgs.lib.unique (map (host: host.userSettings.system) (builtins.attrValues allHosts));
@@ -50,5 +57,5 @@ in
       ;
   };
 
-  inherit systems;
+  inherit systems metadata;
 }
