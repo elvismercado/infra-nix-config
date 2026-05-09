@@ -19,12 +19,34 @@
 #   - Brave: https://support.brave.com/hc/en-us/articles/360039248271
 #   - Chromium: https://chromeenterprise.google/policies/
 #
+# Scope — what enterprise policies CAN and CANNOT control:
+#
+#   ✅ Product-level Brave features: Rewards, Wallet, VPN, AI, Talk, Tor,
+#      News, Sync (BraveRewardsDisabled, BraveWalletDisabled, etc.).
+#   ✅ Standard Chromium controls: telemetry, Safe Browsing, password
+#      manager, autofill, force-installed extensions, default-browser
+#      nags, welcome pages, Web Store icon visibility.
+#
+#   ❌ User-side preferences — NOT policy-controllable, even though they
+#      look like settings. Examples that have NO managed-policy equivalent:
+#        - New-tab page elements (background image, stats row, clock,
+#          top-sites tiles). Internally these are prefs under
+#          `brave.new_tab_page.*` but Brave does not expose them via
+#          policy. There is no `BraveNewTabPageShowBackgroundImage`.
+#        - Default search engine, fonts, themes, zoom, startup pages.
+#        - Bookmark bar visibility, omnibox suggestions.
+#      These are owned by **Brave Sync** in this repo: configure once on
+#      any device in the chain, sync propagates to the rest. See the
+#      "Brave Sync intentionally NOT disabled" note below.
+#
 # Editing checklist:
 #   - Adding/removing an extension: edit the ExtensionInstallForcelist below.
 #     Each entry is "<extension-id>;<update-url>". Brave reads from the
 #     Chrome Web Store, so the update URL is the standard CWS endpoint.
 #   - Adding a new policy: drop it into the attrset; rebuild; verify on
-#     `chrome://policy` that Status: OK and Source: Platform.
+#     `chrome://policy` that Status: OK and Source: Platform. If it shows
+#     "Policy not recognized" it does not exist (likely a user pref — see
+#     the Scope note above).
 
 let
   # Chrome Web Store update endpoint. Brave honours this just like Chrome.
@@ -40,7 +62,10 @@ in
   BraveTalkDisabled = true; # remove Brave's own video-chat (does NOT affect WebRTC / Teams / Zoom / Meet)
   TorDisabled = true; # remove "New private window with Tor"
 
-  # Brave Sync intentionally NOT disabled — used to sync settings + bookmarks.
+  # Brave Sync intentionally NOT disabled — used to sync settings + bookmarks
+  # across devices. Brave Sync also owns user-side preferences that have no
+  # managed-policy equivalent (NTP layout, default search engine, fonts,
+  # etc. — see the Scope note in the header).
   # Brave Shields intentionally NOT touched — defaults stay (Shields-up).
 
   # --- Privacy / telemetry ---
