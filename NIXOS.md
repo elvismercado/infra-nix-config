@@ -57,94 +57,95 @@ Modules default to `false` — importing without enabling has no effect.
 
 ### Available NixOS Modules
 
-| Module                                                   | Option                                      |
-| -------------------------------------------------------- | ------------------------------------------- |
-| `systems/nixos/packages.nix`                             | `custom.sysPackages.enable`                 |
-| **Nix**                                                  |                                             |
-| `systems/nixos/nix/enable-flakes.nix`                    | `custom.sysNixEnableFlakes.enable`          |
-| `systems/nixos/nix/garbage.nix`                          | `custom.sysGc.enable`                       |
-| `systems/nixos/printing.nix`                             | `custom.sysNixPrinting.enable`              |
-| `systems/nixos/fwupd.nix`                                | `custom.sysNixFwupd.enable`                 |
-| `systems/nixos/docker.nix`                               | `custom.sysNixDocker.enable`                |
-| `systems/nixos/postinstall.nix`                          | `custom.sysNixPostinstall.enable`           |
-| **Peripherals**                                          |                                             |
-| `systems/nixos/bluetooth.nix`                            | `custom.sysNixBluetooth.enable`             |
-| `systems/nixos/pipewire.nix`                             | `custom.sysNixPipewire.enable`              |
-| **Memory**                                               |                                             |
-| `systems/nixos/memory/zram.nix`                          | `custom.sysNixZram.enable`                  |
-| `systems/nixos/memory/earlyoom.nix`                      | `custom.sysNixEarlyoom.enable`              |
-| `systems/nixos/memory/hibernation.nix`                   | `custom.sysNixHibernate.enable`             |
-| **Bootloader**                                           |                                             |
-| `systems/nixos/bootloader/grub.nix`                      | `custom.sysNixGrub.enable`                  |
-| `systems/nixos/bootloader/grub-theme-sleek.nix`          | `custom.sysNixGrubThemeSleek.enable`        |
-|                                                          | `custom.sysNixGrubThemeSleek.style`         |
-| `systems/nixos/bootloader/grub-theme-breeze.nix`         | `custom.sysNixGrubThemeBreeze.enable`       |
-| `systems/nixos/bootloader/grub-theme-nixos.nix`          | `custom.sysNixGrubThemeNixos.enable`        |
-| `systems/nixos/bootloader/systemd-boot.nix`              | `custom.sysNixSystemdBoot.enable`           |
-| `systems/nixos/bootloader/plymouth.nix`                  | `custom.sysNixPlymouth.enable`              |
-| `systems/nixos/bootloader/plymouth-theme-builtin.nix`    | `custom.sysNixPlymouthThemeBuiltin.enable`  |
-|                                                          | `custom.sysNixPlymouthThemeBuiltin.theme`   |
-| `systems/nixos/bootloader/plymouth-theme-nixos.nix`      | `custom.sysNixPlymouthThemeNixos.enable`    |
-| `systems/nixos/bootloader/plymouth-theme-breeze.nix`     | `custom.sysNixPlymouthThemeBreeze.enable`   |
-| `systems/nixos/bootloader/plymouth-theme-adi1090x.nix`   | `custom.sysNixPlymouthThemeAdi1090x.enable` |
-|                                                          | `custom.sysNixPlymouthThemeAdi1090x.theme`  |
-| **CPU**                                                  |                                             |
-| `systems/nixos/cpu/amd/base.nix`                         | `custom.sysNixAmdCpu.enable`                |
-| `systems/nixos/cpu/amd/ryzen.nix`                        | `custom.sysNixAmdRyzenCpu.enable`           |
-| `systems/nixos/cpu/amd/pstate.nix`                       | `custom.sysNixAmdPstate.enable`             |
-| `systems/nixos/cpu/amd/zenpower.nix`                     | `custom.sysNixAmdZenpower.enable`           |
-| `systems/nixos/cpu/amd/zen-kernel.nix`                   | `custom.sysNixZenKernel.enable`             |
-| `systems/nixos/cpu/amd/mitigations-off.nix`              | `custom.sysNixCpuMitigationsOff.enable`     |
-| **CPU Profiles** (import one per host)                   |                                             |
-| `systems/nixos/cpu/amd/ryzen_9_3900x.nix`                | `custom.sysNixAmdRyzen93900x.enable`        |
-| `systems/nixos/cpu/amd/ryzen_9_5900x.nix`                | `custom.sysNixAmdRyzen95900x.enable`        |
-| **Desktop Environment**                                  |                                             |
-| `systems/nixos/desktop_environment/cosmic.nix`           | `custom.sysNixCosmicDesktop.enable`         |
-| `systems/nixos/desktop_environment/kde_plasma.nix`       | `custom.sysNixKdePlasma.enable`             |
-| **Display Manager**                                      |                                             |
-| `systems/nixos/display_manager/sddm.nix`                 | `custom.sysNixSddm.enable`                  |
-| `systems/nixos/display_manager/sddm-monitor-layout.nix`  | `custom.sysNixSddmMonitorLayout.enable`     |
-| `systems/nixos/display_manager/sddm-input-config.nix`    | `custom.sysNixSddmInputConfig.enable`       |
-| **Graphics**                                             |                                             |
-| `systems/nixos/graphics/amd_radeon_r7_430.nix`           | `custom.sysNixAmdRadeonR7430.enable`        |
-| `systems/nixos/graphics/intel_arc_a380-intel-driver.nix` | `custom.sysNixIntelArcIntelDriver.enable`   |
-| `systems/nixos/graphics/nvidia_gtx_1060.nix`             | `custom.sysNixNvidiaGtx1060.enable`         |
-| `systems/nixos/graphics/nvidia_rtx_3070_lhr.nix`         | `custom.sysNixNvidiaRtx3070Lhr.enable`      |
-| `systems/nixos/graphics/nvidia_rtx_3080.nix`             | `custom.sysNixNvidiaRtx3080.enable`         |
-| **Graphics — Utilities**                                 |                                             |
-| `systems/nixos/graphics/utilities/amd.nix`               | `custom.sysNixAmdGraphics.enable`           |
-| `systems/nixos/graphics/utilities/nomodeset.nix`         | `custom.sysNixNomodeset.enable`             |
-| `systems/nixos/graphics/utilities/nvtop-intel.nix`       | `custom.sysNixNvtopIntel.enable`            |
-| `systems/nixos/graphics/utilities/nvtop-nvidia.nix`      | `custom.sysNixNvtopNvidia.enable`           |
-| **Input**                                                |                                             |
-| `systems/nixos/input/wacom.nix`                          | `custom.sysNixWacom.enable`                 |
-| **Mouse**                                                |                                             |
-| `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`         |
-| **Security**                                             |                                             |
-| `systems/nixos/security/fprintd.nix`                     | `custom.sysNixFprintd.enable`               |
-| `systems/nixos/security/yubikey.nix`                     | `custom.sysNixYubikey.enable`               |
-| **SSD**                                                  |                                             |
-| `systems/nixos/ssd/default.nix`                          | `custom.sysNixSsd.enable`                   |
-| **System**                                               |                                             |
-| `systems/nixos/system/user.nix`                          | `custom.sysNixUser.enable`                  |
-|                                                          | `custom.sysNixUser.extraGroups`             |
-| `systems/nixos/system/console.nix`                       | `custom.sysNixConsole.enable`               |
-|                                                          | `custom.sysNixConsole.colorScheme`          |
-| `systems/nixos/system/fonts.nix`                         | `custom.sysFonts.enable`                    |
-| `systems/nixos/system/i18n.nix`                          | `custom.sysNixI18n.enable`                  |
-| `systems/nixos/system/time.nix`                          | `custom.sysNixTimezone.enable`              |
-| `systems/nixos/system/network-tuning.nix`                | `custom.sysNixNetworkTuning.enable`         |
-| **Apps**                                                 |                                             |
-| `systems/nixos/apps/adb.nix`                             | `custom.sysNixAdb.enable`                   |
-| `systems/nixos/apps/coolercontrol.nix`                   | `custom.sysNixCoolercontrol.enable`         |
-| `systems/nixos/apps/embedded.nix`                        | `custom.sysNixEmbedded.enable`              |
-| `systems/nixos/apps/libvirtd.nix`                        | `custom.sysNixLibvirtd.enable`              |
-| `systems/nixos/apps/sunshine.nix`                        | `custom.sysNixSunshine.enable`              |
-| **Shared** (cross-platform)                              |                                             |
-| `systems/shared/bash.nix`                                | `custom.sysBashCompletion.enable`           |
-| `systems/shared/fonts.nix`                               | `custom.sysFonts.enable`                    |
-| `systems/shared/packages.nix`                            | `custom.sysPackages.enable`                 |
-| `systems/shared/ssh-server.nix`                          | `custom.sysSshServer.enable`                |
+| Module                                                   | Option                                                                  |
+| -------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `systems/nixos/packages.nix`                             | `custom.sysPackages.enable`                                             |
+| **Nix**                                                  |                                                                         |
+| `systems/nixos/nix/enable-flakes.nix`                    | `custom.sysNixEnableFlakes.enable`                                      |
+| `systems/nixos/nix/garbage.nix`                          | `custom.sysGc.enable`                                                   |
+| `systems/nixos/printing.nix`                             | `custom.sysNixPrinting.enable`                                          |
+| `systems/nixos/fwupd.nix`                                | `custom.sysNixFwupd.enable`                                             |
+| `systems/nixos/docker.nix`                               | `custom.sysNixDocker.enable`                                            |
+| `systems/nixos/postinstall.nix`                          | `custom.sysNixPostinstall.enable`                                       |
+| **Peripherals**                                          |                                                                         |
+| `systems/nixos/bluetooth.nix`                            | `custom.sysNixBluetooth.enable`                                         |
+| `systems/nixos/pipewire.nix`                             | `custom.sysNixPipewire.enable`                                          |
+| **Memory**                                               |                                                                         |
+| `systems/nixos/memory/zram.nix`                          | `custom.sysNixZram.enable`                                              |
+| `systems/nixos/memory/earlyoom.nix`                      | `custom.sysNixEarlyoom.enable`                                          |
+| `systems/nixos/memory/hibernation.nix`                   | `custom.sysNixHibernate.enable`                                         |
+| **Bootloader**                                           |                                                                         |
+| `systems/nixos/bootloader/grub.nix`                      | `custom.sysNixGrub.enable`                                              |
+| `systems/nixos/bootloader/grub-theme-sleek.nix`          | `custom.sysNixGrubThemeSleek.enable`                                    |
+|                                                          | `custom.sysNixGrubThemeSleek.style`                                     |
+| `systems/nixos/bootloader/grub-theme-breeze.nix`         | `custom.sysNixGrubThemeBreeze.enable`                                   |
+| `systems/nixos/bootloader/grub-theme-nixos.nix`          | `custom.sysNixGrubThemeNixos.enable`                                    |
+| `systems/nixos/bootloader/systemd-boot.nix`              | `custom.sysNixSystemdBoot.enable`                                       |
+| `systems/nixos/bootloader/plymouth.nix`                  | `custom.sysNixPlymouth.enable`                                          |
+| `systems/nixos/bootloader/plymouth-theme-builtin.nix`    | `custom.sysNixPlymouthThemeBuiltin.enable`                              |
+|                                                          | `custom.sysNixPlymouthThemeBuiltin.theme`                               |
+| `systems/nixos/bootloader/plymouth-theme-nixos.nix`      | `custom.sysNixPlymouthThemeNixos.enable`                                |
+| `systems/nixos/bootloader/plymouth-theme-breeze.nix`     | `custom.sysNixPlymouthThemeBreeze.enable`                               |
+| `systems/nixos/bootloader/plymouth-theme-adi1090x.nix`   | `custom.sysNixPlymouthThemeAdi1090x.enable`                             |
+|                                                          | `custom.sysNixPlymouthThemeAdi1090x.theme`                              |
+| **CPU**                                                  |                                                                         |
+| `systems/nixos/cpu/amd/base.nix`                         | `custom.sysNixAmdCpu.enable`                                            |
+| `systems/nixos/cpu/amd/ryzen.nix`                        | `custom.sysNixAmdRyzenCpu.enable`                                       |
+| `systems/nixos/cpu/amd/pstate.nix`                       | `custom.sysNixAmdPstate.enable`                                         |
+| `systems/nixos/cpu/amd/zenpower.nix`                     | `custom.sysNixAmdZenpower.enable`                                       |
+| `systems/nixos/cpu/amd/zen-kernel.nix`                   | `custom.sysNixZenKernel.enable`                                         |
+| `systems/nixos/cpu/amd/mitigations-off.nix`              | `custom.sysNixCpuMitigationsOff.enable`                                 |
+| **CPU Profiles** (import one per host)                   |                                                                         |
+| `systems/nixos/cpu/amd/ryzen_9_3900x.nix`                | `custom.sysNixAmdRyzen93900x.enable`                                    |
+| `systems/nixos/cpu/amd/ryzen_9_5900x.nix`                | `custom.sysNixAmdRyzen95900x.enable`                                    |
+| **Desktop Environment**                                  |                                                                         |
+| `systems/nixos/desktop_environment/cosmic.nix`           | `custom.sysNixCosmicDesktop.enable`                                     |
+| `systems/nixos/desktop_environment/kde_plasma.nix`       | `custom.sysNixKdePlasma.enable`                                         |
+| **Display Manager**                                      |                                                                         |
+| `systems/nixos/display_manager/sddm.nix`                 | `custom.sysNixSddm.enable`                                              |
+| `systems/nixos/display_manager/sddm-monitor-layout.nix`  | `custom.sysNixSddmMonitorLayout.enable`                                 |
+| `systems/nixos/display_manager/sddm-input-config.nix`    | `custom.sysNixSddmInputConfig.enable`                                   |
+| **Graphics**                                             |                                                                         |
+| `systems/nixos/graphics/amd_radeon_r7_430.nix`           | `custom.sysNixAmdRadeonR7430.enable`                                    |
+| `systems/nixos/graphics/intel_arc_a380-intel-driver.nix` | `custom.sysNixIntelArcIntelDriver.enable`                               |
+| `systems/nixos/graphics/nvidia_gtx_1060.nix`             | `custom.sysNixNvidiaGtx1060.enable`                                     |
+| `systems/nixos/graphics/nvidia_rtx_3070_lhr.nix`         | `custom.sysNixNvidiaRtx3070Lhr.enable`                                  |
+| `systems/nixos/graphics/nvidia_rtx_3080.nix`             | `custom.sysNixNvidiaRtx3080.enable`                                     |
+| **Graphics — Utilities**                                 |                                                                         |
+| `systems/nixos/graphics/utilities/amd.nix`               | `custom.sysNixAmdGraphics.enable`                                       |
+| `systems/nixos/graphics/utilities/nomodeset.nix`         | `custom.sysNixNomodeset.enable`                                         |
+| `systems/nixos/graphics/utilities/nvtop-intel.nix`       | `custom.sysNixNvtopIntel.enable`                                        |
+| `systems/nixos/graphics/utilities/nvtop-nvidia.nix`      | `custom.sysNixNvtopNvidia.enable`                                       |
+| **Input**                                                |                                                                         |
+| `systems/nixos/input/wacom.nix`                          | `custom.sysNixWacom.enable`                                             |
+| **Mouse**                                                |                                                                         |
+| `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`                                     |
+| **Security**                                             |                                                                         |
+| `systems/nixos/security/fprintd.nix`                     | `custom.sysNixFprintd.enable`                                           |
+| `systems/nixos/security/yubikey.nix`                     | `custom.sysNixYubikey.enable`                                           |
+| **SSD**                                                  |                                                                         |
+| `systems/nixos/ssd/default.nix`                          | `custom.sysNixSsd.enable`                                               |
+| **System**                                               |                                                                         |
+| `systems/nixos/system/user.nix`                          | `custom.sysNixUser.enable`                                              |
+|                                                          | `custom.sysNixUser.extraGroups`                                         |
+| `systems/nixos/system/console.nix`                       | `custom.sysNixConsole.enable`                                           |
+|                                                          | `custom.sysNixConsole.colorScheme`                                      |
+| `systems/nixos/system/fonts.nix`                         | `custom.sysFonts.enable`                                                |
+| `systems/nixos/system/i18n.nix`                          | `custom.sysNixI18n.enable`                                              |
+| `systems/nixos/system/time.nix`                          | `custom.sysNixTimezone.enable`                                          |
+| `systems/nixos/system/network-tuning.nix`                | `custom.sysNixNetworkTuning.enable`                                     |
+| **Apps**                                                 |                                                                         |
+| `systems/nixos/apps/adb.nix`                             | `custom.sysNixAdb.enable`                                               |
+| `systems/nixos/apps/coolercontrol.nix`                   | `custom.sysNixCoolercontrol.enable`                                     |
+| `systems/nixos/apps/embedded.nix`                        | `custom.sysNixEmbedded.enable`                                          |
+| `systems/nixos/apps/libvirtd.nix`                        | `custom.sysNixLibvirtd.enable`                                          |
+| `systems/nixos/apps/sunshine.nix`                        | `custom.sysNixSunshine.enable`                                          |
+| `systems/nixos/brave-policies.nix`                       | `custom.sysBravePolicies.enable` (managed via `custom.appBrave.enable`) |
+| **Shared** (cross-platform)                              |                                                                         |
+| `systems/shared/bash.nix`                                | `custom.sysBashCompletion.enable`                                       |
+| `systems/shared/fonts.nix`                               | `custom.sysFonts.enable`                                                |
+| `systems/shared/packages.nix`                            | `custom.sysPackages.enable`                                             |
+| `systems/shared/ssh-server.nix`                          | `custom.sysSshServer.enable`                                            |
 
 > Shared modules are imported indirectly — e.g. `nixos/nix/garbage.nix` imports `shared/garbage.nix` and layers on NixOS-specific `nix.gc` settings. You import the platform wrapper, not the shared file directly.
 

@@ -54,24 +54,25 @@ Modules use the same `custom.*` namespace pattern as NixOS. Import and enable in
 
 ### Available Darwin Modules
 
-| Module                                  | Option                              |
-| --------------------------------------- | ----------------------------------- |
-| `systems/darwin/alacritty.nix`          | `custom.sysDarAlacritty.enable`     |
-| `systems/darwin/control-center.nix`     | `custom.sysDarControlCenter.enable` |
-| `systems/darwin/dock.nix`               | `custom.sysDarDock.enable`          |
-| `systems/darwin/finder.nix`             | `custom.sysDarFinder.enable`        |
-| `systems/darwin/fonts.nix`              | `custom.sysFonts.enable`            |
-| `systems/darwin/garbage.nix`            | `custom.sysGc.enable`               |
-| `systems/darwin/packages.nix`           | `custom.sysPackages.enable`         |
-| `systems/darwin/power.nix`              | `custom.sysDarPower.enable`         |
-| `systems/darwin/security.nix`           | `custom.sysDarSecurity.enable`      |
-| `systems/darwin/system-preferences.nix` | `custom.sysDarPreferences.enable`   |
-| `systems/darwin/trackpad.nix`           | `custom.sysDarTrackpad.enable`      |
-| **Shared** (cross-platform)             |                                     |
-| `systems/shared/bash.nix`               | `custom.sysBashCompletion.enable`   |
-| `systems/shared/fonts.nix`              | `custom.sysFonts.enable`            |
-| `systems/shared/packages.nix`           | `custom.sysPackages.enable`         |
-| `systems/shared/ssh-server.nix`         | `custom.sysSshServer.enable`        |
+| Module                                  | Option                                                                  |
+| --------------------------------------- | ----------------------------------------------------------------------- |
+| `systems/darwin/alacritty.nix`          | `custom.sysDarAlacritty.enable`                                         |
+| `systems/darwin/brave-policies.nix`     | `custom.sysBravePolicies.enable` (managed via `custom.appBrave.enable`) |
+| `systems/darwin/control-center.nix`     | `custom.sysDarControlCenter.enable`                                     |
+| `systems/darwin/dock.nix`               | `custom.sysDarDock.enable`                                              |
+| `systems/darwin/finder.nix`             | `custom.sysDarFinder.enable`                                            |
+| `systems/darwin/fonts.nix`              | `custom.sysFonts.enable`                                                |
+| `systems/darwin/garbage.nix`            | `custom.sysGc.enable`                                                   |
+| `systems/darwin/packages.nix`           | `custom.sysPackages.enable`                                             |
+| `systems/darwin/power.nix`              | `custom.sysDarPower.enable`                                             |
+| `systems/darwin/security.nix`           | `custom.sysDarSecurity.enable`                                          |
+| `systems/darwin/system-preferences.nix` | `custom.sysDarPreferences.enable`                                       |
+| `systems/darwin/trackpad.nix`           | `custom.sysDarTrackpad.enable`                                          |
+| **Shared** (cross-platform)             |                                                                         |
+| `systems/shared/bash.nix`               | `custom.sysBashCompletion.enable`                                       |
+| `systems/shared/fonts.nix`              | `custom.sysFonts.enable`                                                |
+| `systems/shared/packages.nix`           | `custom.sysPackages.enable`                                             |
+| `systems/shared/ssh-server.nix`         | `custom.sysSshServer.enable`                                            |
 
 > Darwin wrapper modules (e.g. `darwin/garbage.nix`) import the shared module and add Darwin-specific settings. Import the `darwin/` file, not the `shared/` file directly.
 

@@ -87,10 +87,11 @@ modules/
       ssd/                   #   SSD optimisations (fstrim)
       system/                #   Console, fonts, i18n, network tuning, time, user
       bluetooth.nix          #   Bluetooth + A2DP audio
+      brave-policies.nix     #   Brave managed policies (debrand + privacy + extensions)
       pipewire.nix           #   PipeWire audio server
-    darwin/                  # Darwin-specific modules (Alacritty, Control Center, Dock, Finder,
-                             #   fonts, gc, packages, Power, Security, System Preferences, Trackpad)
-    shared/                  # Cross-platform modules (bash, fonts, garbage, packages, ssh)
+    darwin/                  # Darwin-specific modules (Alacritty, Brave policies, Control Center, Dock,
+                             #   Finder, fonts, gc, packages, Power, Security, System Preferences, Trackpad)
+    shared/                  # Cross-platform modules (bash, Brave policies data, fonts, garbage, packages, ssh)
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Fastfetch, fnm, Git,
                              #   mpv, pyenv, SSH, Starship

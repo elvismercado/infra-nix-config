@@ -24,10 +24,14 @@ let
   cfg = config.custom.appBrave;
 in
 {
-  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper)";
+  imports = [ ../../systems/darwin/brave-policies.nix ];
+
+  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper + managed policies)";
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "brave-browser" ];
+
+    custom.sysBravePolicies.enable = true;
 
     home-manager.users.${userSettings.username} = {
       imports = [ ../../home-manager/darwin/brave.nix ];

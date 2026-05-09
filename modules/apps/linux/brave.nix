@@ -22,9 +22,13 @@ let
   cfg = config.custom.appBrave;
 in
 {
-  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration)";
+  imports = [ ../../systems/nixos/brave-policies.nix ];
+
+  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration + managed policies)";
 
   config = lib.mkIf cfg.enable {
+    custom.sysBravePolicies.enable = true;
+
     home-manager.users.${userSettings.username} = {
       imports = [ ../../home-manager/linux/brave.nix ];
       custom.hmBrave.enable = true;
