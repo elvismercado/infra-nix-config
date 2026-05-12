@@ -4,9 +4,10 @@ macOS system configuration is managed through `flake/darwin.nix` using [nix-darw
 
 ## Current Hosts
 
-| Host | Architecture  | Channel | User | Hardware                       |
-| ---- | ------------- | ------- | ---- | ------------------------------ |
-| EDGE | x86_64-darwin | stable  | edge | 2018 MacBook Pro 15", Intel i9 |
+| Host | Architecture   | Channel | User  | Hardware                         |
+| ---- | -------------- | ------- | ----- | -------------------------------- |
+| EDGE | x86_64-darwin  | stable  | elvis | 2018 MacBook Pro 15", Intel i9   |
+| LULA | aarch64-darwin | stable  | maria | 2026 MacBook Neo, Apple A-series |
 
 ## Rebuild
 
@@ -15,6 +16,7 @@ Rebuild the system configuration from the flake:
 ```bash
 # Rebuild using the host's flake configuration
 darwin-rebuild switch --flake .#EDGE
+darwin-rebuild switch --flake .#LULA
 ```
 
 ## How It Works

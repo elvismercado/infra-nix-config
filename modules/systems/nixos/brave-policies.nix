@@ -27,10 +27,24 @@
 
 let
   cfg = config.custom.sysBravePolicies;
-  policies = import ../shared/brave-policies-data.nix;
+  policies = import ../shared/brave-policies-data.nix { extensions = cfg.extensions; };
 in
 {
-  options.custom.sysBravePolicies.enable = lib.mkEnableOption "Brave managed policies (debrand + privacy + force-installed extensions)";
+  options.custom.sysBravePolicies = {
+    enable = lib.mkEnableOption "Brave managed policies (debrand + privacy + force-installed extensions)";
+
+    extensions = lib.mkOption {
+      type = lib.types.nullOr (lib.types.listOf lib.types.str);
+      default = null;
+      description = ''
+        Chrome Web Store extension IDs to force-install. `null` (default)
+        inherits the shared list from `brave-policies-data.nix`. Pass `[]`
+        to disable force-install entirely on this host. Hosts normally set
+        this via `custom.appBrave.extensions` on the Brave app façade.
+      '';
+      example = [ "nngceckbapebfimnlniiiahkandclblb" ];
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     environment.etc."brave/policies/managed/debrand.json" = {

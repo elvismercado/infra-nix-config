@@ -12,11 +12,12 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 
 ## Hosts
 
-| Host   | System             | Architecture  | Channel | Docs                               |
-| ------ | ------------------ | ------------- | ------- | ---------------------------------- |
-| JIN    | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/JIN/README.md)    |
-| FENNEC | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/FENNEC/README.md) |
-| EDGE   | macOS (nix-darwin) | x86_64-darwin | stable  | [Hardware](hosts/EDGE/README.md)   |
+| Host   | System             | Architecture   | Channel | Docs                               |
+| ------ | ------------------ | -------------- | ------- | ---------------------------------- |
+| JIN    | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/JIN/README.md)    |
+| FENNEC | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/FENNEC/README.md) |
+| EDGE   | macOS (nix-darwin) | x86_64-darwin  | stable  | [Hardware](hosts/EDGE/README.md)   |
+| LULA   | macOS (nix-darwin) | aarch64-darwin | stable  | [Hardware](hosts/LULA/README.md)   |
 
 ## Quick Commands
 
@@ -27,6 +28,7 @@ sudo nixos-rebuild switch --flake .#FENNEC
 
 # macOS — rebuild system
 darwin-rebuild switch --flake .#EDGE
+darwin-rebuild switch --flake .#LULA
 ```
 
 > Home Manager is integrated as a system module on all hosts, so it is applied as part of the system rebuild above. Standalone `home-manager switch` is reserved for future non-NixOS/non-darwin hosts (e.g. Ubuntu, Arch) registered in `homeManagerHosts`.

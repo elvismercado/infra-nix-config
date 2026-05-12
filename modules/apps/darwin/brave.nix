@@ -26,12 +26,27 @@ in
 {
   imports = [ ../../systems/darwin/brave-policies.nix ];
 
-  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper + managed policies)";
+  options.custom.appBrave = {
+    enable = lib.mkEnableOption "Brave browser (Homebrew cask + HM wrapper + managed policies)";
+
+    extensions = lib.mkOption {
+      type = lib.types.nullOr (lib.types.listOf lib.types.str);
+      default = null;
+      description = ''
+        Chrome Web Store extension IDs to force-install for this host.
+        `null` (default) inherits the shared list from
+        `modules/systems/shared/brave-policies-data.nix`. Pass `[]` to
+        disable force-install entirely for non-power-user hosts.
+      '';
+      example = [ "nngceckbapebfimnlniiiahkandclblb" ];
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     homebrew.casks = [ "brave-browser" ];
 
     custom.sysBravePolicies.enable = true;
+    custom.sysBravePolicies.extensions = cfg.extensions;
 
     home-manager.users.${userSettings.username} = {
       imports = [ ../../home-manager/darwin/brave.nix ];

@@ -24,10 +24,25 @@ in
 {
   imports = [ ../../systems/nixos/brave-policies.nix ];
 
-  options.custom.appBrave.enable = lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration + managed policies)";
+  options.custom.appBrave = {
+    enable = lib.mkEnableOption "Brave browser (nixpkgs binary + KDE Plasma integration + managed policies)";
+
+    extensions = lib.mkOption {
+      type = lib.types.nullOr (lib.types.listOf lib.types.str);
+      default = null;
+      description = ''
+        Chrome Web Store extension IDs to force-install for this host.
+        `null` (default) inherits the shared list from
+        `modules/systems/shared/brave-policies-data.nix`. Pass `[]` to
+        disable force-install entirely for non-power-user hosts.
+      '';
+      example = [ "nngceckbapebfimnlniiiahkandclblb" ];
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     custom.sysBravePolicies.enable = true;
+    custom.sysBravePolicies.extensions = cfg.extensions;
 
     home-manager.users.${userSettings.username} = {
       imports = [ ../../home-manager/linux/brave.nix ];

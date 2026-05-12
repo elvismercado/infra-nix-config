@@ -40,6 +40,9 @@ let
   darwinHosts = {
     # `sudo darwin-rebuild switch --flake .#EDGE`
     EDGE = mkHost "EDGE";
+
+    # `sudo darwin-rebuild switch --flake .#LULA`
+    LULA = mkHost "LULA";
   };
 
   # Standalone home-manager hosts — for systems without NixOS/nix-darwin

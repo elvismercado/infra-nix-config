@@ -1,10 +1,10 @@
 # Brave managed policies — shared data
 #
 # Single source of truth for the policy attrset applied to Brave on every
-# host that enables `custom.appBrave.enable`. Pure data: no function args,
-# no `let`, no `mkIf`. The OS-specific writers in
-# `modules/systems/{nixos,darwin}/brave-policies.nix` import this file and
-# render it to the right on-disk format:
+# host that enables `custom.appBrave.enable`. Imported as a function: the
+# OS-specific writers in `modules/systems/{nixos,darwin}/brave-policies.nix`
+# call it with optional `extensions` overrides and render the result to the
+# right on-disk format:
 #
 #   - Linux:  /etc/brave/policies/managed/debrand.json (JSON)
 #   - Darwin: ~/Library/Managed Preferences/com.brave.Browser (plist via
@@ -40,17 +40,41 @@
 #      "Brave Sync intentionally NOT disabled" note below.
 #
 # Editing checklist:
-#   - Adding/removing an extension: edit the ExtensionInstallForcelist below.
-#     Each entry is "<extension-id>;<update-url>". Brave reads from the
-#     Chrome Web Store, so the update URL is the standard CWS endpoint.
+#   - Adding/removing an extension on every host: edit `defaultExtensions`
+#     below. Each entry is the bare Chrome Web Store ID; the function
+#     appends the standard CWS update URL.
+#   - Overriding extensions on a specific host: set
+#     `custom.appBrave.extensions = [ "<id>" ... ];` on that host (use
+#     `[]` to disable force-install entirely for that host).
 #   - Adding a new policy: drop it into the attrset; rebuild; verify on
 #     `chrome://policy` that Status: OK and Source: Platform. If it shows
 #     "Policy not recognized" it does not exist (likely a user pref — see
 #     the Scope note above).
 
+{
+  # Per-host override. Pass `null` (default) to inherit the shared
+  # `defaultExtensions` list below; pass a list of CWS extension IDs to
+  # replace it (pass `[]` to disable force-install entirely on this host).
+  extensions ? null,
+}:
+
 let
   # Chrome Web Store update endpoint. Brave honours this just like Chrome.
   cwsUpdate = "https://clients2.google.com/service/update2/crx";
+
+  # Default cross-host force-install set. Hosts that don't set
+  # `custom.appBrave.extensions` inherit this list. Each entry is the bare
+  # extension ID; the `;<update-url>` suffix is added below.
+  defaultExtensions = [
+    "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
+    "fnaicdffflnofjppbagibeoednhnbjhg" # Floccus bookmark sync
+    "mnjggcdmjocbbbhaepdhchncahnbgone" # SponsorBlock for YouTube
+    "jcgpghgjhhahcefnfpbncdmhhddedhnk" # Click to remove element
+    "fdpohaocaechififmbbbbbknoalclacl" # GoFullPage — full page screen capture
+    # "cjpalhdlnbpafiamejdnhcphjbkeiagm" # uBlock Origin — uncomment to force-install on every host (cannot be installed-disabled via policy)
+  ];
+
+  resolvedExtensions = if extensions == null then defaultExtensions else extensions;
 in
 {
   # --- Brave-specific: kill the "Brave company" surface ---
@@ -85,14 +109,7 @@ in
 
   # --- Force-installed extensions ---
   # Format: "<chrome-web-store-id>;<update-url>". The user cannot remove or
-  # disable these — that's the point of force-install. To allow user-managed
-  # install instead, omit the entry; users can install manually from CWS.
-  ExtensionInstallForcelist = [
-    "nngceckbapebfimnlniiiahkandclblb;${cwsUpdate}" # Bitwarden
-    "fnaicdffflnofjppbagibeoednhnbjhg;${cwsUpdate}" # Floccus bookmark sync
-    "mnjggcdmjocbbbhaepdhchncahnbgone;${cwsUpdate}" # SponsorBlock for YouTube
-    "jcgpghgjhhahcefnfpbncdmhhddedhnk;${cwsUpdate}" # Click to remove element
-    "fdpohaocaechififmbbbbbknoalclacl;${cwsUpdate}" # GoFullPage — full page screen capture
-    # "cjpalhdlnbpafiamejdnhcphjbkeiagm;${cwsUpdate}" # uBlock Origin — uncomment to force-install (cannot be installed-disabled via policy)
-  ];
+  # disable these — that's the point of force-install. See `extensions`
+  # parameter above for per-host override.
+  ExtensionInstallForcelist = map (id: "${id};${cwsUpdate}") resolvedExtensions;
 }
