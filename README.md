@@ -150,9 +150,9 @@ present.
 
 ## PII & Secrets Discipline
 
-Notes-to-self distilled from the Round 15 PII audit (see [TODO.md](TODO.md)).
-Single-maintainer repo, so this section is the entire backstop: no
-`SECURITY.md`, no `CONTRIBUTING.md`.
+Notes-to-self on what stays public vs private and the hygiene that keeps
+the split working. Single-maintainer repo, so this section is the entire
+backstop: no `SECURITY.md`, no `CONTRIBUTING.md`.
 
 ### The split
 
@@ -183,13 +183,10 @@ The public tree deliberately exposes:
 - Each host's `channel` choice and hardware class strings in per-host
   READMEs.
 
-Full reasoning lives in `TODO.md` Round 15 → `P3 — Architecture & Convention`
-→ "Cloud-service app intent" entry.
-
 ### Pre-push checklist
 
-Before pushing to the public remote, run the three probes from
-`TODO.md` Round 15 P3 "Git history may contain pre-cleanup leaks":
+Before pushing to the public remote, run these probes for leaks that may
+have landed in commits:
 
 ```bash
 git log --all -S "192.168" --oneline
@@ -197,10 +194,11 @@ git log --all -S "<one syncthing ID prefix>" --oneline
 git log --all --grep -iE "password|secret|token|credential"
 ```
 
-If a probe surfaces a real value in old commits, **rotate it** (e.g. the
-Syncthing device-ID rotation procedure in the Backlog → Round 15
-follow-ups). `git filter-repo` rewrite is declined: force-push doesn't
-unpublish what is already cloned or cached, and breaks downstream forks.
+If a probe surfaces a real value in old commits, **rotate it** (e.g.
+regenerate a Syncthing device identity by deleting `cert.pem` + `key.pem`
+and restarting, then update `nix-config-private`). `git filter-repo`
+rewrite is declined: force-push doesn't unpublish what is already cloned
+or cached, and breaks downstream forks.
 
 ## Per-Host Settings
 
