@@ -36,9 +36,8 @@
 # infinite recursion (it forces `config` to be evaluated to provide
 # `_module.args.pkgs`, but `config` depends on `imports`). `userSettings`
 # arrives via `extraSpecialArgs` and is available before `config`.
-# macOS users use the Web UI shortcut as the entry point (no menubar icon
-# — accepted trade-off; see `.archive/syncthing-2026-05-08/` for the
-# previous cask-based setup).
+# macOS users use the Web UI shortcut as the entry point (no menubar
+# icon — accepted trade-off).
 #
 # The matching `web-shortcuts.nix` wrapper is selected per OS so that the
 # right renderer (`.desktop` on Linux, `.webloc` on darwin) is in scope.

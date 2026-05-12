@@ -10,8 +10,6 @@
 # darwin (upstream HM puts an `assertPlatform = linux` on
 # `services.syncthing.tray`). The Web UI desktop shortcut
 # (`~/Desktop/Syncthing Web UI.webloc`) is the canonical entry point.
-# Previous cask-based setup is preserved under
-# `.archive/syncthing-2026-05-08/` if a rollback is ever needed.
 #
 # Hosts should not also touch `custom.hmSyncthing.enable` directly.
 #
