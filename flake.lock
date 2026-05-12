@@ -331,6 +331,22 @@
         "type": "github"
       }
     },
+    "private": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778601752,
+        "narHash": "sha256-/KWDDB6o8E/wO1h8hjQc77PPP03uc6mvTpO1KRQtNgo=",
+        "ref": "refs/heads/main",
+        "rev": "0a4dcc42073268b31e3f0dde95e6f27b39634469",
+        "revCount": 3,
+        "type": "git",
+        "url": "file:../nix-config-private"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:../nix-config-private"
+      }
+    },
     "root": {
       "inputs": {
         "determinate": "determinate",
@@ -340,7 +356,8 @@
         "nix-darwin-stable": "nix-darwin-stable",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-stable": "nixpkgs-stable",
-        "plasma-manager": "plasma-manager"
+        "plasma-manager": "plasma-manager",
+        "private": "private"
       }
     }
   },
