@@ -11,7 +11,7 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 | GPU       | Radeon Pro Vega 20 4 GB        |
 | iGPU      | Intel UHD Graphics 630 1536 MB |
 | RAM       | 32 GB 2400 MHz DDR4            |
-| Storage   | Apple SSD AP1024M, 1 TB        |
+| Storage   | 1 TB NVMe SSD                  |
 
 ## Configuration overview
 
