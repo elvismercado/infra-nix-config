@@ -9,11 +9,12 @@ let
     hostName:
     let
       publicUserSettings = import ../hosts/${hostName}/user-settings.nix;
-      # Optional private overlay (sibling repo, gitignored from the public
-      # tree). Holds PII-bearing fields like `timeZone`. When the overlay
-      # path doesn't exist, fall back to an empty attrset so the public
-      # repo evaluates standalone.
-      privateOverlayPath = ../../nix-config-private/hosts/${hostName}/user-settings.nix;
+      # Private overlay merged in from the `private` flake input
+      # (sibling `nix-config-private` repo). Holds PII-bearing fields like
+      # `timeZone`, `language`, `regionalFormat`. The `pathExists` guard
+      # handles the case where the sibling exists but a per-host overlay
+      # file hasn't been created yet (e.g. a freshly-added host).
+      privateOverlayPath = inputs.private + "/hosts/${hostName}/user-settings.nix";
       privateUserSettings =
         if builtins.pathExists privateOverlayPath then import privateOverlayPath else { };
       userSettings = publicUserSettings // privateUserSettings;

@@ -27,7 +27,9 @@
 }:
 
 let
-  language = userSettings.language or "en-GB";
+  language = userSettings.language or (lib.warn
+    "userSettings.language unset for host '${userSettings.hostname}'; defaulting to en-GB. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+    "en-GB");
   regionalFormat = userSettings.regionalFormat or language;
   toPosix = t: (builtins.replaceStrings [ "-" ] [ "_" ] t) + ".UTF-8";
   uiLocale = toPosix language;

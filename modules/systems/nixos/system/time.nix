@@ -2,8 +2,10 @@
 #
 # Sets time.timeZone from userSettings.timeZone so the host clock and
 # log timestamps match the location configured in user-settings.nix.
-# Falls back to "Etc/UTC" when userSettings.timeZone is unset (e.g. the
-# public repo without a private overlay).
+# Falls back to "Europe/London" when userSettings.timeZone is unset and
+# emits a build-time warning naming the host and the file to edit.
+# London is a placeholder, chosen to match the darwin module so behaviour
+# is identical across OSes when the overlay is missing.
 #
 # Usage:
 #   imports = [ ../../../modules/systems/nixos/system/time.nix ];
@@ -22,6 +24,9 @@
   };
 
   config = lib.mkIf config.custom.sysNixTimezone.enable {
-    time.timeZone = userSettings.timeZone or "Etc/UTC";
+    time.timeZone =
+      userSettings.timeZone or (lib.warn
+        "userSettings.timeZone unset for host '${userSettings.hostname}'; defaulting to Europe/London. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+        "Europe/London");
   };
 }

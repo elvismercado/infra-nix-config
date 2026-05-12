@@ -126,7 +126,8 @@ modules/
 ## Private Sibling Repo
 
 A handful of host-identifying fields (Syncthing device IDs, per-peer LAN
-addresses) live in a separate private repo,
+addresses, per-host `timeZone` / `language` / `regionalFormat`) live in
+a separate private repo,
 [`elvismercado/nix-config-private`](https://github.com/elvismercado/nix-config-private),
 cloned as a sibling folder on disk:
 
@@ -136,13 +137,32 @@ cloned as a sibling folder on disk:
 └── nix-config-private/      # sibling (private; same shape under hosts/)
 ```
 
-The flake loader ([flake/metadata.nix](flake/metadata.nix)) auto-discovers
-the sibling and merges its per-host overrides on top of the public
-`hosts/<HOST>/metadata.nix` stubs via `lib.recursiveUpdate`. When the
-sibling is absent (CI, outside contributors, a fresh checkout), the
-merge is a no-op — the Syncthing peer map ends up empty and
-`nix flake check` still passes. Managed hosts clone both repos as
-siblings during install.
+The sibling is wired in two places:
+
+- **Per-host metadata** for the Syncthing peer map: the flake loader
+  ([flake/metadata.nix](flake/metadata.nix)) auto-discovers the sibling
+  and merges its per-host overrides on top of the public
+  `hosts/<HOST>/metadata.nix` stubs via `lib.recursiveUpdate`. When the
+  sibling is absent the merge is a no-op and the peer map ends up empty.
+- **Per-host `userSettings` overlay** for PII fields like `timeZone`:
+  declared as a `flake = false` input named `private` in
+  [`flake.nix`](flake.nix) and merged on top of the public
+  `hosts/<HOST>/user-settings.nix` by [`flake/hosts.nix`](flake/hosts.nix).
+  Because it's a real flake input, the sibling **must be present** at
+  `../nix-config-private` for any rebuild or `nix flake check` to
+  succeed. Bootstrap with:
+
+  ```bash
+  cd ~/git
+  gh repo clone elvismercado/nix-config-private
+  ```
+
+  If you don't have access to the private repo, you can substitute an
+  empty stub (a directory containing `hosts/<HOST>/user-settings.nix`
+  files that return `{ }`) and the public defaults (Europe/London,
+  en-GB) will activate with a build-time warning.
+
+Managed hosts clone both repos as siblings during install.
 
 A multi-root VS Code workspace [`nix-config.code-workspace`](nix-config.code-workspace)
 at the repo root opens both folders in one window when the sibling is

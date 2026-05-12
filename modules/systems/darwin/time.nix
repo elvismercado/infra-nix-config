@@ -4,10 +4,13 @@
 # log timestamps, and scheduled jobs match the location configured in
 # user-settings.nix. nix-darwin applies this via `systemsetup -settimezone`
 # on activation, the same setting controlled by System Settings.
-# Falls back to "UTC" when userSettings.timeZone is unset (e.g. the public
-# repo without a private overlay). NixOS uses "Etc/UTC" but macOS's
-# `systemsetup -listtimezones` doesn't accept the "Etc/" prefix, so the
-# darwin fallback diverges from the NixOS module on purpose.
+#
+# Falls back to "Europe/London" when userSettings.timeZone is unset and
+# emits a build-time warning naming the host and the file to edit. London
+# is a placeholder — it's a real geographic tz that exists in macOS's
+# `systemsetup -listtimezones` and on every Linux glibc, so the fallback
+# always activates cleanly. "UTC" / "Etc/UTC" were tried first but macOS
+# rejects both forms.
 #
 # Usage:
 #   imports = [ ../../../modules/systems/darwin/time.nix ];
@@ -26,6 +29,9 @@
   };
 
   config = lib.mkIf config.custom.sysDarTimezone.enable {
-    time.timeZone = userSettings.timeZone or "UTC";
+    time.timeZone =
+      userSettings.timeZone or (lib.warn
+        "userSettings.timeZone unset for host '${userSettings.hostname}'; defaulting to Europe/London. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+        "Europe/London");
   };
 }

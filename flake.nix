@@ -41,6 +41,22 @@
 
     # determinate.url = "github:DeterminateSystems/determinate";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
+    # Private overlay sibling repo (gitignored from the public tree).
+    # Holds PII-bearing per-host fields (timeZone, language, regionalFormat,
+    # syncthing IDs/addresses). Expected to live next to this repo on disk:
+    #
+    #   git clone <public>  nix-config
+    #   git clone <private> nix-config-private
+    #
+    # `flake = false` means we treat it as a plain source tree, not a flake.
+    # If the sibling is missing, `nix flake check` (and any rebuild) will fail
+    # with `cannot read input 'private'`. Bootstrap by cloning the sibling
+    # — see README “PII & Secrets Discipline”.
+    private = {
+      url = "path:../nix-config-private";
+      flake = false;
+    };
   };
 
   outputs =
