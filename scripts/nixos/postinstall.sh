@@ -219,6 +219,64 @@ step_gh_ssh_key() {
 }
 
 # ──────────────────────────────────────────────────────────────
+# Step 7: Replace stub private overlay with the real repo
+# ──────────────────────────────────────────────────────────────
+step_private_overlay() {
+  local private_dir="$HOME/git/nix-config-private"
+
+  if [[ ! -d "$private_dir" ]]; then
+    info "No private sibling at ${private_dir} — nothing to upgrade. Skipping."
+    echo ""
+    return
+  fi
+
+  # Already configured with a real origin? Treat as already upgraded.
+  if git -C "$private_dir" remote get-url origin &>/dev/null; then
+    info "Private sibling already has a configured remote — nothing to upgrade."
+    echo ""
+    return
+  fi
+
+  warn "Private sibling at ${private_dir} is the install.sh stub."
+  warn "While the stub is in place, time/locale fall back to Europe/London + en-GB"
+  warn "with lib.warn lines on every rebuild."
+
+  if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null; then
+    warn "gh CLI not authenticated — cannot upgrade the stub automatically."
+    warn "Run 'gh auth login' first, then re-run postinstall — or upgrade manually:"
+    warn "  cd ~/git && rm -rf nix-config-private && gh repo clone elvismercado/nix-config-private"
+    echo ""
+    return
+  fi
+
+  if ! confirm "Replace the stub with the real elvismercado/nix-config-private repo?"; then
+    info "Skipped — stub remains in place."
+    echo ""
+    return
+  fi
+
+  # Move the stub aside so a failed clone doesn't leave the user without
+  # any sibling at all (which would break the next rebuild).
+  local stub_backup
+  stub_backup=$(mktemp -d -t nix-config-private-stub.XXXXXX)
+  info "Backing up stub to ${stub_backup}..."
+  mv "$private_dir" "$stub_backup/nix-config-private"
+
+  if gh repo clone elvismercado/nix-config-private "$private_dir"; then
+    info "Real private sibling cloned. Removing stub backup..."
+    rm -rf "$stub_backup"
+    info "Done. Next rebuild will pick up real timezone / locale values."
+  else
+    error "gh repo clone failed. Restoring the stub from ${stub_backup}..."
+    mv "$stub_backup/nix-config-private" "$private_dir"
+    rm -rf "$stub_backup"
+    warn "Stub restored. Fix the auth issue and re-run postinstall, or upgrade manually:"
+    warn "  cd ~/git && rm -rf nix-config-private && gh repo clone elvismercado/nix-config-private"
+  fi
+  echo ""
+}
+
+# ──────────────────────────────────────────────────────────────
 # Step 7: Verify NixOS rebuild
 # ──────────────────────────────────────────────────────────────
 step_nixos_rebuild() {
@@ -310,6 +368,7 @@ main() {
   step_ssh_key
   step_gh_auth
   step_gh_ssh_key
+  step_private_overlay
   step_nixos_rebuild
   step_commit_hardware_config
 

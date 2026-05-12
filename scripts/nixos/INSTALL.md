@@ -384,6 +384,56 @@ rm -rf "/tmp/${REPO_NAME}"
 > chown -R "${TARGET_UID}:100" "/mnt/home/${TARGET_USER}/git"
 > ```
 
+### 7.5. Provision the private sibling
+
+The flake declares `inputs.private = { url = "git+file:../nix-config-private";
+flake = false; }` in `flake.nix`. Without that sibling on disk next to
+`nix-config`, `nixos-install` aborts at flake evaluation with
+`cannot read input 'private'`.
+
+**If you have access to the real private repo**, clone it next to the
+public one (HTTPS works for the owner with cached credentials; otherwise
+use SSH or pre-stage via USB/SSH before reaching this step):
+
+```bash
+PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/nix-config-private"
+nix-shell -p git --run "git clone https://github.com/elvismercado/nix-config-private.git '$PRIVATE_DIR'"
+chown -R "${TARGET_UID}:100" "$PRIVATE_DIR"
+```
+
+**If you do not have access** (or just want the installer to keep moving),
+write a stub repo with an empty `user-settings.nix` for this host. The
+modules will fall back to Europe/London + en-GB and emit `lib.warn`
+lines on each rebuild until you replace the stub later.
+
+```bash
+PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/nix-config-private"
+nix-shell -p git --run "
+  set -e
+  git init -q -b main '$PRIVATE_DIR'
+  mkdir -p '$PRIVATE_DIR/hosts/${HOST}'
+  printf '%s\n' '{ }' > '$PRIVATE_DIR/hosts/${HOST}/user-settings.nix'
+  cd '$PRIVATE_DIR'
+  git -c user.name=installer -c user.email=installer@localhost add -A
+  git -c user.name=installer -c user.email=installer@localhost commit -q -m 'initial stub'
+"
+chown -R "${TARGET_UID}:100" "$PRIVATE_DIR"
+```
+
+> `git+file:` only sees committed files — the stub MUST be an initialised
+> git repo with at least one commit. A bare directory with an unstaged
+> `user-settings.nix` will not satisfy the flake input.
+
+To upgrade a stub later (after first boot + `gh auth login`):
+
+```bash
+cd ~/git
+rm -rf nix-config-private
+gh repo clone elvismercado/nix-config-private
+```
+
+`postinstall.sh` offers this as an interactive step.
+
 ### 8. Generate hardware configuration
 
 This detects your current mounts, UUIDs, and kernel modules:
@@ -484,19 +534,35 @@ git commit -m "$HOST: update hardware-configuration.nix"
 git push
 ```
 
-### Optional: clone the private metadata sibling
+### Private metadata sibling (auto-stubbed)
 
-A handful of host-identifying fields (Syncthing device IDs, LAN
-addresses) live in a separate private repo cloned as a sibling of
-this one. The public flake builds fine without it — when absent, the
-Syncthing peer map is just empty. Pull it in on managed hosts to
-participate in the peer mesh:
+The flake declares a sibling repo `nix-config-private` as a `flake = false`
+input (see `flake.nix`). It holds PII-bearing per-host fields (Syncthing
+device IDs, LAN addresses, `timeZone`, `language`, `regionalFormat`) and
+must be present on disk for any rebuild to evaluate.
+
+- `install.sh` provisions a sibling automatically:
+  1. If a sibling already exists at `/mnt/home/<user>/git/nix-config-private`
+     (e.g. pre-staged via SSH/USB), it's left alone.
+  2. Otherwise it tries a public HTTPS clone of
+     `elvismercado/nix-config-private` — succeeds only for the repo owner
+     with cached credentials.
+  3. On failure it writes a stub: an initialised git repo containing
+     `hosts/<HOST>/user-settings.nix = { }`. The `lib.warn` fallbacks
+     (Europe/London, en-GB) kick in on every rebuild until the stub is
+     replaced.
+
+To replace the stub with the real overlay after first boot:
 
 ```bash
 cd ~/git
+rm -rf nix-config-private
 gh repo clone elvismercado/nix-config-private
 # Next `nixos-rebuild switch` picks up the merged metadata.
 ```
+
+`postinstall.sh` includes an interactive step for this upgrade after
+`gh auth login`.
 
 ---
 

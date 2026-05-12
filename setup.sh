@@ -3,16 +3,20 @@ set -e
 
 # Bootstrap script for cloning + initial build of the nix-config flake.
 #
-# Optional sibling: `elvismercado/nix-config-private` (private repo with
-# Syncthing IDs + LAN addresses for the peer mesh). Clone it alongside
-# this repo if you want managed hosts to participate in the mesh:
+# Required sibling: `elvismercado/nix-config-private` (private repo with
+# PII-bearing per-host fields and the Syncthing peer mesh). The flake
+# declares it as a `flake = false` input (`url = "git+file:../nix-config-private"`)
+# — without it on disk next to this repo, `darwin-rebuild` and
+# `nixos-rebuild` fail at flake eval with `cannot read input 'private'`.
 #
-#   gh repo clone elvismercado/nix-config-private ~/git/nix-config-private
-#
-# The flake builds fine without it (empty peer map).
+# This script offers to clone the sibling interactively after the public
+# repo is in place. If you decline, you'll need to provide the sibling
+# yourself (or run install.sh's stub fallback) before the first rebuild.
 
 REPO_NAME="nix-config"
 REPO_DIR="$HOME/git/$REPO_NAME"
+PRIVATE_REPO_NAME="nix-config-private"
+PRIVATE_REPO_DIR="$HOME/git/$PRIVATE_REPO_NAME"
 
 fatal() {
   echo "[Setup] ERROR: $*" >&2
@@ -192,6 +196,62 @@ download_repo() {
   echo "[Setup] Ready to use nix-config"
 }
 
+clone_private_sibling() {
+  # The flake declares `inputs.private = git+file:../nix-config-private` as
+  # a required input. Without the sibling, every rebuild fails at flake eval.
+  # This step is interactive — the user may decline and provide the sibling
+  # themselves (e.g. via install.sh's stub fallback on NixOS, or a manual
+  # clone later).
+
+  if [ -d "$PRIVATE_REPO_DIR" ]; then
+    echo "[Setup] Private sibling already present at $PRIVATE_REPO_DIR, skipping"
+    return 0
+  fi
+
+  echo ""
+  echo "[Setup] The flake requires a sibling repo 'nix-config-private' next to nix-config."
+  echo "[Setup] Without it, darwin-rebuild / nixos-rebuild fail at flake eval."
+  printf "[Setup] Clone elvismercado/nix-config-private into $PRIVATE_REPO_DIR now? [y/N] "
+  read -r answer
+  case "$answer" in
+    [yY]*)
+      ;;
+    *)
+      echo "[Setup] Skipped. Provide the sibling before your first rebuild:"
+      echo "[Setup]   gh repo clone elvismercado/nix-config-private $PRIVATE_REPO_DIR"
+      echo "[Setup] See nix-config/README.md ‘PII & Secrets Discipline’ for details."
+      return 0
+      ;;
+  esac
+
+  # Try gh first (handles private-repo auth), then SSH, then HTTPS as a
+  # last-resort fallback (works for the owner with cached creds).
+  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    echo "[Setup] Cloning private sibling via gh..."
+    if gh repo clone elvismercado/nix-config-private "$PRIVATE_REPO_DIR"; then
+      echo "[Setup] Private sibling cloned to $PRIVATE_REPO_DIR"
+      return 0
+    fi
+    echo "[Setup] gh clone failed, falling back to SSH..."
+  fi
+
+  if nix-shell -p git --run "git clone git@github.com:elvismercado/nix-config-private.git '$PRIVATE_REPO_DIR'" 2>/dev/null; then
+    echo "[Setup] Private sibling cloned via SSH to $PRIVATE_REPO_DIR"
+    return 0
+  fi
+
+  echo "[Setup] SSH clone failed, trying HTTPS..."
+  if nix-shell -p git --run "git clone https://github.com/elvismercado/nix-config-private.git '$PRIVATE_REPO_DIR'" 2>/dev/null; then
+    echo "[Setup] Private sibling cloned via HTTPS to $PRIVATE_REPO_DIR"
+    return 0
+  fi
+
+  echo "[Setup] All clone methods failed. The sibling is still needed."
+  echo "[Setup] After authenticating GitHub, run:"
+  echo "[Setup]   gh repo clone elvismercado/nix-config-private $PRIVATE_REPO_DIR"
+  echo "[Setup] Continuing without it — rebuilds will fail until it's in place."
+}
+
 # Start
 echo "[Setup] Starting script..."
 
@@ -208,3 +268,4 @@ install_xcode_clt
 install_homebrew
 
 download_repo
+clone_private_sibling
