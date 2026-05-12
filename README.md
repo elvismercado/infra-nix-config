@@ -148,6 +148,60 @@ A multi-root VS Code workspace [`nix-config.code-workspace`](nix-config.code-wor
 at the repo root opens both folders in one window when the sibling is
 present.
 
+## PII & Secrets Discipline
+
+Notes-to-self distilled from the Round 15 PII audit (see [TODO.md](TODO.md)).
+Single-maintainer repo, so this section is the entire backstop: no
+`SECURITY.md`, no `CONTRIBUTING.md`.
+
+### The split
+
+Host-identifying fields (Syncthing device IDs, per-peer LAN addresses,
+`timeZone`) live in [`nix-config-private`](https://github.com/elvismercado/nix-config-private)
+and are merged in by the flake loader. The public repo carries structure
+and non-identifying config. See [Private Sibling Repo](#private-sibling-repo)
+for the mechanism.
+
+### `.gitignore` guards
+
+The public [`.gitignore`](.gitignore) blocks the common shapes of
+accidentally-committed local state:
+
+- `*.local.nix` (with a `!*.example.local.nix` carve-out for committed templates)
+- `secrets/`
+- `.env`, `.env.*`
+- `*.age`, `*.gpg`
+- `**/INSTALL-REPORT.md`
+
+### Accepted exposures
+
+The public tree deliberately exposes:
+
+- The set of installed apps, which implies accounts with their respective
+  cloud services (Nextcloud, Google Drive via Insync, Proton Mail, Mullvad
+  VPN, Syncthing). No URLs, tokens, account IDs, or device IDs ride along.
+- Each host's `channel` choice and hardware class strings in per-host
+  READMEs.
+
+Full reasoning lives in `TODO.md` Round 15 → `P3 — Architecture & Convention`
+→ "Cloud-service app intent" entry.
+
+### Pre-push checklist
+
+Before pushing to the public remote, run the three probes from
+`TODO.md` Round 15 P3 "Git history may contain pre-cleanup leaks":
+
+```bash
+git log --all -S "192.168" --oneline
+git log --all -S "<one syncthing ID prefix>" --oneline
+git log --all --grep -iE "password|secret|token|credential"
+```
+
+If a probe surfaces a real value in old commits, **rotate it** (e.g. the
+Syncthing device-ID rotation procedure in the Backlog → Round 15
+follow-ups). `git filter-repo` rewrite is declined: force-push doesn't
+unpublish what is already cloned or cached, and breaks downstream forks.
+
 ## Per-Host Settings
 
 Each host has a `user-settings.nix` that controls system-level decisions:
