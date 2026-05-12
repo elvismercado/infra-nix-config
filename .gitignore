@@ -1,1 +1,14 @@
+# Build / install artefacts
 **/INSTALL-REPORT.md
+
+# Secrets / local-only files (see TODO.md Round 15 — PII Audit)
+# Guard against accidental commits of host-specific metadata, secrets
+# stores, and dotenv files. Committed templates use the
+# `*.example.local.nix` suffix so they stay tracked.
+*.local.nix
+!*.example.local.nix
+secrets/
+.env
+.env.*
+*.age
+*.gpg
