@@ -50,11 +50,20 @@
     #   git clone <private> nix-config-private
     #
     # `flake = false` means we treat it as a plain source tree, not a flake.
-    # If the sibling is missing, `nix flake check` (and any rebuild) will fail
-    # with `cannot read input 'private'`. Bootstrap by cloning the sibling
-    # — see README “PII & Secrets Discipline”.
+    # `git+file:` (rather than `path:`) is used because plain
+    # `path:../nix-config-private` mis-parses on Determinate Nix as
+    # `error: 'nix-config-private' is too short to be a valid store path`.
+    # `git+file:` resolves the relative path against this flake's parent
+    # directory and copies the git-tracked files into the store.
+    #
+    # Caveat: only committed overlay files are visible. Uncommitted edits
+    # in the sibling repo won't be picked up until you `git add && commit`.
+    #
+    # If the sibling is missing, `nix flake check` (and any rebuild) will
+    # fail with `cannot read input 'private'`. Bootstrap by cloning the
+    # sibling — see README "PII & Secrets Discipline".
     private = {
-      url = "path:../nix-config-private";
+      url = "git+file:../nix-config-private";
       flake = false;
     };
   };

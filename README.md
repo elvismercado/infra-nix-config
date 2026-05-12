@@ -146,11 +146,14 @@ The sibling is wired in two places:
   sibling is absent the merge is a no-op and the peer map ends up empty.
 - **Per-host `userSettings` overlay** for PII fields like `timeZone`:
   declared as a `flake = false` input named `private` in
-  [`flake.nix`](flake.nix) and merged on top of the public
-  `hosts/<HOST>/user-settings.nix` by [`flake/hosts.nix`](flake/hosts.nix).
-  Because it's a real flake input, the sibling **must be present** at
-  `../nix-config-private` for any rebuild or `nix flake check` to
-  succeed. Bootstrap with:
+  [`flake.nix`](flake.nix) (using `git+file:../nix-config-private`) and
+  merged on top of the public `hosts/<HOST>/user-settings.nix` by
+  [`flake/hosts.nix`](flake/hosts.nix). Because it's a real flake input,
+  the sibling **must be present** at `../nix-config-private` for any
+  rebuild or `nix flake check` to succeed, **and overlay edits must be
+  committed** in the sibling repo before they're visible to the build
+  (the `git+file:` scheme only copies tracked files into the Nix store).
+  Bootstrap with:
 
   ```bash
   cd ~/git
