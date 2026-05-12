@@ -7,7 +7,7 @@ macOS system configuration is managed through `flake/darwin.nix` using [nix-darw
 | Host | Architecture   | Channel | User  | Hardware                         |
 | ---- | -------------- | ------- | ----- | -------------------------------- |
 | EDGE | x86_64-darwin  | stable  | elvis | 2018 MacBook Pro 15", Intel i9   |
-| LULA | aarch64-darwin | stable  | maria | 2026 MacBook Neo, Apple A-series |
+| LULA | aarch64-darwin | stable  | lula  | 2026 MacBook Neo, Apple A-series |
 
 ## Rebuild
 

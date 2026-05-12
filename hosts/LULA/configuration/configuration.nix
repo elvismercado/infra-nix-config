@@ -8,7 +8,7 @@
   system.primaryUser = userSettings.username; # required for homebrew.enable and other per-user options
   nix.enable = false; # using determinate installer
 
-  # macOS auto-updates — Maria's laptop should stay current without manual
+  # macOS auto-updates — this laptop should stay current without manual
   # intervention. These keys live under the SoftwareUpdate domain and are
   # forwarded to /Library/Preferences/com.apple.SoftwareUpdate.plist by
   # nix-darwin's CustomUserPreferences.

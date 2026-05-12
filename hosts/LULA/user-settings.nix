@@ -1,5 +1,5 @@
 {
-  username = "maria"; # username or name of the system user
+  username = "lula"; # username or name of the system user
   hostname = "LULA"; # as description or hostname
   system = "aarch64-darwin"; # 2026 MacBook Neo — Apple A-series silicon
   channel = "stable"; # "stable" or "unstable"

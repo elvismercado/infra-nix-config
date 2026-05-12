@@ -35,7 +35,7 @@
   environment.shells = [ pkgs.bashInteractive ];
   environment.variables.LANG = "en_GB.UTF-8";
 
-  # Homebrew — minimal set for Maria. AppCleaner is the only must-have GUI
+  # Homebrew — minimal set for this host. AppCleaner is the only must-have GUI
   # tool that isn't covered by an Option 3 app façade.
   homebrew = {
     enable = true;

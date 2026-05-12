@@ -1,7 +1,7 @@
 # LULA
 
-macOS laptop — 2026 MacBook Neo, Apple A-series silicon. Maria's personal
-machine, set up as a low-friction non-power-user host.
+macOS laptop — 2026 MacBook Neo, Apple A-series silicon. Personal
+machine for a non-technical user, set up as a low-friction host.
 
 ## Hardware
 
@@ -35,10 +35,10 @@ LULA intentionally runs a minimal app set:
 
 - **Brave** — primary browser. Managed policies (debrand + privacy) are
   applied, but **no force-installed extensions** (`custom.appBrave.extensions = []`).
-  Maria can install whatever she wants from the Chrome Web Store.
+  The user can install whatever they want from the Chrome Web Store.
 - **LocalSend** — cross-device file sharing.
 - **AppCleaner** (Homebrew cask) — clean uninstaller for the rare cases
-  where she installs something manually.
+  where the user installs something manually.
 
 ## Useful commands
 
