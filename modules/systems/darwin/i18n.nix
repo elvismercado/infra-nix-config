@@ -12,6 +12,11 @@
 # also writes `environment.variables.LANG` to the matching POSIX locale so CLI
 # tools running under the system shell pick up the same language.
 #
+# Implementation note: nix-darwin's `system.defaults.NSGlobalDomain` only
+# exposes a curated subset of typed options. `AppleLanguages` and `AppleLocale`
+# are not in that list, so we route them through `CustomUserPreferences`
+# (a freeform `defaults write -g <key> <value>` passthrough).
+#
 # Note: AppleLanguages and AppleLocale are read at app launch. A language change
 # requires logout/login (or app relaunch) to take effect across the running
 # session. Falls back to "en-GB" when userSettings.language is unset.
@@ -39,8 +44,10 @@ in
   };
 
   config = lib.mkIf config.custom.sysDarI18n.enable {
-    system.defaults.NSGlobalDomain.AppleLanguages = [ language ];
-    system.defaults.NSGlobalDomain.AppleLocale = toApple regionalFormat;
+    system.defaults.CustomUserPreferences.NSGlobalDomain = {
+      AppleLanguages = [ language ];
+      AppleLocale = toApple regionalFormat;
+    };
     environment.variables.LANG = toPosix language;
   };
 }
