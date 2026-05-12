@@ -37,6 +37,8 @@ Use existing hosts as templates:
   system = "<system>";
   channel = "<channel>";
   # timeZone = "<timeZone>"; # optional — typically lives in nix-config-private; defaults to Etc/UTC
+  # language = "en-GB"; # optional — BCP 47 dash form; typically lives in nix-config-private; defaults to "en-GB"
+  # regionalFormat = "nl-NL"; # optional — BCP 47 dash form; typically lives in nix-config-private; defaults to language
   # desktopEnvironment = "kde-plasma"; # NixOS only, omit for Darwin
   # uid = <uid>; # Required for Darwin, recommended for NixOS
 }

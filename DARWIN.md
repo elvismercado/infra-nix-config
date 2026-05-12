@@ -65,6 +65,7 @@ Modules use the same `custom.*` namespace pattern as NixOS. Import and enable in
 | `systems/darwin/finder.nix`             | `custom.sysDarFinder.enable`                                            |
 | `systems/darwin/fonts.nix`              | `custom.sysFonts.enable`                                                |
 | `systems/darwin/garbage.nix`            | `custom.sysGc.enable`                                                   |
+| `systems/darwin/i18n.nix`               | `custom.sysDarI18n.enable`                                              |
 | `systems/darwin/packages.nix`           | `custom.sysPackages.enable`                                             |
 | `systems/darwin/power.nix`              | `custom.sysDarPower.enable`                                             |
 | `systems/darwin/security.nix`           | `custom.sysDarSecurity.enable`                                          |

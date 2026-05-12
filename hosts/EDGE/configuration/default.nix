@@ -28,6 +28,7 @@
     ../../../modules/systems/darwin/power.nix
     ../../../modules/systems/darwin/security.nix
     ../../../modules/systems/darwin/time.nix
+    ../../../modules/systems/darwin/i18n.nix
 
     # Shared
     ../../../modules/systems/shared/bash.nix
@@ -59,7 +60,6 @@
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
-  environment.variables.LANG = "en_GB.UTF-8";
 
   # Darwin / UI
   custom.sysDarControlCenter.enable = true;
@@ -74,6 +74,7 @@
   custom.sysDarPower.enable = true;
   custom.sysDarSecurity.enable = true;
   custom.sysDarTimezone.enable = true;
+  custom.sysDarI18n.enable = true;
 
   # Shared
   custom.sysBashCompletion.enable = true;

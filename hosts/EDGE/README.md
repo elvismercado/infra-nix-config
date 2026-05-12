@@ -19,7 +19,7 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 - **Nix Daemon:** Managed by Determinate installer (`nix.enable = false`)
 - **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
 - **Networking:** WakeOnLAN, hostname/computerName/localHostName/SMB
-- **Environment:** `LANG=en_GB.UTF-8` (timezone set via `nix-config-private` overlay)
+- **Environment:** UI language, regional formats, and timezone are configured via the `nix-config-private` overlay.
 - **System Preferences:** Control Center, Dock, Finder, Trackpad, Power, Security (all managed)
 - **Fonts:** Nerd Fonts, Google Fonts
 - **System Packages:** git, gh, nano

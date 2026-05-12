@@ -19,7 +19,7 @@ machine for a non-technical user, set up as a low-friction host.
 - **Nix Daemon:** Managed by Determinate installer (`nix.enable = false`)
 - **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
 - **Networking:** WakeOnLAN, hostname/computerName/localHostName/SMB
-- **Environment:** `LANG=en_GB.UTF-8` (timezone defaults to Etc/UTC until the private overlay is created post-delivery)
+- **Environment:** UI language, regional formats, and timezone are configured via the `nix-config-private` overlay. Falls back to `en-GB` / `Etc/UTC` when the overlay is missing.
 - **System Preferences:** Control Center, System Preferences, Trackpad,
   Power, Security (all managed)
 - **Fonts:** Nerd Fonts, Google Fonts
