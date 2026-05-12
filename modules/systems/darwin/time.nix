@@ -4,8 +4,10 @@
 # log timestamps, and scheduled jobs match the location configured in
 # user-settings.nix. nix-darwin applies this via `systemsetup -settimezone`
 # on activation, the same setting controlled by System Settings.
-# Falls back to "Etc/UTC" when userSettings.timeZone is unset (e.g. the
-# public repo without a private overlay).
+# Falls back to "UTC" when userSettings.timeZone is unset (e.g. the public
+# repo without a private overlay). NixOS uses "Etc/UTC" but macOS's
+# `systemsetup -listtimezones` doesn't accept the "Etc/" prefix, so the
+# darwin fallback diverges from the NixOS module on purpose.
 #
 # Usage:
 #   imports = [ ../../../modules/systems/darwin/time.nix ];
@@ -24,6 +26,6 @@
   };
 
   config = lib.mkIf config.custom.sysDarTimezone.enable {
-    time.timeZone = userSettings.timeZone or "Etc/UTC";
+    time.timeZone = userSettings.timeZone or "UTC";
   };
 }
