@@ -19,7 +19,7 @@ machine for a non-technical user, set up as a low-friction host.
 - **Nix Daemon:** Managed by Determinate installer (`nix.enable = false`)
 - **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
 - **Networking:** WakeOnLAN, hostname/computerName/localHostName/SMB
-- **Environment:** `LANG=en_GB.UTF-8`, timeZone `Europe/Amsterdam`
+- **Environment:** `LANG=en_GB.UTF-8` (timezone defaults to Etc/UTC until the private overlay is created post-delivery)
 - **System Preferences:** Control Center, System Preferences, Trackpad,
   Power, Security (all managed)
 - **Fonts:** Nerd Fonts, Google Fonts

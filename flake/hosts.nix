@@ -8,7 +8,15 @@ let
   mkHost =
     hostName:
     let
-      userSettings = import ../hosts/${hostName}/user-settings.nix;
+      publicUserSettings = import ../hosts/${hostName}/user-settings.nix;
+      # Optional private overlay (sibling repo, gitignored from the public
+      # tree). Holds PII-bearing fields like `timeZone`. When the overlay
+      # path doesn't exist, fall back to an empty attrset so the public
+      # repo evaluates standalone.
+      privateOverlayPath = ../../nix-config-private/hosts/${hostName}/user-settings.nix;
+      privateUserSettings =
+        if builtins.pathExists privateOverlayPath then import privateOverlayPath else { };
+      userSettings = publicUserSettings // privateUserSettings;
     in
     if !(builtins.elem userSettings.channel validChannels) then
       throw "Host '${hostName}': channel must be one of ${builtins.toJSON validChannels}, got '${toString userSettings.channel}'"

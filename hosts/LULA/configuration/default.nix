@@ -23,6 +23,7 @@
     ../../../modules/systems/darwin/fonts.nix
     ../../../modules/systems/darwin/power.nix
     ../../../modules/systems/darwin/security.nix
+    ../../../modules/systems/darwin/time.nix
 
     # Shared
     ../../../modules/systems/shared/bash.nix
@@ -54,6 +55,7 @@
   custom.sysFonts.enable = true;
   custom.sysDarPower.enable = true;
   custom.sysDarSecurity.enable = true;
+  custom.sysDarTimezone.enable = true;
 
   # Shared
   custom.sysBashCompletion.enable = true;

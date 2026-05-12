@@ -92,7 +92,7 @@ Use this pattern only when binary and config genuinely cross layer boundaries. P
 ## Host Wiring
 
 - `default.nix` is the import entry point for both `configuration/` and `home-manager/`
-- `user-settings.nix` provides `username`, `hostname`, `system`, `channel`, `timeZone`, `uid`, `repoPath` (relative to `$HOME`), and optionally `desktopEnvironment` (e.g. `"kde-plasma"`; consumed by `brave.nix` and read elsewhere via `userSettings.desktopEnvironment or null`)
+- `user-settings.nix` provides `username`, `hostname`, `system`, `channel`, `uid`, `repoPath` (relative to `$HOME`), and optionally `timeZone` and `desktopEnvironment`. `timeZone` is treated as PII (regional fingerprint) and typically lives in the `nix-config-private/hosts/<HOST>/user-settings.nix` overlay merged in by `flake/hosts.nix`; the time modules fall back to `Etc/UTC` via `userSettings.timeZone or "Etc/UTC"` when no value is provided. `desktopEnvironment` (e.g. `"kde-plasma"`) is consumed by `brave.nix` and read elsewhere via `userSettings.desktopEnvironment or null`. NixOS hosts wire timezone with `custom.sysNixTimezone.enable = true;`; darwin hosts wire it with `custom.sysDarTimezone.enable = true;`.
 - Modules receive `userSettings` via `extraSpecialArgs` (home-manager) or `specialArgs` (system)
 - Host-identifying values (hostname, computer name, SMB name, etc.) must use `userSettings.hostname` — never hardcode the hostname string
 

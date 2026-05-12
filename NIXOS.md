@@ -36,7 +36,7 @@ sudo nixos-rebuild switch --flake .
 Every NixOS module receives these via `specialArgs`:
 
 - `inputs` — all flake inputs (access `inputs.nixpkgs-stable`, `inputs.home-manager`, etc.)
-- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`, `timeZone`)
+- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`; optional `timeZone`)
 - `outputs` — the flake's own outputs
 
 ## Toggleable Modules
@@ -174,7 +174,7 @@ Modules default to `false` — importing without enabling has no effect.
      hostname = "MYHOST"; # description / hostname (must match networking.hostName)
      system = "x86_64-linux";
      channel = "stable"; # "stable" or "unstable"
-     timeZone = "Europe/Amsterdam";
+     # timeZone = "Etc/UTC"; # optional — typically set in the nix-config-private overlay; default Etc/UTC
      uid = 1000; # UID for the system user — must match install script chown
      repoPath = "git/nix-config"; # relative to $HOME
      desktopEnvironment = "kde-plasma"; # "kde-plasma", "cosmic", or null

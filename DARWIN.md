@@ -33,7 +33,7 @@ darwin-rebuild switch --flake .#LULA
 Every Darwin module receives these via `specialArgs`:
 
 - `inputs` — all flake inputs (access `inputs.home-manager`, etc.)
-- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`, `timeZone`)
+- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`; optional `timeZone`)
 - `outputs` — the flake's own outputs
 
 ## Determinate Nix on macOS
@@ -69,6 +69,7 @@ Modules use the same `custom.*` namespace pattern as NixOS. Import and enable in
 | `systems/darwin/power.nix`              | `custom.sysDarPower.enable`                                             |
 | `systems/darwin/security.nix`           | `custom.sysDarSecurity.enable`                                          |
 | `systems/darwin/system-preferences.nix` | `custom.sysDarPreferences.enable`                                       |
+| `systems/darwin/time.nix`               | `custom.sysDarTimezone.enable`                                          |
 | `systems/darwin/trackpad.nix`           | `custom.sysDarTrackpad.enable`                                          |
 | **Shared** (cross-platform)             |                                                                         |
 | `systems/shared/bash.nix`               | `custom.sysBashCompletion.enable`                                       |
@@ -113,7 +114,7 @@ After installation, clone the repo and run `darwin-rebuild switch`.
      hostname = "MYHOST"; # description / hostname
      system = "aarch64-darwin"; # or "x86_64-darwin" for Intel Macs
      channel = "stable"; # "stable" or "unstable"
-     timeZone = "Europe/Amsterdam";
+     # timeZone = "Etc/UTC"; # optional — typically set in the nix-config-private overlay; default Etc/UTC
      uid = 501; # required for users.knownUsers — find with `id -u <username>`
      repoPath = "git/nix-config"; # relative to $HOME
      desktopEnvironment = null; # macOS — DE managed by the OS

@@ -38,7 +38,7 @@ darwin-rebuild switch --flake .#LULA
 Every Home Manager module receives these via `extraSpecialArgs`:
 
 - `inputs` — all flake inputs
-- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`, `timeZone`, `uid`, `repoPath`, and optionally `desktopEnvironment`)
+- `userSettings` — the host's `user-settings.nix` (`username`, `hostname`, `system`, `channel`, `uid`, `repoPath`, and optionally `timeZone` and `desktopEnvironment`)
 - `outputs` — the flake's own outputs
 
 ## Toggleable Modules

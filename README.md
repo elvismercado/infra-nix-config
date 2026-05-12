@@ -92,7 +92,7 @@ modules/
       brave-policies.nix     #   Brave managed policies (debrand + privacy + extensions)
       pipewire.nix           #   PipeWire audio server
     darwin/                  # Darwin-specific modules (Alacritty, Brave policies, Control Center, Dock,
-                             #   Finder, fonts, gc, packages, Power, Security, System Preferences, Trackpad)
+                             #   Finder, fonts, gc, packages, Power, Security, System Preferences, time, Trackpad)
     shared/                  # Cross-platform modules (bash, Brave policies data, fonts, garbage, packages, ssh)
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Fastfetch, fnm, Git,
@@ -158,7 +158,7 @@ Each host has a `user-settings.nix` that controls system-level decisions:
   hostname = "MYHOST";
   system = "x86_64-linux";       # Architecture
   channel = "stable";            # "stable" or "unstable" nixpkgs
-  timeZone = "Europe/Amsterdam";
+  # timeZone = "Etc/UTC"; # optional — typically set in nix-config-private; default Etc/UTC
 }
 ```
 
