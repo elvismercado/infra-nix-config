@@ -60,8 +60,8 @@ in
       # Each toy runs under an idle inhibitor so the display stays on and
       # the host doesn't auto-suspend while it's running. The inhibit is
       # released when the toy exits.
-      funmatrix = "${funWrap}unimatrix -s 96 -l o"; # Matrix rain (fast, iconic katakana set)
-      funbonsai = "${funWrap}cbonsai -li"; # Live-growing ASCII bonsai, infinite loop
+      funmatrix = "${funWrap}unimatrix -s 70 -l o"; # Matrix rain (relaxed pace, iconic katakana set)
+      funbonsai = "${funWrap}cbonsai -lit 0.08"; # Live-growing ASCII bonsai, infinite loop, slower step
       funhack = "${funWrap}genact"; # Fake hacking activity generator
     };
   };
