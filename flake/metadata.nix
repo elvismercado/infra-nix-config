@@ -14,24 +14,32 @@
 #
 # ## Public/private split
 #
-# Each host's metadata is split across two repos:
+# Hosts come in two flavours:
 #
-#   - PUBLIC stub   — `hosts/<HOST>/metadata.nix` in THIS repo. Holds
-#                     non-sensitive descriptors: `hostname`, `managed`,
-#                     `os`.
-#   - PRIVATE overlay — `hosts/<HOST>/metadata.nix` in the sibling
-#                     `nix-config-private` repo (expected at
-#                     `../nix-config-private/` relative to this repo
-#                     root). Holds privacy-sensitive fields like
-#                     Syncthing device IDs and per-peer LAN addresses.
+#   - MANAGED hosts (built from this repo). Their metadata is split:
+#       * PUBLIC stub   — `hosts/<HOST>/metadata.nix` in THIS repo,
+#                         alongside `configuration/` and `home-manager/`.
+#                         Holds non-sensitive descriptors: `hostname`,
+#                         `managed = true`, `os`.
+#       * PRIVATE overlay — `hosts/<HOST>/metadata.nix` in the sibling
+#                         `nix-config-private` repo (expected at
+#                         `../nix-config-private/` relative to this repo
+#                         root). Holds privacy-sensitive fields like
+#                         Syncthing device IDs and per-peer LAN addresses.
+#
+#   - UNMANAGED hosts (Unraid boxes, phones, the Windows side of a
+#     dual-boot, etc.). Their metadata lives ENTIRELY in the private
+#     repo — there is no matching public stub. The loader unions in
+#     any host present only on the private side so these still surface
+#     in cross-host data (e.g. the syncthing peer map).
 #
 # This loader merges the private overlay on top of the public stub via
 # `lib.recursiveUpdate` (private wins). When the private sibling is
 # absent (CI, fresh checkout, outside contributor), the merge is a
-# no-op and the loader returns the public stubs unchanged. Consumers
-# like `syncthing-peers.nix` already filter out peers without an `id`,
-# so a missing private repo degrades to an empty peer map rather than
-# a build failure.
+# no-op and the loader returns the public stubs unchanged — unmanaged
+# hosts simply don't appear. Consumers like `syncthing-peers.nix`
+# already filter out peers without an `id`, so a missing private repo
+# degrades to an empty/shrunk peer map rather than a build failure.
 #
 # Returns:
 #   {
@@ -49,9 +57,9 @@ let
   hasMetadata = name: type:
     type == "directory" && builtins.pathExists (hostsDir + "/${name}/metadata.nix");
 
-  hostNames = builtins.attrNames (lib.filterAttrs hasMetadata entries);
+  publicHostNames = builtins.attrNames (lib.filterAttrs hasMetadata entries);
 
-  public = lib.genAttrs hostNames (name: import (hostsDir + "/${name}/metadata.nix"));
+  public = lib.genAttrs publicHostNames (name: import (hostsDir + "/${name}/metadata.nix"));
 
   # Sibling private repo. Path literal resolves at flake-eval time;
   # `builtins.pathExists` returns `false` cleanly when the sibling is
@@ -62,9 +70,15 @@ let
     then import privateMetadata { inherit lib; }
     else { };
 
-  all = lib.mapAttrs
-    (name: pub: lib.recursiveUpdate pub (private.${name} or { }))
-    public;
+  # Union of host names across public stubs and private-only entries.
+  # Hosts present only in private (unmanaged: Unraid, phones, the
+  # Windows side of dual-boot, …) get an empty public base and inherit
+  # everything from the private overlay.
+  allHostNames =
+    lib.unique (publicHostNames ++ builtins.attrNames private);
+
+  all = lib.genAttrs allHostNames
+    (name: lib.recursiveUpdate (public.${name} or { }) (private.${name} or { }));
 
   managed = lib.filterAttrs (_: m: m.managed or false) all;
 in

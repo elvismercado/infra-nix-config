@@ -5,7 +5,9 @@
 # repo and are merged in at flake-eval time. See `flake/metadata.nix`.
 #
 # NOTE: The Windows side of the same physical machine is its own peer
-# with a separate device ID — see `hosts/FENNEC-windows/metadata.nix`.
+# with a separate device ID — defined entirely in the private repo at
+# `nix-config-private/hosts/FENNEC-windows/metadata.nix` (no public
+# stub, see `flake/metadata.nix` header).
 {
   hostname = "FENNEC";
   managed = true;
