@@ -70,7 +70,6 @@ in
 
     # Apps
     ../../../modules/home-manager/all/android.nix
-    ../../../modules/home-manager/all/mpv.nix
     ../../../modules/home-manager/linux/vscode.nix
 
     # Linux
@@ -120,7 +119,6 @@ in
 
   # Apps
   custom.hmAndroid.enable = true;
-  custom.hmMpv.enable = true;
   custom.hmPlasmaConfig.enable = true;
   custom.hmWindowShortcuts.enable = true;
   custom.hmVscode.enable = true;

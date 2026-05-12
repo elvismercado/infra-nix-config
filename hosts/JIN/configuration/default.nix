@@ -84,6 +84,7 @@
     ../../../modules/apps/linux/nextcloud.nix
     ../../../modules/apps/linux/syncthing.nix
     ../../../modules/apps/linux/handbrake.nix
+    ../../../modules/apps/linux/mpv.nix
     ../../../modules/apps/linux/discord.nix
     ../../../modules/apps/linux/mullvad-vpn.nix
     ../../../modules/apps/linux/proton-mail-bridge.nix
@@ -185,6 +186,7 @@
   custom.appNextcloud.enable = true;
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
+  custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
   custom.appMullvadVpn.enable = true;
   custom.appProtonmailBridge.enable = true;

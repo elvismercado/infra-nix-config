@@ -64,7 +64,7 @@ When a home-manager module needs to run on both Linux and macOS, use the simples
 
 Use when home-manager upstream (`programs.<x>`) is cross-platform AND there is no Homebrew-cask conflict on darwin. The module is identical for every host.
 
-Canonical exemplar: [modules/home-manager/all/mpv.nix](../../modules/home-manager/all/mpv.nix).
+Canonical exemplar: [modules/home-manager/all/git.nix](../../modules/home-manager/all/git.nix).
 
 ```nix
 # modules/home-manager/all/<name>.nix

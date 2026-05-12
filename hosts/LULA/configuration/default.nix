@@ -32,6 +32,7 @@
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/darwin/brave.nix
     ../../../modules/apps/darwin/localsend.nix
+    ../../../modules/apps/darwin/mpv.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -65,4 +66,5 @@
   custom.appBrave.enable = true;
   custom.appBrave.extensions = [ ]; # vanilla Brave for a non-power-user host
   custom.appLocalsend.enable = true;
+  custom.appMpv.enable = true;
 }

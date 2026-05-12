@@ -68,6 +68,7 @@
     ../../../modules/apps/linux/vscode.nix
     ../../../modules/apps/linux/syncthing.nix
     ../../../modules/apps/linux/handbrake.nix
+    ../../../modules/apps/linux/mpv.nix
     ../../../modules/apps/linux/discord.nix
     ../../../modules/apps/linux/steam.nix
     ../../../modules/apps/linux/mullvad-vpn.nix
@@ -147,6 +148,7 @@
   custom.appVscode.enable = true;
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
+  custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
   custom.appMullvadVpn.enable = true;

@@ -21,7 +21,6 @@
     ../../../modules/home-manager/all/starship.nix
 
     # Apps
-    ../../../modules/home-manager/all/mpv.nix
 
     # macOS
     ../../../modules/home-manager/darwin/aliases.nix
@@ -40,7 +39,6 @@
   custom.hmStarship.style = "pastel-powerline";
 
   # Apps
-  custom.hmMpv.enable = true;
 
   # macOS
   custom.hmDarwinAliases.enable = true;

@@ -36,7 +36,7 @@ When adding a new home-manager module, walk this in order:
 
 The default. Identical wiring on every host.
 
-**Canonical exemplar:** [modules/home-manager/all/mpv.nix](../../modules/home-manager/all/mpv.nix).
+**Canonical exemplar:** [modules/home-manager/all/git.nix](../../modules/home-manager/all/git.nix).
 
 ```nix
 # modules/home-manager/all/<name>.nix

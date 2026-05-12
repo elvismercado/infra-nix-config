@@ -98,7 +98,6 @@ in
     ../../../modules/home-manager/all/starship.nix
 
     # Apps
-    ../../../modules/home-manager/all/mpv.nix
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
@@ -139,7 +138,6 @@ in
   custom.hmAliasesAmdCpu.enable = true;
 
   # Apps
-  custom.hmMpv.enable = true;
 
   # Linux
   custom.hmLinuxAliases.enable = true;

@@ -24,8 +24,6 @@
 
     # CLI/GUI tools without a cask equivalent
     brews = [
-      # mpv is provided by the home-manager module `custom.hmMpv` (modules/home-manager/all/mpv.nix).
-      # Run `brew uninstall mpv` once after the next switch to drop the legacy brew install.
     ];
 
     casks = [

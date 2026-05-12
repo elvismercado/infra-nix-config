@@ -47,6 +47,7 @@
     ../../../modules/apps/darwin/nextcloud.nix
     ../../../modules/apps/darwin/syncthing.nix
     ../../../modules/apps/darwin/handbrake.nix
+    ../../../modules/apps/darwin/mpv.nix
     ../../../modules/apps/darwin/discord.nix
     ../../../modules/apps/darwin/steam.nix
     ../../../modules/apps/darwin/mullvad-vpn.nix
@@ -93,6 +94,7 @@
   custom.appNextcloud.enable = true;
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
+  custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
   custom.appMullvadVpn.enable = true;

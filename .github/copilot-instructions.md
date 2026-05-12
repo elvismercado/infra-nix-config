@@ -54,7 +54,7 @@ When an app is cross-platform in nixpkgs but only used on Linux hosts in this re
 
 When a home-manager module needs to work on both Linux and macOS, prefer the simplest viable option. Escalate only when forced.
 
-**Option 1 — single `all/` module (default).** Use when home-manager upstream `programs.<x>` is cross-platform, behavior is identical on every host, and there is no nixpkgs-vs-Homebrew-cask conflict on darwin. Example: `all/mpv.nix`.
+**Option 1 — single `all/` module (default).** Use when home-manager upstream `programs.<x>` is cross-platform, behavior is identical on every host, and there is no nixpkgs-vs-Homebrew-cask conflict on darwin. Example: `all/git.nix`.
 
 **Option 2 — `core/` + `linux/` + `darwin/` trio.** Use when ANY of the following is true:
 
@@ -70,7 +70,7 @@ Rules for Option 2:
 - File header on `core/<name>.nix` MUST state: "Internal — do not import from hosts. Imported by `linux/<name>.nix` and `darwin/<name>.nix`."
 - Hosts always import the `linux/` or `darwin/` wrapper, never the `core/` file.
 
-See [.github/instructions/cross-platform.instructions.md](instructions/cross-platform.instructions.md) for the full pattern, code skeletons, and the do/don't checklist. Canonical exemplars: `all/mpv.nix` (Option 1) and `core/vscode.nix` + `linux/vscode.nix` + `darwin/vscode.nix` (Option 2).
+See [.github/instructions/cross-platform.instructions.md](instructions/cross-platform.instructions.md) for the full pattern, code skeletons, and the do/don't checklist. Canonical exemplars: `all/git.nix` (Option 1) and `core/vscode.nix` + `linux/vscode.nix` + `darwin/vscode.nix` (Option 2).
 
 ## App Modules (Cross-Layer Façade)
 
