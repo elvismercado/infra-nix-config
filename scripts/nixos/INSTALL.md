@@ -484,6 +484,20 @@ git commit -m "$HOST: update hardware-configuration.nix"
 git push
 ```
 
+### Optional: clone the private metadata sibling
+
+A handful of host-identifying fields (Syncthing device IDs, LAN
+addresses) live in a separate private repo cloned as a sibling of
+this one. The public flake builds fine without it — when absent, the
+Syncthing peer map is just empty. Pull it in on managed hosts to
+participate in the peer mesh:
+
+```bash
+cd ~/git
+gh repo clone elvismercado/nix-config-private
+# Next `nixos-rebuild switch` picks up the merged metadata.
+```
+
 ---
 
 ## Troubleshooting

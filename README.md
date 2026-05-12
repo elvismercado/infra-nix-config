@@ -123,6 +123,31 @@ modules/
                              #   are system-level)
 ```
 
+## Private Sibling Repo
+
+A handful of host-identifying fields (Syncthing device IDs, per-peer LAN
+addresses) live in a separate private repo,
+[`elvismercado/nix-config-private`](https://github.com/elvismercado/nix-config-private),
+cloned as a sibling folder on disk:
+
+```
+~/git/
+├── nix-config/              # this repo (public)
+└── nix-config-private/      # sibling (private; same shape under hosts/)
+```
+
+The flake loader ([flake/metadata.nix](flake/metadata.nix)) auto-discovers
+the sibling and merges its per-host overrides on top of the public
+`hosts/<HOST>/metadata.nix` stubs via `lib.recursiveUpdate`. When the
+sibling is absent (CI, outside contributors, a fresh checkout), the
+merge is a no-op — the Syncthing peer map ends up empty and
+`nix flake check` still passes. Managed hosts clone both repos as
+siblings during install.
+
+A multi-root VS Code workspace [`nix-config.code-workspace`](nix-config.code-workspace)
+at the repo root opens both folders in one window when the sibling is
+present.
+
 ## Per-Host Settings
 
 Each host has a `user-settings.nix` that controls system-level decisions:

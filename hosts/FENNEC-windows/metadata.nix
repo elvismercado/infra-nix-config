@@ -6,20 +6,12 @@
 # The folder exists here only so this device participates in cross-host
 # data (syncthing peer map, future wireguard peers, etc.).
 #
-# Shares physical hardware (and therefore the LAN IP) with FENNEC, but
-# Syncthing assigns a separate device ID per OS install.
+# Public stub — privacy-sensitive fields (Syncthing device ID, per-peer
+# LAN addresses) live in the sibling `nix-config-private` repo.
+# Shares physical hardware with FENNEC, but Syncthing assigns a
+# separate device ID per OS install.
 {
   hostname = "FENNEC-windows";
   managed = false;
   os = "windows";
-  lanIp = "192.168.20.40";
-
-  syncthing = {
-    # TODO: capture from Web UI → Actions → Show ID (boot into Windows)
-    # id = "...";
-    addresses = [
-      "tcp://192.168.20.40:22000"
-      "dynamic"
-    ];
-  };
 }

@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
 
+# Bootstrap script for cloning + initial build of the nix-config flake.
+#
+# Optional sibling: `elvismercado/nix-config-private` (private repo with
+# Syncthing IDs + LAN addresses for the peer mesh). Clone it alongside
+# this repo if you want managed hosts to participate in the mesh:
+#
+#   gh repo clone elvismercado/nix-config-private ~/git/nix-config-private
+#
+# The flake builds fine without it (empty peer map).
+
 REPO_NAME="nix-config"
 REPO_DIR="$HOME/git/$REPO_NAME"
 

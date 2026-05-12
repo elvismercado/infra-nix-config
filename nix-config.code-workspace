@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "nix-config",
+			"path": "."
+		},
+		{
+			"name": "nix-config-private",
+			"path": "../nix-config-private"
+		}
+	],
+	"settings": {}
+}
