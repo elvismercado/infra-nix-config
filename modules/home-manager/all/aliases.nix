@@ -11,6 +11,19 @@
   ...
 }:
 
+let
+  # Wrap fun* toys in the host's idle inhibitor so the screen doesn't
+  # blank and the system doesn't auto-suspend while they're running.
+  # Released automatically when the toy exits (Ctrl-C, q, etc.).
+  # Manual Sleep / `systemctl suspend` / shutdown still work.
+  isLinux = lib.hasSuffix "linux" userSettings.system;
+  funWrap =
+    if isLinux then
+      ''systemd-inhibit --what=idle:sleep --who=fun --why="terminal eye candy" -- ''
+    else
+      "caffeinate -dis ";
+in
+
 {
   options = {
     custom.hmAliases.enable = lib.mkEnableOption "cross-platform Home Manager shell aliases (nix workflow, diagnostics)";
@@ -27,9 +40,12 @@
       switchtrusted = "nix config show | grep trusted-users";
 
       # --- terminal eye candy ---
-      funmatrix = "unimatrix -s 96 -l o"; # Matrix rain (fast, iconic katakana set)
-      funbonsai = "cbonsai -li"; # Live-growing ASCII bonsai, infinite loop
-      funhack = "genact"; # Fake hacking activity generator
+      # Each toy runs under an idle inhibitor so the display stays on and
+      # the host doesn't auto-suspend while it's running. The inhibit is
+      # released when the toy exits.
+      funmatrix = "${funWrap}unimatrix -s 96 -l o"; # Matrix rain (fast, iconic katakana set)
+      funbonsai = "${funWrap}cbonsai -li"; # Live-growing ASCII bonsai, infinite loop
+      funhack = "${funWrap}genact"; # Fake hacking activity generator
     };
   };
 }
