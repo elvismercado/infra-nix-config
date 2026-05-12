@@ -22,6 +22,13 @@ let
       ''systemd-inhibit --what=idle:sleep --who=fun --why="terminal eye candy" -- ''
     else
       "caffeinate -dis ";
+
+  # Public flake repo + sibling private overlay.
+  # Convention (matches setup.sh / install.sh / flake.nix
+  # `git+file:../nix-config-private`): the private repo lives next to
+  # the public one, so derive its path from `repoPath`'s parent dir.
+  publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
+  privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/nix-config-private";
 in
 
 {
@@ -34,10 +41,20 @@ in
       ll = "ls -alF";
 
       # Nix workflow aliases
-      switchcd = "cd ${config.home.homeDirectory}/${userSettings.repoPath}";
-      switchupdate = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && nix flake update";
-      switchcheck = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && nix flake check";
+      switchcd = "cd ${publicRepo}";
+      switchupdate = "cd ${publicRepo} && nix flake update";
+      switchcheck = "cd ${publicRepo} && nix flake check";
       switchtrusted = "nix config show | grep trusted-users";
+
+      # Git sync: fast-forward both the public repo and the private
+      # sibling. Public failure aborts (--ff-only refuses on local
+      # divergence). Private side is soft: missing dir or a stub repo
+      # (no `origin` remote, as written by install.sh) prints a single
+      # info line and exits 0 so the alias stays chainable.
+      switchpull = ''git -C ${publicRepo} pull --ff-only && '' +
+        ''{ if [ -d ${privateRepo} ] && git -C ${privateRepo} remote get-url origin >/dev/null 2>&1; then '' +
+        ''git -C ${privateRepo} pull --ff-only; '' +
+        ''else echo "switchpull: private sibling missing or stub (no origin) - skipping"; fi; }'';
 
       # --- terminal eye candy ---
       # Each toy runs under an idle inhibitor so the display stays on and
