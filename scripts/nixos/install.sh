@@ -1040,8 +1040,15 @@ install_nixos() {
   info "This may take a while (15–60 minutes depending on your internet connection)..."
   echo ""
 
-  nixos-install --flake "${REPO_DIR}#${FLAKE_HOST}" --no-root-passwd \
-    --option download-buffer-size 268435456
+  # Run from inside the deployed repo so the flake's relative
+  # `git+file:../nix-config-private` input resolves to the sibling we
+  # provisioned at ${REPO_DIR}/../nix-config-private. nix resolves relative
+  # `git+file:` paths against the current working directory, not the parent
+  # flake's directory (see NixOS/nix#12281). Subshell so set -e propagates
+  # the failure without leaving the script in a different CWD.
+  ( cd "${REPO_DIR}" && \
+    nixos-install --flake ".#${FLAKE_HOST}" --no-root-passwd \
+      --option download-buffer-size 268435456 )
 }
 
 # ──────────────────────────────────────────────────────────────
