@@ -556,16 +556,18 @@ must be present on disk for any rebuild to evaluate.
    GitHub via the web/device-code flow. You'll get a one-time code to
    paste into a browser on any other device. On success it clones the
    real repo.
-4. **Public HTTPS clone**: a final unauthenticated attempt — useful only
-   when the live session happens to have cached credentials. Near-zero
-   cost; almost always fails on a clean ISO.
-5. **Stub fallback**: writes an initialised git repo containing
+4. **Stub fallback**: writes an initialised git repo containing
    `hosts/<HOST>/user-settings.nix = { }` and a stub README, then
    commits it. `git+file:` only sees committed files, so the commit is
    mandatory. The empty overlay triggers `lib.warn` fallbacks
    (Europe/London, en-GB) on every rebuild until replaced.
 
-If tiers 1-4 succeed, you're done — no warnings on first rebuild. If
+`install.sh` exports `GIT_TERMINAL_PROMPT=0` for the cascade so any
+stray git auth prompt fails fast instead of hanging on a hidden TTY
+prompt. It also prints `[Tier X]` info lines around every step so
+silent `nix-shell` cache fetches don't look like a hang.
+
+If tiers 1-3 succeed, you're done — no warnings on first rebuild. If
 the cascade lands on the stub, replace it with the real overlay after
 first boot:
 

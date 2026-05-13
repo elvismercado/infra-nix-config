@@ -892,14 +892,19 @@ generate_hardware_config() {
 #   C. Offer interactive `gh auth login -w` (web/device-code flow,
 #      30-second timeout, default no for unattended installs); on success,
 #      `gh repo clone`.
-#   D. Public unauthenticated HTTPS clone — works only for the repo
-#      owner with cached creds in the live session; near-zero cost,
-#      kept as belt-and-braces.
-#   E. Write a stub git repo containing just
+#   D. Write a stub git repo containing just
 #      `hosts/<HOST>/user-settings.nix = { }` and commit it. `git+file:`
 #      only sees committed files, so the commit is mandatory. The empty
 #      overlay triggers the module-level `lib.warn` fallbacks
 #      (Europe/London, en-GB).
+#
+# A previous "unauthenticated public HTTPS clone" tier was removed: the
+# underlying repo is private, so the clone always returned HTTP 401 and
+# git's credential helper hung waiting for a TTY username/password (with
+# our `2>/dev/null` muffle even hiding the prompt). Tiers B/C already
+# handle every authenticated case. As a defence-in-depth we also export
+# `GIT_TERMINAL_PROMPT=0` for the entire function so any stray git auth
+# prompt fails fast instead of blocking.
 #
 # Side effect: sets PRIVATE_SIBLING_KIND to "real" or "stub" so
 # post_install() can tailor its next-steps blurb. Upgrade path from
@@ -908,78 +913,88 @@ PRIVATE_SIBLING_KIND="unknown"
 
 provision_private_sibling() {
   local private_dir="/mnt/home/${USERNAME}/git/nix-config-private"
-  local public_url="https://github.com/elvismercado/nix-config-private.git"
   local repo_slug="elvismercado/nix-config-private"
 
+  # Defence in depth: any git invocation under this function that would
+  # otherwise prompt on the TTY (e.g. private-repo HTTPS without creds)
+  # exits non-zero immediately instead of hanging silently.
+  export GIT_TERMINAL_PROMPT=0
+
+  # Up-front explanation so the user knows what to expect across the
+  # entire cascade, before any potentially-long nix-shell fetches.
+  echo ""
+  echo "  ─── Private sibling provisioning ───"
+  echo "  The flake requires a sibling repo (${repo_slug}) on disk."
+  echo "  Cascade (first success wins):"
+  echo "    A) pre-staged sibling at ${private_dir}"
+  echo "    B) gh CLI already authenticated in this shell"
+  echo "    C) interactive gh auth login (web/device-code flow)"
+  echo "    D) stub fallback (Europe/London + en-GB until upgraded later)"
+  echo ""
+
   # Tier A — already on disk.
+  info "[Tier A] Checking for a pre-staged sibling at ${private_dir}..."
   if [[ -d "$private_dir" ]]; then
-    info "Private sibling already present at ${private_dir}, skipping provisioning."
+    info "[Tier A] Found — leaving it alone."
     PRIVATE_SIBLING_KIND="real"
     return 0
   fi
+  info "[Tier A] Not present, continuing."
 
-  info "Provisioning private sibling at ${private_dir}..."
   mkdir -p "$(dirname "$private_dir")"
 
   # Tier B — gh already authenticated in this shell.
-  # Use a single nix-shell that brings in gh + git so gh's git invocations
-  # find the matching binary on PATH.
-  if nix-shell -p gh git --run "gh auth status" >/dev/null 2>&1; then
-    info "gh already authenticated — cloning private sibling via gh."
+  # First nix-shell call may take a minute on a fresh ISO to fetch the
+  # gh closure (~30 MB) — DO NOT redirect stderr, so the user sees nix's
+  # copy-path lines and knows the script is alive. Only `gh auth
+  # status`'s own stdout is muted because we just care about the exit
+  # code.
+  info "[Tier B] Checking gh authentication (may fetch the gh closure on first run)..."
+  if nix-shell -p gh git --run "gh auth status" >/dev/null; then
+    info "[Tier B] gh is authenticated — cloning private sibling..."
     if nix-shell -p gh git --run "gh repo clone '${repo_slug}' '${private_dir}'"; then
+      info "[Tier B] Cloned successfully."
       PRIVATE_SIBLING_KIND="real"
       chown -R "${USER_UID}:100" "$private_dir" \
         || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
       return 0
     fi
-    warn "gh repo clone failed despite authenticated session — falling through."
+    warn "[Tier B] gh repo clone failed despite authenticated session — falling through."
+  else
+    info "[Tier B] gh is not authenticated in this shell."
   fi
 
   # Tier C — offer interactive gh auth + clone.
   # 30-second default-no keeps unattended installs from hanging.
   echo ""
-  echo "  The private sibling repo (${repo_slug}) is required for the flake"
-  echo "  to evaluate. You can authenticate with GitHub now (web/device-code"
-  echo "  flow) so install.sh clones the real overlay, or skip and accept"
-  echo "  the auto-generated stub (Europe/London + en-GB fallbacks)."
-  echo ""
-  printf "  Authenticate with GitHub now? [y/N] (auto-skip in 30s): "
+  printf "  [Tier C] Authenticate with GitHub now (web/device-code flow)? [y/N] (auto-skip in 30s): "
   local answer=""
   if read -r -t 30 answer; then :; else echo ""; fi
   case "${answer:-n}" in
     [yY]|[yY][eE][sS])
-      info "Launching gh auth login (web/device-code flow)..."
+      info "[Tier C] Launching gh auth login (web/device-code flow)..."
       if nix-shell -p gh git --run "gh auth login -h github.com -p https -w"; then
+        info "[Tier C] Authenticated — cloning private sibling..."
         if nix-shell -p gh git --run "gh repo clone '${repo_slug}' '${private_dir}'"; then
-          info "Cloned private sibling via gh."
+          info "[Tier C] Cloned successfully."
           PRIVATE_SIBLING_KIND="real"
           chown -R "${USER_UID}:100" "$private_dir" \
             || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
           return 0
         else
-          warn "gh repo clone failed after authentication — falling through."
+          warn "[Tier C] gh repo clone failed after authentication — falling through to stub."
         fi
       else
-        warn "gh auth login failed or was cancelled — falling through."
+        warn "[Tier C] gh auth login failed or was cancelled — falling through to stub."
       fi
       ;;
     *)
-      info "Skipped interactive GitHub authentication."
+      info "[Tier C] Skipped interactive GitHub authentication."
       ;;
   esac
 
-  # Tier D — unauthenticated public HTTPS clone (rare success path).
-  if nix-shell -p git --run "git clone --quiet '${public_url}' '${private_dir}'" 2>/dev/null; then
-    info "Cloned private sibling from public URL (cached credentials)."
-    PRIVATE_SIBLING_KIND="real"
-    chown -R "${USER_UID}:100" "$private_dir" \
-      || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
-    return 0
-  fi
-
-  # Tier E — stub fallback.
-  warn "All clone attempts failed (or were skipped)."
-  info "Writing stub repo so the flake can evaluate. Upgrade later via postinstall."
+  # Tier D — stub fallback.
+  info "[Tier D] Writing stub repo so the flake can evaluate. Upgrade later via postinstall."
 
   nix-shell -p git --run "
     set -e
@@ -1011,6 +1026,7 @@ STUB_README
     git -c user.name=installer -c user.email=installer@localhost commit -q -m 'initial stub (auto-generated by install.sh)'
   " || fatal "Failed to write stub private sibling at ${private_dir}."
 
+  info "[Tier D] Stub written and committed."
   PRIVATE_SIBLING_KIND="stub"
   chown -R "${USER_UID}:100" "$private_dir" \
     || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
