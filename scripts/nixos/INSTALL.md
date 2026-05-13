@@ -35,11 +35,19 @@ Boot the NixOS installer and open a terminal.
 sudo -i
 ```
 
-**Clone the repo:**
+**Authenticate with GitHub and clone the repo:**
 
 ```bash
-nix-shell -p git --run "git clone https://github.com/elvismercado/nix-config.git /tmp/nix-config"
+nix-shell -p gh git --run '
+  gh auth login -h github.com -p https -w &&
+  gh repo clone elvismercado/nix-config /tmp/nix-config
+'
 ```
+
+> `gh auth login` is optional but recommended: it lets `install.sh` clone
+> the private sibling (`elvismercado/nix-config-private`) automatically.
+> Skip it (Ctrl-C past the prompt) if you only need the public repo + the
+> installer's stub fallback.
 
 **Run the installer (interactive — prompts for host, disks, and sizes):**
 
@@ -358,7 +366,7 @@ Clone the repo, then look up the username from `user-settings.nix`:
 
 ```bash
 REPO_NAME=nix-config
-nix-shell -p git --run "git clone https://github.com/elvismercado/nix-config.git /tmp/${REPO_NAME}"
+nix-shell -p gh git --run "gh repo clone elvismercado/nix-config /tmp/${REPO_NAME}"
 
 # Read the username and UID for this host
 TARGET_USER=$(sed -n 's/.*username[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "/tmp/${REPO_NAME}/hosts/${HOST}/user-settings.nix")
