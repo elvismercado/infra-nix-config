@@ -534,25 +534,40 @@ git commit -m "$HOST: update hardware-configuration.nix"
 git push
 ```
 
-### Private metadata sibling (auto-stubbed)
+### Private metadata sibling (auto-cloned, stubbed on failure)
 
 The flake declares a sibling repo `nix-config-private` as a `flake = false`
 input (see `flake.nix`). It holds PII-bearing per-host fields (Syncthing
 device IDs, LAN addresses, `timeZone`, `language`, `regionalFormat`) and
 must be present on disk for any rebuild to evaluate.
 
-- `install.sh` provisions a sibling automatically:
-  1. If a sibling already exists at `/mnt/home/<user>/git/nix-config-private`
-     (e.g. pre-staged via SSH/USB), it's left alone.
-  2. Otherwise it tries a public HTTPS clone of
-     `elvismercado/nix-config-private` — succeeds only for the repo owner
-     with cached credentials.
-  3. On failure it writes a stub: an initialised git repo containing
-     `hosts/<HOST>/user-settings.nix = { }`. The `lib.warn` fallbacks
-     (Europe/London, en-GB) kick in on every rebuild until the stub is
-     replaced.
+`install.sh` provisions a sibling automatically using a tiered cascade
+(first success wins):
 
-To replace the stub with the real overlay after first boot:
+1. **Pre-staged**: a sibling already at
+   `/mnt/home/<user>/git/nix-config-private` (e.g. copied in via SSH/USB
+   before `install.sh`) is left alone.
+2. **`gh` already authenticated**: if `gh auth status` succeeds in the
+   live ISO shell — i.e. you ran `nix-shell -p gh --run "gh auth login -w"`
+   before invoking `install.sh` — the installer uses
+   `gh repo clone elvismercado/nix-config-private`.
+3. **Interactive `gh auth login`**: the installer prompts (30-second
+   default-no, so unattended installs don't hang) to authenticate with
+   GitHub via the web/device-code flow. You'll get a one-time code to
+   paste into a browser on any other device. On success it clones the
+   real repo.
+4. **Public HTTPS clone**: a final unauthenticated attempt — useful only
+   when the live session happens to have cached credentials. Near-zero
+   cost; almost always fails on a clean ISO.
+5. **Stub fallback**: writes an initialised git repo containing
+   `hosts/<HOST>/user-settings.nix = { }` and a stub README, then
+   commits it. `git+file:` only sees committed files, so the commit is
+   mandatory. The empty overlay triggers `lib.warn` fallbacks
+   (Europe/London, en-GB) on every rebuild until replaced.
+
+If tiers 1-4 succeed, you're done — no warnings on first rebuild. If
+the cascade lands on the stub, replace it with the real overlay after
+first boot:
 
 ```bash
 cd ~/git
@@ -561,8 +576,8 @@ gh repo clone elvismercado/nix-config-private
 # Next `nixos-rebuild switch` picks up the merged metadata.
 ```
 
-`postinstall.sh` includes an interactive step for this upgrade after
-`gh auth login`.
+`postinstall.sh` includes an interactive step (`step_private_overlay`)
+for this upgrade after `gh auth login`.
 
 ---
 

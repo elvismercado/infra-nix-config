@@ -884,43 +884,109 @@ generate_hardware_config() {
 # flake = false; };`. Without that sibling on disk, `nixos-install` aborts at
 # flake eval with `cannot read input 'private'`.
 #
-# Strategy:
-#   1. If a sibling already exists at the target path (user pre-staged it via
-#      SSH/USB), skip.
-#   2. Otherwise try a public HTTPS clone — works only for the repo owner with
-#      cached creds; expected to fail for everyone else, silent.
-#   3. On failure, write a stub git repo containing just
-#      `hosts/<HOST>/user-settings.nix = { }` and commit it. `git+file:` only
-#      sees committed files, so the commit is mandatory. The empty overlay
-#      triggers the module-level `lib.warn` fallbacks (Europe/London, en-GB).
+# Strategy (tiered cascade, first success wins):
+#   A. Sibling already present at the target path (user pre-staged via
+#      SSH/USB) → leave it alone.
+#   B. `gh` already authenticated in the live ISO shell (user logged in
+#      before invoking install.sh) → `gh repo clone`.
+#   C. Offer interactive `gh auth login -w` (web/device-code flow,
+#      30-second timeout, default no for unattended installs); on success,
+#      `gh repo clone`.
+#   D. Public unauthenticated HTTPS clone — works only for the repo
+#      owner with cached creds in the live session; near-zero cost,
+#      kept as belt-and-braces.
+#   E. Write a stub git repo containing just
+#      `hosts/<HOST>/user-settings.nix = { }` and commit it. `git+file:`
+#      only sees committed files, so the commit is mandatory. The empty
+#      overlay triggers the module-level `lib.warn` fallbacks
+#      (Europe/London, en-GB).
 #
-# Upgrade path: postinstall.sh offers a `gh repo clone` to replace the stub
-# with the real private repo once GitHub auth is set up.
+# Side effect: sets PRIVATE_SIBLING_KIND to "real" or "stub" so
+# post_install() can tailor its next-steps blurb. Upgrade path from
+# stub → real lives in postinstall.sh's `step_private_overlay()`.
+PRIVATE_SIBLING_KIND="unknown"
+
 provision_private_sibling() {
   local private_dir="/mnt/home/${USERNAME}/git/nix-config-private"
   local public_url="https://github.com/elvismercado/nix-config-private.git"
+  local repo_slug="elvismercado/nix-config-private"
 
+  # Tier A — already on disk.
   if [[ -d "$private_dir" ]]; then
     info "Private sibling already present at ${private_dir}, skipping provisioning."
+    PRIVATE_SIBLING_KIND="real"
     return 0
   fi
 
   info "Provisioning private sibling at ${private_dir}..."
   mkdir -p "$(dirname "$private_dir")"
 
-  # Try a public HTTPS clone first. Will fail for non-owners; that's fine.
-  if nix-shell -p git --run "git clone --quiet '${public_url}' '${private_dir}'" 2>/dev/null; then
-    info "Cloned private sibling from public URL."
-  else
-    warn "Public clone of private sibling failed (expected for non-owners)."
-    info "Writing stub repo so the flake can evaluate. Upgrade later via postinstall."
+  # Tier B — gh already authenticated in this shell.
+  # Use a single nix-shell that brings in gh + git so gh's git invocations
+  # find the matching binary on PATH.
+  if nix-shell -p gh git --run "gh auth status" >/dev/null 2>&1; then
+    info "gh already authenticated — cloning private sibling via gh."
+    if nix-shell -p gh git --run "gh repo clone '${repo_slug}' '${private_dir}'"; then
+      PRIVATE_SIBLING_KIND="real"
+      chown -R "${USER_UID}:100" "$private_dir" \
+        || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
+      return 0
+    fi
+    warn "gh repo clone failed despite authenticated session — falling through."
+  fi
 
-    nix-shell -p git --run "
-      set -e
-      git init -q -b main '${private_dir}'
-      mkdir -p '${private_dir}/hosts/${FLAKE_HOST}'
-      printf '%s\n' '{ }' > '${private_dir}/hosts/${FLAKE_HOST}/user-settings.nix'
-      cat > '${private_dir}/README.md' <<'STUB_README'
+  # Tier C — offer interactive gh auth + clone.
+  # 30-second default-no keeps unattended installs from hanging.
+  echo ""
+  echo "  The private sibling repo (${repo_slug}) is required for the flake"
+  echo "  to evaluate. You can authenticate with GitHub now (web/device-code"
+  echo "  flow) so install.sh clones the real overlay, or skip and accept"
+  echo "  the auto-generated stub (Europe/London + en-GB fallbacks)."
+  echo ""
+  printf "  Authenticate with GitHub now? [y/N] (auto-skip in 30s): "
+  local answer=""
+  if read -r -t 30 answer; then :; else echo ""; fi
+  case "${answer:-n}" in
+    [yY]|[yY][eE][sS])
+      info "Launching gh auth login (web/device-code flow)..."
+      if nix-shell -p gh git --run "gh auth login -h github.com -p https -w"; then
+        if nix-shell -p gh git --run "gh repo clone '${repo_slug}' '${private_dir}'"; then
+          info "Cloned private sibling via gh."
+          PRIVATE_SIBLING_KIND="real"
+          chown -R "${USER_UID}:100" "$private_dir" \
+            || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
+          return 0
+        else
+          warn "gh repo clone failed after authentication — falling through."
+        fi
+      else
+        warn "gh auth login failed or was cancelled — falling through."
+      fi
+      ;;
+    *)
+      info "Skipped interactive GitHub authentication."
+      ;;
+  esac
+
+  # Tier D — unauthenticated public HTTPS clone (rare success path).
+  if nix-shell -p git --run "git clone --quiet '${public_url}' '${private_dir}'" 2>/dev/null; then
+    info "Cloned private sibling from public URL (cached credentials)."
+    PRIVATE_SIBLING_KIND="real"
+    chown -R "${USER_UID}:100" "$private_dir" \
+      || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
+    return 0
+  fi
+
+  # Tier E — stub fallback.
+  warn "All clone attempts failed (or were skipped)."
+  info "Writing stub repo so the flake can evaluate. Upgrade later via postinstall."
+
+  nix-shell -p git --run "
+    set -e
+    git init -q -b main '${private_dir}'
+    mkdir -p '${private_dir}/hosts/${FLAKE_HOST}'
+    printf '%s\n' '{ }' > '${private_dir}/hosts/${FLAKE_HOST}/user-settings.nix'
+    cat > '${private_dir}/README.md' <<'STUB_README'
 # nix-config-private (stub)
 
 Auto-generated by \`scripts/nixos/install.sh\` because the real private
@@ -940,12 +1006,12 @@ To replace this stub with the real overlay (assuming you have access):
 
 \`postinstall.sh\` offers this as an interactive step.
 STUB_README
-      cd '${private_dir}'
-      git -c user.name=installer -c user.email=installer@localhost add -A
-      git -c user.name=installer -c user.email=installer@localhost commit -q -m 'initial stub (auto-generated by install.sh)'
-    " || fatal "Failed to write stub private sibling at ${private_dir}."
-  fi
+    cd '${private_dir}'
+    git -c user.name=installer -c user.email=installer@localhost add -A
+    git -c user.name=installer -c user.email=installer@localhost commit -q -m 'initial stub (auto-generated by install.sh)'
+  " || fatal "Failed to write stub private sibling at ${private_dir}."
 
+  PRIVATE_SIBLING_KIND="stub"
   chown -R "${USER_UID}:100" "$private_dir" \
     || fatal "Failed to chown ${private_dir} to ${USER_UID}:100."
 }
@@ -1053,15 +1119,23 @@ post_install() {
   echo "     - Changing your password"
   echo "     - Setting up git identity and SSH keys"
   echo "     - GitHub authentication"
-  echo "     - Replacing the stub private sibling with the real repo"
+  if [[ "${PRIVATE_SIBLING_KIND}" == "stub" ]]; then
+    echo "     - Replacing the stub private sibling with the real repo"
+  fi
   echo "     - Verifying NixOS and home-manager rebuilds"
   echo "     - Committing hardware-configuration.nix"
   echo ""
-  echo "  Note: a stub nix-config-private was provisioned next to nix-config."
-  echo "  The first rebuild will emit lib.warn lines about defaulting to"
-  echo "  Europe/London and en-GB until you replace the stub with the real"
-  echo "  private repo (postinstall step, or: gh repo clone elvismercado/nix-config-private)."
-  echo ""
+  if [[ "${PRIVATE_SIBLING_KIND}" == "stub" ]]; then
+    echo "  Note: a stub nix-config-private was provisioned next to nix-config."
+    echo "  The first rebuild will emit lib.warn lines about defaulting to"
+    echo "  Europe/London and en-GB until you replace the stub with the real"
+    echo "  private repo (postinstall step, or: gh repo clone elvismercado/nix-config-private)."
+    echo ""
+  else
+    echo "  Note: the real nix-config-private was cloned next to nix-config."
+    echo "  No fallback warnings expected on first rebuild."
+    echo ""
+  fi
 }
 
 # ──────────────────────────────────────────────────────────────

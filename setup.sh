@@ -224,15 +224,37 @@ clone_private_sibling() {
       ;;
   esac
 
-  # Try gh first (handles private-repo auth), then SSH, then HTTPS as a
-  # last-resort fallback (works for the owner with cached creds).
+  # Tier order: pre-authenticated gh → interactive gh auth → SSH → HTTPS.
+  # The interactive gh tier covers the common case of "gh installed but
+  # never used" — a quick web/device-code login bootstraps the clone
+  # without forcing the user to drop out, run gh manually, and resume.
   if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    echo "[Setup] Cloning private sibling via gh..."
+    echo "[Setup] Cloning private sibling via gh (already authenticated)..."
     if gh repo clone elvismercado/nix-config-private "$PRIVATE_REPO_DIR"; then
       echo "[Setup] Private sibling cloned to $PRIVATE_REPO_DIR"
       return 0
     fi
     echo "[Setup] gh clone failed, falling back to SSH..."
+  elif command -v gh >/dev/null 2>&1; then
+    echo "[Setup] gh installed but not authenticated."
+    printf "[Setup] Authenticate with GitHub now (web/device-code flow)? [y/N] "
+    read -r auth_answer
+    case "$auth_answer" in
+      [yY]*)
+        if gh auth login -h github.com -p https -w; then
+          if gh repo clone elvismercado/nix-config-private "$PRIVATE_REPO_DIR"; then
+            echo "[Setup] Private sibling cloned to $PRIVATE_REPO_DIR"
+            return 0
+          fi
+          echo "[Setup] gh clone failed after auth, falling back to SSH..."
+        else
+          echo "[Setup] gh auth login failed/cancelled, falling back to SSH..."
+        fi
+        ;;
+      *)
+        echo "[Setup] Skipped gh auth, falling back to SSH..."
+        ;;
+    esac
   fi
 
   if nix-shell -p git --run "git clone git@github.com:elvismercado/nix-config-private.git '$PRIVATE_REPO_DIR'" 2>/dev/null; then
