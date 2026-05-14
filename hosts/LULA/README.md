@@ -27,8 +27,10 @@ Personal machine for a non-technical user, set up as a low-friction host.
 
 ### Biometrics
 
-- Fingerprint reader — supported via `fprintd` (not wired in this round;
-  see [Future work](#future-work)).
+- Fingerprint reader — enabled via `fprintd`. Enrol fingers in **System
+  Settings → Users → Fingerprint Authentication**, or run `fprintd-enroll`
+  from a shell. Once enrolled, the print works for login, sudo, and
+  polkit prompts.
 - IR camera (Windows Hello face unlock) — no Linux equivalent.
 
 ## Configuration overview
@@ -44,6 +46,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Networking:** NetworkManager (auto-enabled by `custom.sysNixUser`)
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
+- **Biometrics:** fprintd (fingerprint login, sudo, polkit)
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
   when the overlay is missing.
@@ -98,9 +101,6 @@ powerprofilesctl set performance   # or balanced / power-saver
 
 ## Future work
 
-- **Fingerprint login.** The reader is supported by `fprintd`. Wire
-  `custom.sysNixFprintd.enable = true;` and run `fprintd-enroll`
-  post-install when desired.
 - **Declarative KDE Plasma config.** Defaults from KDE's first-run
   wizard for now; pin theme/panel/taskbar via `hmPlasmaConfig` once
   preferences settle.

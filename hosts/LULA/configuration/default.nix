@@ -51,6 +51,7 @@
     # Services
     ../../../modules/systems/nixos/fwupd.nix
     ../../../modules/systems/nixos/postinstall.nix
+    ../../../modules/systems/nixos/security/fprintd.nix
 
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/linux/brave.nix
@@ -109,6 +110,7 @@
   # Services
   custom.sysNixFwupd.enable = true;
   custom.sysNixPostinstall.enable = true;
+  custom.sysNixFprintd.enable = true;
 
   # Apps (cross-layer façades) — minimal persona for a non-technical user.
   # Brave with no force-installed extensions (vanilla) per LULA's profile.

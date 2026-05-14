@@ -12,7 +12,6 @@ Open items only.
 
 ### LULA — post-install follow-ups
 
-- [ ] **LULA: enable `fprintd` post-install if desired.** Module exists at [modules/systems/nixos/security/fprintd.nix](modules/systems/nixos/security/fprintd.nix). Wire `custom.sysNixFprintd.enable = true;` in [hosts/LULA/configuration/default.nix](hosts/LULA/configuration/default.nix) and run `fprintd-enroll` once after the next switch.
 - [ ] **LULA: declarative KDE Plasma config.** Skipped at install time so the user could pick defaults via Plasma's first-run wizard. Once preferences settle, pin theme/panel/taskbar via a Linux `hmPlasmaConfig` block in [hosts/LULA/home-manager/default.nix](hosts/LULA/home-manager/default.nix).
 - [ ] **LULA: verify `id -u lula` after first install.** [hosts/LULA/user-settings.nix](hosts/LULA/user-settings.nix) sets `uid = 1000` (NixOS default for the first normal user). If the live uid differs, update the file.
 
