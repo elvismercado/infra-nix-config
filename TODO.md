@@ -27,6 +27,10 @@ Open items only.
   - **(b) Build a `home.activation` post-switch patcher.** ~15 lines of bash using `kwriteconfig6` that scans `plasma-org.kde.plasma.desktop-appletsrc` for `plugin=org.kde.plasma.<name>` lines, derives each containment path, and writes the relevant `[Configuration][<Group>]` keys. Idempotent; runs every `switch`. No-ops on a fresh install before the user has added the widget. Best modelled as a generic `custom.hmPlasmaSystrayConfigPatcher` consuming a freeform attrset like `{ "org.kde.plasma.weather".WeatherStation = { source = ...; updateInterval = ...; }; }`, so the same module covers all affected widgets.
   - **Workaround until then (current state):** the weather widget is pinned to the systray's `shown` list (works), but the user must right-click → Configure once to pick wttr.in + their location. Plasma persists across reboots. Affected hosts: JIN, FENNEC, LULA. Overlay schema (`source`, `latitude`, `longitude`, `updateIntervalMinutes`) is preserved as inert reference data so it's already in place when option (a) or (b) lands — see the KNOWN LIMITATION block in `common.nix` header.
 
+### Future apps — parked until upstream packaging lands
+
+- [ ] **Helium browser on LULA (alongside Brave).** Privacy-focused Chromium fork from imputnet ([helium.computer](https://helium.computer)). Not in nixpkgs as of May 2026; upstream is pre-1.0 and ships only `.deb` / `.tar.xz` / `.AppImage`. When it lands in nixpkgs (or stabilises at 1.0), add a `modules/apps/linux/helium.nix` cross-layer façade following the same pattern as [modules/apps/linux/brave.nix](modules/apps/linux/brave.nix) and enable on LULA via `custom.appHelium.enable = true;`. Brave stays primary on LULA — Helium is a secondary browser, no managed-policy module needed initially (Helium has no stable policy schema yet). Re-evaluate when: nixpkgs ships `helium-browser`, OR upstream tags 1.0.
+
 ## Round 1 — flake/ folder & wiring
 
 ### P1 — Security & Correctness
