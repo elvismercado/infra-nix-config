@@ -107,6 +107,15 @@ in
   WelcomePageOnOSUpgradeEnabled = false; # no welcome page after OS upgrades
   HideWebStoreIcon = true; # hide the Web Store tile on the new-tab page (store still reachable via chrome://extensions)
 
+  # --- Diagnostics ---
+  # 1 = DeveloperToolsAllowed (incl. force-installed extensions).
+  # Default is 0 (DeveloperToolsDisallowedForForceInstalledExtensions),
+  # which hides "Inspect" on the popup of any policy-installed extension
+  # (e.g. Bitwarden) and the "service worker" link on chrome://extensions.
+  # We need both to debug extension issues on managed hosts. Tighten back
+  # to 0 if a host ever needs lockdown semantics for managed extensions.
+  DeveloperToolsAvailability = 1;
+
   # --- Force-installed extensions ---
   # Format: "<chrome-web-store-id>;<update-url>". The user cannot remove or
   # disable these — that's the point of force-install. See `extensions`
