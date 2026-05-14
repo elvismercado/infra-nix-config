@@ -31,6 +31,69 @@ Open items only.
 
 - [ ] **Helium browser on LULA (alongside Brave).** Privacy-focused Chromium fork from imputnet ([helium.computer](https://helium.computer)). Not in nixpkgs as of May 2026; upstream is pre-1.0 and ships only `.deb` / `.tar.xz` / `.AppImage`. When it lands in nixpkgs (or stabilises at 1.0), add a `modules/apps/linux/helium.nix` cross-layer façade following the same pattern as [modules/apps/linux/brave.nix](modules/apps/linux/brave.nix) and enable on LULA via `custom.appHelium.enable = true;`. Brave stays primary on LULA — Helium is a secondary browser, no managed-policy module needed initially (Helium has no stable policy schema yet). Re-evaluate when: nixpkgs ships `helium-browser`, OR upstream tags 1.0.
 
+### LULA — accessibility & usability tweaks (pick up one at a time)
+
+Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older users. Each item is independent; pick one, plan, implement, validate with the user, move on. Most land in [modules/home-manager/linux/plasma/{common,lula}.nix](modules/home-manager/linux/plasma/lula.nix) or [hosts/LULA/home-manager/default.nix](hosts/LULA/home-manager/default.nix). Where an option is genuinely cross-host useful (cursor size, confirm-on-logout, lock-panel), promote it to `common.nix` behind a `custom.hmPlasmaCommon.<name>` toggle; LULA-specific bits (Kickoff swap, dock icon size) stay in `lula.nix`.
+
+**Top 5 to do first** (best UX-per-line-of-config):
+
+1. Cursor — 36px Breeze + Bouncing click feedback.
+2. Confirm-on-logout.
+3. Lock panel layout (prevent accidental drag-off).
+4. Klipper clipboard history limited to ~5 entries (privacy + clutter).
+5. Replace Application Dashboard with classic Kickoff (full-screen launcher disorients).
+
+#### High impact
+
+- [ ] **Cursor: 36px Breeze + Bouncing click feedback.** `programs.plasma.workspace.cursor = { theme = "Breeze"; size = 36; cursorFeedback = "Bouncing"; };`. The bouncing pulse on click confirms the click registered — single biggest fix for the "did it click?" double/triple-click compulsion.
+- [ ] **Confirm on logout.** `programs.plasma.session.general.askForConfirmationOnLogout = true;`. Prevents losing work when she hits the power button.
+- [ ] **Single-window mode in Dolphin + sensible defaults.** Disable tabs by default; force "Details" view; show full path in title; show status bar; show tooltips. `programs.plasma.configFile."dolphinrc"` keys: `[General] BrowseThroughArchives=true; ShowFullPath=true; ShowToolTips=true; ShowStatusBar=true;` + `[KFileDialog Settings] View Style=DetailsView`.
+- [ ] **Disable window-snapping / tiling shortcuts** (Meta+arrows, screen-edge tiling). Accidental triggers move windows to half-screen and the user can't recover. Keep Super+E (Activities/Show Desktop). KWin shortcuts → Window Quick Tile actions = unbound.
+- [ ] **Window borders on maximized windows.** Disable "no borders when maximized" effect. Older users navigate by chrome; removing it disorients. KWin: `[Plugins] kwin4_effect_maximizeEnabled=false` (or whichever current name) — verify exact key.
+
+#### Visibility & legibility
+
+- [ ] **Global UI scaling 110–125%.** Different from font bump — scales the whole UI (padding, scrollbars, controls). 14" 1080p panel benefits enormously. `kscreen` per-monitor scale factor.
+- [ ] **High-contrast color scheme.** `programs.plasma.workspace.colorScheme = "BreezeHighContrast";`. Sharper window borders, selection, disabled-vs-enabled states.
+- [ ] **Always-visible scrollbars.** Plasma 6 hides them until hover; she never sees how long a list is. `kdeglobals` `[KDE] AnimateButtonHovers=...` + Qt scrollbar policy override.
+- [ ] **Animated cursor when launching apps** (bouncy cursor while app starts). KWin effect, telegraphs "click registered, just wait".
+
+#### Notifications & focus
+
+- [ ] **Disable Activities entirely.** `kded` Activities plugins off. Activities are powerful and dangerous — easy to switch into an empty one and "lose everything".
+- [ ] **Lengthen notification timeout** from 5s → 10s. `programs.plasma.configFile."plasmanotifyrc"` `[Notifications] PopupTimeout=10000`.
+- [ ] **Disable system sounds** for non-notification events (window close, error beeps). Keep notification sounds on.
+- [ ] **Pin click-to-focus explicitly.** `programs.plasma.kwin.focus.policy = "ClickToFocus";` (defensive — already default but worth pinning).
+
+#### Discoverability
+
+- [ ] **Bigger dock icons + spacing.** Bump `panels[bottom].height` from 56 to 64–72 and set `iconTasks.iconSpacing = "large"`. Less precision required to click.
+- [ ] **Show window labels in taskbar** — switch `iconTasks` → `org.kde.plasma.taskmanager` (icons + text). Two open Brave windows are indistinguishable by icon alone.
+- [ ] **Disable "group by application"** in taskmanager — each window gets its own button. "Where's my email?" → one button per window, no hover-popup.
+- [ ] **Replace Application Dashboard with Kickoff (or add Kickoff alongside).** Full-screen Dashboard hides the desktop and disorients. Classic Kickoff opens a small corner menu. Swap `org.kde.plasma.kickerdash` → `org.kde.plasma.kickoff` in [modules/home-manager/linux/plasma/lula.nix](modules/home-manager/linux/plasma/lula.nix) top panel.
+- [ ] **Show Desktop button on bottom panel too.** One-click escape from clutter — already on top, mirror to bottom.
+
+#### Safety nets
+
+- [ ] **Lock panel layout** so she can't drag widgets off into oblivion. `kwriteconfig6 ... LockedByDefault=true` on the plasma containments. Blocks Plasma's edit-mode drag-and-drop. Best as a `custom.hmPlasmaCommon.lockPanels.enable` toggle (default true on parent-style hosts).
+- [ ] **Klipper clipboard history → 5 entries** (currently 20+ default). Old passwords / addresses leaking into history is a privacy + cognitive-load problem. `programs.plasma.configFile."klipperrc"` `[General] MaxClipItems=5; KeepClipboardContents=true;`.
+- [ ] **Disable Plasma edit-mode shortcut** (Meta+D defaults). Accidental edit mode → accidental panel destruction.
+- [ ] **Force "show hidden files = no" in Dolphin.** Forever. Discovering `.config` and "tidying it up" is a real failure mode.
+- [ ] **Disable Shift+Delete** (bypass-trash). Trash-only, always.
+- [ ] **KDE Connect off** unless she actually uses it — pairing prompts confuse. Currently not enabled — verify and pin.
+- [ ] **Auto-lock screen after 15 min** (not 5). Long enough she doesn't keep seeing the login screen during normal use. `programs.plasma.kscreenlocker.timeout = 15;`.
+
+#### Accessibility
+
+- [ ] **Disable sticky-keys / slow-keys toggles** (5×Shift trigger). Accidental trigger = "my keyboard is broken" support call. Disable the gesture, keep the feature available via System Settings.
+- [ ] **Shake mouse to find cursor** — wiggle the trackpad, cursor briefly enlarges. KWin effect: `programs.plasma.kwin.effects.shakeCursor.enable = true;` (verify exact path in plasma-manager).
+- [ ] **Disable magnifier shortcut** (Meta+= → full-screen zoom). Surprise zoom is panic-inducing.
+- [ ] **Document trackpad right-click gesture** (two-finger tap for right-click — libinput `clickfinger` is already default). README addition only, no config change.
+
+#### Brave-side (lives in `modules/systems/shared/brave-policies-data.nix` or per-host extension)
+
+- [ ] **Pin frequently-used bookmarks to the toolbar.** Gmail, news, Floccus settings, Bitwarden popup. Reduces "how do I get to my email" calls. Either via `ManagedBookmarks` policy (server-side managed, can't be deleted) or by seeding the `Bookmarks` JSON on first launch via `home.activation`. `ManagedBookmarks` is the right tool — already a policy mechanism, can't be accidentally deleted.
+
 ## Round 1 — flake/ folder & wiring
 
 ### P1 — Security & Correctness
