@@ -50,6 +50,20 @@
   custom.hmPlasmaCommon.kwallet.enable = false;
   # Double-click to open files/folders (Windows / macOS Finder behavior).
   custom.hmPlasmaCommon.singleClickToOpen = false;
+  # Larger 36px Breeze_Snow cursor with bouncing click-feedback pulse.
+  custom.hmPlasmaCommon.cursor.enable = true;
+  # Confirm before logout / restart / shutdown.
+  custom.hmPlasmaCommon.confirmLogout.enable = true;
+
+  # Klipper — keep clipboard history short. Limits the privacy /
+  # confusion footprint of "the last 20 things you copied are visible
+  # in the system tray" (Bitwarden passwords, Wi-Fi PSKs, addresses).
+  # Five entries is enough for practical clipboard reuse without
+  # turning the popup into a scrolling history.
+  programs.plasma.configFile."klipperrc"."General" = {
+    MaxClipItems = 5;
+    KeepClipboardContents = true;
+  };
 
   # Trackpad — per-device libinput config. Plasma Wayland reads
   # `~/.config/kcminputrc`; identifiers come from

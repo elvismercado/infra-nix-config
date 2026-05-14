@@ -48,6 +48,12 @@ in
         lengthMode = "fill";
         floating = false;
         widgets = [
+          # Classic Kickoff menu — small corner menu, leaves the
+          # desktop visible. Familiar Windows-Start-style for less
+          # tech-savvy users. Shipped alongside the Application
+          # Dashboard below so the user can try both and decide.
+          "org.kde.plasma.kickoff"
+
           # Application Dashboard — full-screen grid, easy for users
           # unfamiliar with cascading menus.
           "org.kde.plasma.kickerdash"

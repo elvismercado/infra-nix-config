@@ -37,11 +37,11 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 
 **Top 5 to do first** (best UX-per-line-of-config):
 
-1. Cursor — 36px Breeze + Bouncing click feedback.
-2. Confirm-on-logout.
-3. Lock panel layout (prevent accidental drag-off).
-4. Klipper clipboard history limited to ~5 entries (privacy + clutter).
-5. Replace Application Dashboard with classic Kickoff (full-screen launcher disorients).
+1. ~~Cursor — 36px Breeze + Bouncing click feedback.~~ ✅ Done 2026-05-14 — `custom.hmPlasmaCommon.cursor.enable`.
+2. ~~Confirm-on-logout.~~ ✅ Done 2026-05-14 — `custom.hmPlasmaCommon.confirmLogout.enable`.
+3. Lock panel layout (prevent accidental drag-off). — see Safety nets entry; needs research before implementing.
+4. ~~Klipper clipboard history limited to ~5 entries (privacy + clutter).~~ ✅ Done 2026-05-14 — `klipperrc [General] MaxClipItems=5`.
+5. ~~Replace Application Dashboard with classic Kickoff.~~ ✅ Partial 2026-05-14 — Kickoff added **alongside** Kickerdash on LULA's top panel for a try-out period; collapse to one once the user picks.
 
 #### High impact
 
@@ -75,7 +75,10 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 
 #### Safety nets
 
-- [ ] **Lock panel layout** so she can't drag widgets off into oblivion. `kwriteconfig6 ... LockedByDefault=true` on the plasma containments. Blocks Plasma's edit-mode drag-and-drop. Best as a `custom.hmPlasmaCommon.lockPanels.enable` toggle (default true on parent-style hosts).
+- [ ] **Lock panel layout** so she can't drag widgets off into oblivion. Two competing mechanisms, both with caveats — needs validation before committing:
+  - **(a) `Containments[N].immutability=2`** in `~/.config/plasma-org.kde.plasma.desktop-appletsrc`. Per-containment `immutability` value `2` (`SystemImmutable`) prevents edit-mode drags. Risk: plasma-manager's panel desktop-script _deletes and rebuilds_ `plasma-org.kde.plasma.desktop-appletsrc` on every switch (see `panelPreCMD` comment in upstream `modules/panels.nix`), so writes to that file from `programs.plasma.configFile` may be wiped. Likely needs a `home.activation` post-switch patcher that runs _after_ plasma-manager's script.
+  - **(b) `kdeglobals [KDE Action Restrictions]` kiosk keys.** `action/plasma/add_widgets=false`, `action/plasma/configure=false`, `action/plasma/add_panel=false`, etc. Cleaner, written through plasma-manager's existing `configFile` mechanism, lives in a stable file. Downside: kiosk restrictions are coarser (no edit mode at all, including from System Settings).
+  - **Decision pending.** Likely (b) wrapped in `custom.hmPlasmaCommon.lockPanels.enable` (default false), with the trade-off documented. Validate on LULA first; if it sticks, promote default to true on parent-style hosts.
 - [ ] **Klipper clipboard history → 5 entries** (currently 20+ default). Old passwords / addresses leaking into history is a privacy + cognitive-load problem. `programs.plasma.configFile."klipperrc"` `[General] MaxClipItems=5; KeepClipboardContents=true;`.
 - [ ] **Disable Plasma edit-mode shortcut** (Meta+D defaults). Accidental edit mode → accidental panel destruction.
 - [ ] **Force "show hidden files = no" in Dolphin.** Forever. Discovering `.config` and "tidying it up" is a real failure mode.

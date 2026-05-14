@@ -61,6 +61,16 @@
 #     Useful on hosts whose primary user expects desktop-OS click
 #     semantics rather than KDE's default web-style single-click.
 #
+#   custom.hmPlasmaCommon.cursor.enable (default: false)
+#     When `true`, applies a parent-friendly cursor preset:
+#     `Breeze_Snow` theme at 36px with a "Bouncing" click-feedback
+#     pulse. Bigger cursor is easier to track; the click pulse cuts
+#     down on rapid-fire double/triple-click reflex.
+#
+#   custom.hmPlasmaCommon.confirmLogout.enable (default: false)
+#     When `true`, Plasma asks for confirmation (with a 30-second
+#     countdown auto-cancel) before logout / restart / shutdown.
+#
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
 #                                    weather conditionally appended.
@@ -149,6 +159,29 @@ in
         behavior). When `true` (KDE default), a single-click opens.
       '';
     };
+
+    cursor.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        When `true`, applies a parent-friendly cursor preset: the
+        `Breeze_Snow` theme at 36px with a "Bouncing" click-feedback
+        pulse. Larger cursor is easier to track on a high-DPI laptop
+        panel; the click pulse confirms the click registered, which
+        cuts down on the rapid-fire double/triple-click reflex.
+      '';
+    };
+
+    confirmLogout.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        When `true`, Plasma asks for confirmation (with a 30-second
+        countdown auto-cancel) before logout / restart / shutdown.
+        Prevents accidental session loss from a stray click in the
+        power menu.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -200,6 +233,21 @@ in
       workspace = {
         clickItemTo = if cfg.singleClickToOpen then "open" else "select";
         splashScreen.theme = "None";
+      }
+      // lib.optionalAttrs cfg.cursor.enable {
+        # Parent-friendly cursor: bigger + visible click feedback.
+        cursor = {
+          theme = "Breeze_Snow";
+          size = 36;
+          cursorFeedback = "Bouncing";
+        };
+      };
+
+      session = {
+        sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+      }
+      // lib.optionalAttrs cfg.confirmLogout.enable {
+        general.askForConfirmationOnLogout = true;
       };
 
       desktop.icons = {
@@ -207,8 +255,6 @@ in
         alignment = "left";
         lockInPlace = false;
       };
-
-      session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
 
       configFile = {
         "kwinrc"."Windows".Placement = "UnderMouse";
