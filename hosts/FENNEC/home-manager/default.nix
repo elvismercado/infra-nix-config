@@ -258,6 +258,7 @@ in
   # Linux / KDE Plasma
   custom.hmPlasmaMacos.enable = true;
   custom.hmPlasmaCommon.systray.weather.enable = true;
+  custom.hmPlasmaCommon.kwallet.enable = false;
 
   # Linux / Gaming
   custom.hmGaming.enable = true;

@@ -126,6 +126,7 @@ in
   custom.hmAndroid.enable = true;
   custom.hmPlasmaMacos.enable = true;
   custom.hmPlasmaCommon.systray.weather.enable = true;
+  custom.hmPlasmaCommon.kwallet.enable = false;
   custom.hmWindowShortcuts.enable = true;
   custom.hmVscode.enable = true;
 

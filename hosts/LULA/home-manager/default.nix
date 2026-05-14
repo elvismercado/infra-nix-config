@@ -47,4 +47,5 @@
   custom.hmPlasmaLula.enable = true;
   custom.hmPlasmaCommon.systray.weather.enable = true;
   custom.hmPlasmaCommon.hotCorners.enable = false;
+  custom.hmPlasmaCommon.kwallet.enable = false;
 }

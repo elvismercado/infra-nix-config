@@ -96,6 +96,24 @@ in
         (Overview, Activities, etc.). KDE's defaults are kept when `true`.
       '';
     };
+
+    kwallet.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `false`, disables the KWallet daemon entirely (writes
+        `Enabled=false` to `kwalletrc`) and suppresses the first-run
+        wizard. Without a Secret Service agent running, NetworkManager
+        falls back to its own keyfile store for Wi-Fi PSKs (saved under
+        `/etc/NetworkManager/system-connections/`, root-readable), which
+        avoids the well-known "Wi-Fi waits for authentication but no
+        prompt appears" deadlock when KWallet is uninitialized.
+
+        Saved Wi-Fi networks that were previously stored in KWallet must
+        be forgotten and re-added once after flipping this off, so that
+        plasma-nm rewrites them to the system keyfile.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -156,6 +174,17 @@ in
 
       configFile = {
         "kwinrc"."Windows".Placement = "UnderMouse";
+      }
+      # KWallet kill switch — disable the daemon and suppress the
+      # first-run wizard. Without a Secret Service agent, plasma-nm /
+      # NetworkManager fall back to the system keyfile store for Wi-Fi
+      # PSKs, which is what we want on hosts where nobody asked for a
+      # password manager UI.
+      // lib.optionalAttrs (!cfg.kwallet.enable) {
+        "kwalletrc"."Wallet" = {
+          "Enabled" = false;
+          "First Use" = false;
+        };
       }
       # Hot-corner kill switch — disable all four screen edges. Value 9
       # corresponds to KWin's `ElectricBorder::ElectricNone` enum, which
