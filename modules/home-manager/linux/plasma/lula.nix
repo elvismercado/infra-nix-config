@@ -102,34 +102,34 @@ in
     ];
 
     # Larger UI fonts — default Plasma is 10pt Noto Sans, which is
-    # tight on a 14" 1080p panel for a non-technical user. Bump the
-    # main UI fonts to 12pt and the fixed-width font to 12pt as well
-    # (Hack Nerd Font is pulled in by `custom.sysFonts`, matches what
-    # Starship expects in the terminal).
+    # tight on a 14" 1080p panel for a non-technical user. Bumped to
+    # 14pt main / 12pt small / 13pt fixed-width. Hack Nerd Font is
+    # pulled in by `custom.sysFonts` and matches what Starship expects
+    # in the terminal.
     programs.plasma.fonts = {
       general = {
         family = "Noto Sans";
-        pointSize = 12;
+        pointSize = 14;
       };
       menu = {
         family = "Noto Sans";
-        pointSize = 12;
+        pointSize = 14;
       };
       toolbar = {
         family = "Noto Sans";
-        pointSize = 12;
+        pointSize = 14;
       };
       windowTitle = {
         family = "Noto Sans";
-        pointSize = 12;
+        pointSize = 14;
       };
       small = {
         family = "Noto Sans";
-        pointSize = 10;
+        pointSize = 12;
       };
       fixedWidth = {
         family = "Hack Nerd Font";
-        pointSize = 12;
+        pointSize = 13;
       };
     };
   };

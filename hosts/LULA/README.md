@@ -47,7 +47,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
 - **Biometrics:** fprintd (fingerprint login, sudo, polkit)
-- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock for pinned and running apps. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). UI fonts bumped to 12pt for easier reading on the 14" panel. Weather widget enabled for Terneuzen.
+- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock for pinned and running apps. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). UI fonts bumped to 14pt (12pt small, 13pt mono) for easier reading on the 14" panel. Weather widget enabled for Terneuzen.
 - **Trackpad:** natural scrolling, tap-to-click, disable-while-typing (declared per-device via `programs.plasma.input.touchpads`).
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
