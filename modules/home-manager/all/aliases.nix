@@ -29,6 +29,14 @@ let
   # the public one, so derive its path from `repoPath`'s parent dir.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
   privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/nix-config-private";
+
+  # Guarded one-liner that refreshes the `private` flake input lock
+  # against the local sibling repo. Silent no-op when the sibling is
+  # missing or not a git repo (e.g. fresh hosts, install.sh stubs). The
+  # `--flake` arg means it works even when invoked from a different cwd.
+  # `2>/dev/null || true` swallows nix's "warning: updating lock file"
+  # noise and keeps the alias chainable on `&&`.
+  bumpPrivate = "{ if [ -d ${privateRepo} ] && git -C ${privateRepo} rev-parse --git-dir >/dev/null 2>&1; then nix flake update private --flake ${publicRepo} 2>/dev/null || true; fi; }";
 in
 
 {
@@ -43,8 +51,14 @@ in
       # Nix workflow aliases
       switchcd = "cd ${publicRepo}";
       switchupdate = "cd ${publicRepo} && nix flake update";
-      switchcheck = "cd ${publicRepo} && nix flake check";
+      switchcheck = "cd ${publicRepo} && ${bumpPrivate} && nix flake check";
       switchtrusted = "nix config show | grep trusted-users";
+
+      # Explicit one-shot: refresh the `private` lock entry, commit,
+      # and push. Use after editing the private overlay to ship the
+      # bump to other hosts. `switchcheck` / `switch` already refresh
+      # the lock locally; this one persists the change.
+      switchbumpprivate = "cd ${publicRepo} && nix flake update private && git add flake.lock && git commit -m 'flake.lock: bump private input' && git push";
 
       # Git sync: fast-forward both the public repo and the private
       # sibling. Public failure aborts (--ff-only refuses on local
@@ -54,7 +68,8 @@ in
       switchpull = ''git -C ${publicRepo} pull --ff-only && '' +
         ''{ if [ -d ${privateRepo} ] && git -C ${privateRepo} remote get-url origin >/dev/null 2>&1; then '' +
         ''git -C ${privateRepo} pull --ff-only; '' +
-        ''else echo "switchpull: private sibling missing or stub (no origin) - skipping"; fi; }'';
+        ''else echo "switchpull: private sibling missing or stub (no origin) - skipping"; fi; } && '' +
+        bumpPrivate;
 
       # --- terminal eye candy ---
       # Each toy runs under an idle inhibitor so the display stays on and
