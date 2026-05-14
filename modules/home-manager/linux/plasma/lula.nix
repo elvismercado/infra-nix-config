@@ -70,16 +70,18 @@ in
         ];
       }
 
-      # Bottom panel — floating dock with pinned launchers + running apps.
-      # `iconTasks` shows both pinned (.desktop launchers) and currently
-      # running windows in a single strip, so the user has one place to
-      # see "what can I open" and "what's open right now".
+      # Bottom panel — full-width dock with pinned launchers + running
+      # apps. `iconTasks` shows both pinned (.desktop launchers) and
+      # currently running windows in a single strip, so the user has one
+      # place to see "what can I open" and "what's open right now".
+      # Non-floating + `lengthMode = "fill"` gives a true edge-to-edge
+      # taskbar; `dodgewindows` lets maximized apps reclaim the full
+      # screen height.
       {
         location = "bottom";
         height = 56;
-        floating = true;
-        alignment = "center";
-        lengthMode = "fit";
+        floating = false;
+        lengthMode = "fill";
         hiding = "dodgewindows";
         widgets = [
           {
@@ -94,5 +96,37 @@ in
         ];
       }
     ];
+
+    # Larger UI fonts — default Plasma is 10pt Noto Sans, which is
+    # tight on a 14" 1080p panel for a non-technical user. Bump the
+    # main UI fonts to 12pt and the fixed-width font to 12pt as well
+    # (Hack Nerd Font is pulled in by `custom.sysFonts`, matches what
+    # Starship expects in the terminal).
+    programs.plasma.fonts = {
+      general = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      menu = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      toolbar = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      windowTitle = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      small = {
+        family = "Noto Sans";
+        pointSize = 10;
+      };
+      fixedWidth = {
+        family = "Hack Nerd Font";
+        pointSize = 12;
+      };
+    };
   };
 }

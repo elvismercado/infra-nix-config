@@ -57,6 +57,7 @@
     ../../../modules/apps/linux/brave.nix
     ../../../modules/apps/linux/localsend.nix
     ../../../modules/apps/linux/mpv.nix
+    ../../../modules/apps/linux/nextcloud.nix
     ../../../modules/apps/linux/onlyoffice.nix
   ];
 
@@ -113,10 +114,15 @@
   custom.sysNixFprintd.enable = true;
 
   # Apps (cross-layer façades) — minimal persona for a non-technical user.
-  # Brave with no force-installed extensions (vanilla) per LULA's profile.
+  # Brave with two managed extensions: Bitwarden for passwords and
+  # Floccus to keep bookmarks in sync via Nextcloud.
   custom.appBrave.enable = true;
-  custom.appBrave.extensions = [ ];
+  custom.appBrave.extensions = [
+    "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
+    "fnaicdffflnofjppbagibeoednhnbjhg" # Floccus bookmark sync
+  ];
   custom.appLocalsend.enable = true;
   custom.appMpv.enable = true;
+  custom.appNextcloud.enable = true;
   custom.appOnlyoffice.enable = true;
 }
