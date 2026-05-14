@@ -112,18 +112,6 @@
   custom.sysNixPostinstall.enable = true;
   custom.sysNixFprintd.enable = true;
 
-  # Trackpad ergonomics — applied at the libinput layer so they're
-  # active both at SDDM and inside the Plasma session, and survive any
-  # touchpad hardware swap (no per-device vendor/product IDs needed).
-  #   - naturalScrolling: macOS-style (content follows fingers)
-  #   - tapping:          tap = click (libinput default, kept explicit)
-  #   - tappingDragLock:  tap-and-drag tolerates a brief finger-lift
-  services.libinput.touchpad = {
-    naturalScrolling = true;
-    tapping = true;
-    tappingDragLock = true;
-  };
-
   # Apps (cross-layer façades) — minimal persona for a non-technical user.
   # Brave with no force-installed extensions (vanilla) per LULA's profile.
   custom.appBrave.enable = true;

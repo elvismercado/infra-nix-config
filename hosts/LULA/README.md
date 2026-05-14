@@ -48,7 +48,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Bluetooth:** enabled
 - **Biometrics:** fprintd (fingerprint login, sudo, polkit)
 - **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a floating bottom dock for pinned and running apps. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). Weather widget enabled for Terneuzen.
-- **Trackpad:** natural scrolling, tap-to-click, tap-and-drag with finger-lift tolerance (`services.libinput.touchpad`).
+- **Trackpad:** natural scrolling, tap-to-click, disable-while-typing (declared per-device via `programs.plasma.input.touchpads`).
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
   when the overlay is missing.

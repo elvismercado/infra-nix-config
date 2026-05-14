@@ -50,4 +50,20 @@
   custom.hmPlasmaCommon.kwallet.enable = false;
   # Double-click to open files/folders (Windows / macOS Finder behavior).
   custom.hmPlasmaCommon.singleClickToOpen = false;
+
+  # Trackpad — per-device libinput config. Plasma Wayland reads
+  # `~/.config/kcminputrc`; identifiers come from
+  # `/proc/bus/input/devices` on LULA:
+  #   SynPS/2 Synaptics TouchPad, Vendor=0002, Product=0007.
+  programs.plasma.input.touchpads = [
+    {
+      enable = true;
+      name = "SynPS/2 Synaptics TouchPad";
+      vendorId = "0002";
+      productId = "0007";
+      naturalScroll = true;
+      tapToClick = true;
+      disableWhileTyping = true;
+    }
+  ];
 }
