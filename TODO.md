@@ -10,10 +10,6 @@ Open items only.
 - [ ] **Migrate `inputs.private` away from relative `git+file:` before Nix removes it.** Every NixOS rebuild emits `warning: Fetching Git repository 'file:../nix-config-private', which uses a path relative to the current directory. ... will stop working in a future release. See https://github.com/NixOS/nix/issues/12281`. Tracked decision in [flake.nix](flake.nix) header comment. Investigate alternatives: absolute path resolved against `self.outPath`'s parent, an installer-time `git+file:///abs/path` rewrite, or moving the private overlay into a real flake input (likely requires a private GitHub repo URL with token-based auth on every rebuilder — trade-off vs the current sibling-on-disk model).
 - [ ] **Investigate `download buffer is full` warning during `nixos-install`.** install.sh already passes `--option download-buffer-size 268435456` (256 MiB) but the warning still fires on LULA. Either the option doesn't apply early enough, or the substituter saturates faster than the configured buffer drains on the live ISO. Check whether bumping further (512 MiB / 1 GiB) helps, or whether this is a known cosmetic warning in current Nix.
 
-### LULA — post-install follow-ups
-
-- [ ] **LULA: verify `id -u lula` after first install.** [hosts/LULA/user-settings.nix](hosts/LULA/user-settings.nix) sets `uid = 1000` (NixOS default for the first normal user). If the live uid differs, update the file.
-
 ### Display modules — parked, decide remove vs upgrade
 
 - [ ] **`custom.sysNixPlymouth` + `custom.hmShutdownDisableOutputs` — improve before re-enabling (coupled).** Parked on JIN + FENNEC 2026-05-05. The shutdown-disable-outputs module exists _only_ to mitigate Plymouth's multi-monitor shutdown flicker, so the two are all-or-nothing: re-enable Plymouth (with fixes) → re-evaluate `hmShutdownDisableOutputs`; delete Plymouth permanently → also delete `hmShutdownDisableOutputs`. Issues to fix before re-enabling Plymouth:
