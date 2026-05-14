@@ -6,12 +6,17 @@ In this repo, Home Manager is integrated as a **system module** on every NixOS a
 
 ## Current Hosts
 
-| Host   | System         | Channel | HM Integration |
-| ------ | -------------- | ------- | -------------- |
-| JIN    | x86_64-linux   | stable  | NixOS module   |
-| FENNEC | x86_64-linux   | stable  | NixOS module   |
-| EDGE   | x86_64-darwin  | stable  | darwin module  |
-| LULA   | aarch64-darwin | stable  | darwin module  |
+| Host   | System        | Channel | HM Integration |
+| ------ | ------------- | ------- | -------------- |
+| JIN    | x86_64-linux  | stable  | NixOS module   |
+| FENNEC | x86_64-linux  | stable  | NixOS module   |
+| LULA   | x86_64-linux  | stable  | NixOS module   |
+| EDGE   | x86_64-darwin | stable  | darwin module  |
+
+> LULA is mid-migration from macOS to NixOS. The table reflects the
+> target state. Until Round 2 ships, the host's `metadata.os` is still
+> `"darwin"` so the flake keeps evaluating — see
+> [hosts/LULA/README.md](hosts/LULA/README.md).
 
 ## Apply
 
@@ -20,8 +25,8 @@ Home Manager config is applied as part of the system rebuild:
 ```bash
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
+sudo nixos-rebuild switch --flake .#LULA   # after Round 2
 darwin-rebuild switch --flake .#EDGE
-darwin-rebuild switch --flake .#LULA
 ```
 
 > There is no standalone `home-manager switch --flake .#<HOST>` for these hosts — `homeManagerHosts` in `flake/hosts.nix` is currently empty. To enable standalone use for a future non-NixOS/non-darwin host, add it to `homeManagerHosts`.

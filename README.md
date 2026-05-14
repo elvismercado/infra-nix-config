@@ -12,12 +12,16 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 
 ## Hosts
 
-| Host   | System             | Architecture   | Channel | Docs                               |
-| ------ | ------------------ | -------------- | ------- | ---------------------------------- |
-| JIN    | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/JIN/README.md)    |
-| FENNEC | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/FENNEC/README.md) |
-| EDGE   | macOS (nix-darwin) | x86_64-darwin  | stable  | [Hardware](hosts/EDGE/README.md)   |
-| LULA   | macOS (nix-darwin) | aarch64-darwin | stable  | [Hardware](hosts/LULA/README.md)   |
+| Host   | System             | Architecture  | Channel | Docs                               |
+| ------ | ------------------ | ------------- | ------- | ---------------------------------- |
+| JIN    | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/JIN/README.md)    |
+| FENNEC | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/FENNEC/README.md) |
+| LULA   | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/LULA/README.md)   |
+| EDGE   | macOS (nix-darwin) | x86_64-darwin | stable  | [Hardware](hosts/EDGE/README.md)   |
+
+> LULA is mid-migration from macOS to NixOS (new hardware: Lenovo
+> ThinkPad T14 Gen 2). The table reflects the target state — see
+> [hosts/LULA/README.md](hosts/LULA/README.md) for status.
 
 ## Quick Commands
 
@@ -25,10 +29,10 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 # NixOS — rebuild system
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
+sudo nixos-rebuild switch --flake .#LULA   # after Round 2 of the LULA migration
 
 # macOS — rebuild system
 darwin-rebuild switch --flake .#EDGE
-darwin-rebuild switch --flake .#LULA
 ```
 
 > Home Manager is integrated as a system module on all hosts, so it is applied as part of the system rebuild above. Standalone `home-manager switch` is reserved for future non-NixOS/non-darwin hosts (e.g. Ubuntu, Arch) registered in `homeManagerHosts`.

@@ -4,10 +4,15 @@ NixOS system configuration is managed through `flake/nixos.nix`. Each NixOS host
 
 ## Current Hosts
 
-| Host   | Architecture | Channel | User   |
-| ------ | ------------ | ------- | ------ |
-| JIN    | x86_64-linux | stable  | jin    |
-| FENNEC | x86_64-linux | stable  | fennec |
+| Host   | Architecture | Channel | User   | Notes                                                           |
+| ------ | ------------ | ------- | ------ | --------------------------------------------------------------- |
+| JIN    | x86_64-linux | stable  | jin    | Desktop — Ryzen 9 3900X / Radeon R7 430                         |
+| FENNEC | x86_64-linux | stable  | fennec | Desktop — Ryzen 9 5900X / RTX 3080                              |
+| LULA   | x86_64-linux | stable  | lula   | Laptop — ThinkPad T14 Gen 2 / i5-1135G7 — **migration pending** |
+
+> LULA's NixOS install and host-config rewrite land in Round 2 of the
+> macOS → NixOS migration. Until then, `metadata.os = "darwin"` keeps
+> the flake evaluating — see [hosts/LULA/README.md](hosts/LULA/README.md).
 
 ## Rebuild
 
@@ -17,6 +22,7 @@ Rebuild the system configuration from the flake:
 # Rebuild using the host's flake configuration
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
+sudo nixos-rebuild switch --flake .#LULA   # after Round 2
 
 # Rebuild from the current directory (uses hostname to find config)
 sudo nixos-rebuild switch --flake .
