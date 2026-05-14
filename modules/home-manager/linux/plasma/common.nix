@@ -23,14 +23,23 @@
 #     the private overlay in
 #     `nix-config-private/hosts/<HOST>/user-settings.nix`:
 #       weatherLocation = {
-#         name = "The Hague";              # station label shown in widget
-#         latitude = "52.0731027233998";   # reserved for future provider wiring
-#         longitude = "4.292356634891381"; # reserved for future provider wiring
-#         updateIntervalMinutes = 30;       # optional, default 60
+#         name = "The Hague";                              # human label, not read by widget
+#         source = "wttr.in|weather|The Hague,NL";         # REQUIRED
+#         latitude = "52.0731027233998";                   # reference only
+#         longitude = "4.292356634891381";                 # reference only
+#         updateIntervalMinutes = 30;                       # optional, default 60
 #       };
-#     Only the station label and refresh interval are written
-#     declaratively; the data provider (wttr.in / BBC / NOAA / ...) is
-#     picked manually in the widget UI on first launch.
+#     `source` is the literal value the KDE weather applet writes to
+#     `[Configuration][WeatherStation] source=` in its appletsrc entry.
+#     Format is `<provider>|weather|<location-id>`. wttr.in is the
+#     simplest provider — location id is just `City,CC` (or any string
+#     wttr.in accepts; see `wttr.in/:help`). For bbcukmet / noaa /
+#     envcan you typically have to configure the widget once via the
+#     GUI on a throwaway machine, then read the resulting `source=`
+#     line out of `~/.config/plasma-org.kde.plasma.desktop-appletsrc`.
+#     `latitude`/`longitude` are kept in the overlay as inert reference
+#     data — not consumed by the widget, useful if we ever wire a
+#     different provider or a 3rd-party widget that needs coordinates.
 #
 #   custom.hmPlasmaCommon.hotCorners.enable (default: true)
 #     When `false`, disables all four screen-edge "hot corner" actions
@@ -65,7 +74,9 @@ let
       ++ lib.optional weatherEnabled "org.kde.plasma.weather";
     configs = lib.optionalAttrs weatherEnabled {
       "org.kde.plasma.weather".config.WeatherStation = {
-        weatherStationName = weather.name;
+        # `source` is the verbatim key the KDE weather applet reads.
+        # Format: "<provider>|weather|<location-id>". See header.
+        source = weather.source;
         updateInterval = weather.updateIntervalMinutes or 60;
       };
     };
@@ -131,6 +142,10 @@ in
       {
         assertion = !weatherEnabled || weather != null;
         message = "custom.hmPlasmaCommon.systray.weather.enable requires userSettings.weatherLocation (typically set in nix-config-private/hosts/<HOST>/user-settings.nix)";
+      }
+      {
+        assertion = !weatherEnabled || weather == null || (weather ? source);
+        message = "userSettings.weatherLocation.source is required when custom.hmPlasmaCommon.systray.weather.enable = true. Format: \"<provider>|weather|<location-id>\", e.g. \"wttr.in|weather|The Hague,NL\".";
       }
     ];
 
