@@ -74,6 +74,7 @@
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/linux/signal-desktop.nix
     ../../../modules/apps/linux/libreoffice.nix
+    ../../../modules/apps/linux/onlyoffice.nix
     ../../../modules/apps/linux/rpi-imager.nix
     ../../../modules/apps/linux/localsend.nix
     ../../../modules/apps/linux/yubico-authenticator.nix
