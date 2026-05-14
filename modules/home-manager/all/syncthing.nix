@@ -24,8 +24,33 @@
 #                                          empty, the merged config has no folders
 #                                          and the daemon won't fabricate "Default"
 #                                          on a fresh install either.
+#   - New-folder defaults                — path / ignorePerms / ignore lines for
+#                                          folders created later via the Web UI.
+#                                          See "New-folder defaults" below.
 #   - Web UI desktop shortcut            — clickable launcher for http://127.0.0.1:8384
 #                                          via the cross-platform web-shortcuts helper.
+#
+# New-folder defaults (settings.defaults.folder + settings.defaults.ignores):
+# These pre-fill the "Add Folder" dialog and are written into each new
+# folder's `.stignore` on creation. They DO NOT touch existing folders.
+#
+#   custom.hmSyncthing.defaultFolderPath
+#     Path pre-filled in the Web UI's "Folder Path" field.
+#     Default: `${config.home.homeDirectory}/cloud/syncthing` (works on
+#     both Linux and macOS).
+#
+#   custom.hmSyncthing.ignorePermsByDefault
+#     Pre-ticks "Ignore Permissions" for new folders. Default `true` —
+#     the cluster spans Linux + macOS (EDGE), and perm bits don't survive
+#     the round-trip cleanly.
+#
+#   custom.hmSyncthing.defaultIgnoreLines
+#     List of `.stignore` lines copied into every new folder. Default
+#     covers OS-generated cruft (with `(?d)` so Syncthing actively
+#     deletes it instead of conflict-flagging) plus a couple of
+#     universally-noisy dev directories. Hosts can extend with
+#     `lib.mkAfter [ ... ]` or replace with `lib.mkForce [ ... ]`.
+#
 #
 # The ONLY OS branch is the Linux KDE system tray icon: upstream HM puts an
 # `assertPlatform "...tray" pkgs lib.platforms.linux` on
@@ -78,7 +103,53 @@ in
     (if isLinux then ../linux/web-shortcuts.nix else ../darwin/web-shortcuts.nix)
   ];
 
-  options.custom.hmSyncthing.enable = lib.mkEnableOption "Syncthing continuous file synchronisation (services.syncthing on both Linux and macOS)";
+  options.custom.hmSyncthing = {
+    enable = lib.mkEnableOption "Syncthing continuous file synchronisation (services.syncthing on both Linux and macOS)";
+
+    defaultFolderPath = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.home.homeDirectory}/cloud/syncthing";
+      defaultText = lib.literalExpression ''"\${config.home.homeDirectory}/cloud/syncthing"'';
+      description = ''
+        Path pre-filled in the Web UI's "Add Folder" dialog. Applies to
+        new folders only — existing folders keep their current path.
+      '';
+    };
+
+    ignorePermsByDefault = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Pre-tick "Ignore Permissions" for newly-added folders. Default
+        `true` because the cluster spans Linux + macOS and perm bits
+        don't round-trip cleanly. Applies to new folders only.
+      '';
+    };
+
+    defaultIgnoreLines = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        # OS-generated cruft — `(?d)` lets Syncthing delete instead of conflict.
+        "(?d).DS_Store"
+        "(?d)._*"
+        "(?d)Thumbs.db"
+        "(?d)desktop.ini"
+        "(?d)$RECYCLE.BIN"
+        "(?d).Spotlight-V100"
+        "(?d).Trashes"
+        "(?d).fseventsd"
+        "(?d).TemporaryItems"
+        # Universally-noisy dev directories — don't auto-delete locally.
+        "node_modules"
+        "__pycache__"
+      ];
+      description = ''
+        Lines copied into each new folder's `.stignore` on creation.
+        Existing folders are not touched. Extend with `lib.mkAfter` or
+        replace with `lib.mkForce`.
+      '';
+    };
+  };
 
   config = lib.mkIf cfg.enable {
     services.syncthing = {
@@ -98,6 +169,15 @@ in
         deviceName = userSettings.hostname; # show the canonical hostname in the Web UI / cluster
       };
       settings.devices = peers;
+
+      # New-folder defaults — pre-fill path/ignorePerms and seed
+      # `.stignore` for folders created later via the Web UI. Existing
+      # folders are unaffected.
+      settings.defaults.folder = {
+        path = cfg.defaultFolderPath;
+        ignorePerms = cfg.ignorePermsByDefault;
+      };
+      settings.defaults.ignores.lines = cfg.defaultIgnoreLines;
     };
 
     # Clickable ~/Desktop launcher for the Web UI (renders .desktop on
