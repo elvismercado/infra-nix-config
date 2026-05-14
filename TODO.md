@@ -12,7 +12,6 @@ Open items only.
 
 ### LULA — post-install follow-ups
 
-- [ ] **LULA: declarative KDE Plasma config.** Skipped at install time so the user could pick defaults via Plasma's first-run wizard. Once preferences settle, pin theme/panel/taskbar via a Linux `hmPlasmaConfig` block in [hosts/LULA/home-manager/default.nix](hosts/LULA/home-manager/default.nix).
 - [ ] **LULA: verify `id -u lula` after first install.** [hosts/LULA/user-settings.nix](hosts/LULA/user-settings.nix) sets `uid = 1000` (NixOS default for the first normal user). If the live uid differs, update the file.
 
 ### Display modules — parked, decide remove vs upgrade

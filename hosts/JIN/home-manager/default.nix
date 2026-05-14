@@ -125,6 +125,8 @@ in
   # Apps
   custom.hmAndroid.enable = true;
   custom.hmPlasmaConfig.enable = true;
+  custom.hmPlasmaConfig.layout = "macos";
+  custom.hmPlasmaConfig.systray.weather.enable = true;
   custom.hmWindowShortcuts.enable = true;
   custom.hmVscode.enable = true;
 

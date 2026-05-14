@@ -257,6 +257,8 @@ in
 
   # Linux / KDE Plasma
   custom.hmPlasmaConfig.enable = true;
+  custom.hmPlasmaConfig.layout = "macos";
+  custom.hmPlasmaConfig.systray.weather.enable = true;
 
   # Linux / Gaming
   custom.hmGaming.enable = true;

@@ -22,6 +22,7 @@
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
+    ../../../modules/home-manager/linux/plasma-config.nix
   ];
 
   # Base
@@ -38,4 +39,10 @@
 
   # Linux
   custom.hmLinuxAliases.enable = true;
+
+  # Linux / KDE Plasma — minimal layout, weather widget enabled
+  # (uses userSettings.weatherLocation from the private overlay).
+  custom.hmPlasmaConfig.enable = true;
+  custom.hmPlasmaConfig.layout = "minimal";
+  custom.hmPlasmaConfig.systray.weather.enable = true;
 }

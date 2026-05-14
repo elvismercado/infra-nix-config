@@ -47,6 +47,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
 - **Biometrics:** fprintd (fingerprint login, sudo, polkit)
+- **Desktop config:** `hmPlasmaConfig` with `layout = "minimal"` (single bottom floating panel, systray + clock) and weather widget for Terneuzen.
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
   when the overlay is missing.
@@ -101,6 +102,4 @@ powerprofilesctl set performance   # or balanced / power-saver
 
 ## Future work
 
-- **Declarative KDE Plasma config.** Defaults from KDE's first-run
-  wizard for now; pin theme/panel/taskbar via `hmPlasmaConfig` once
-  preferences settle.
+_None tracked at the moment._
