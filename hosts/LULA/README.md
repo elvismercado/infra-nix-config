@@ -47,7 +47,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
 - **Biometrics:** fprintd (fingerprint login, sudo, polkit)
-- **Desktop config:** `hmPlasmaConfig` with `layout = "minimal"` (single bottom floating panel, systray + clock) and weather widget for Terneuzen.
+- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a floating bottom dock for pinned and running apps. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). Weather widget enabled for Terneuzen.
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
   when the overlay is missing.

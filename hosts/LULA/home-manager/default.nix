@@ -22,7 +22,7 @@
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
-    ../../../modules/home-manager/linux/plasma-config.nix
+    ../../../modules/home-manager/linux/plasma/lula.nix
   ];
 
   # Base
@@ -40,9 +40,11 @@
   # Linux
   custom.hmLinuxAliases.enable = true;
 
-  # Linux / KDE Plasma — minimal layout, weather widget enabled
-  # (uses userSettings.weatherLocation from the private overlay).
-  custom.hmPlasmaConfig.enable = true;
-  custom.hmPlasmaConfig.layout = "minimal";
-  custom.hmPlasmaConfig.systray.weather.enable = true;
+  # Linux / KDE Plasma — LULA layout (top tray panel + bottom dock,
+  # no Global Menu). Weather widget pulls from the private overlay's
+  # userSettings.weatherLocation. Hot corners disabled to avoid
+  # accidental Overview triggers.
+  custom.hmPlasmaLula.enable = true;
+  custom.hmPlasmaCommon.systray.weather.enable = true;
+  custom.hmPlasmaCommon.hotCorners.enable = false;
 }
