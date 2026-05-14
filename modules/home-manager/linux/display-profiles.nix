@@ -317,9 +317,12 @@ let
             log "Warning: sysfs modes not found for $connector, using current resolution"
           fi
 
-          # Build modes JSON array from space-separated list
+          # Build modes JSON array from space-separated list. Word-splitting
+          # on $modes_str is intentional: it's a space-separated list of
+          # "WxH@RR" tokens with no embedded whitespace.
           local modes_json="[]"
           if [ -n "$modes_str" ]; then
+            # shellcheck disable=SC2086
             modes_json=$(printf '%s\n' $modes_str | jq -R . | jq -s -c .)
           fi
 
