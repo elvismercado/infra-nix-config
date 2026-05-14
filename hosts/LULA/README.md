@@ -34,7 +34,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 ## Configuration overview
 
 - **OS:** NixOS 25.11 (Xantusia), x86_64-linux, stable channel
-- **Bootloader:** GRUB with sleek dark theme (1080p, single-OS, 5 s timeout)
+- **Bootloader:** GRUB with sleek dark theme (1080p, single-OS, 2 s timeout)
 - **Desktop:** KDE Plasma + SDDM (Wayland)
 - **CPU/GPU:** Intel Tiger Lake i5-1135G7 (`custom.sysNixIntelTigerLakeI51135g7`)
   + Intel Iris Xe (`custom.sysNixIntelIrisXe`, VA-API via iHD)

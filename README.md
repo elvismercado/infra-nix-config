@@ -19,17 +19,13 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 | LULA   | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/LULA/README.md)   |
 | EDGE   | macOS (nix-darwin) | x86_64-darwin | stable  | [Hardware](hosts/EDGE/README.md)   |
 
-> LULA is mid-migration from macOS to NixOS (new hardware: Lenovo
-> ThinkPad T14 Gen 2). The table reflects the target state — see
-> [hosts/LULA/README.md](hosts/LULA/README.md) for status.
-
 ## Quick Commands
 
 ```bash
 # NixOS — rebuild system
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
-sudo nixos-rebuild switch --flake .#LULA   # after Round 2 of the LULA migration
+sudo nixos-rebuild switch --flake .#LULA
 
 # macOS — rebuild system
 darwin-rebuild switch --flake .#EDGE
