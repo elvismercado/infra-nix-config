@@ -20,6 +20,10 @@
 # Notes:
 #   - Tiger Lake's i915 PCI IDs are in the default kernel probe list, so
 #     we do NOT set i915.force_probe (unlike Arc A380 / DG2 which needs it).
+#   - i915.enable_guc=3 enables GuC submission + HuC firmware loading on
+#     Gen11+. Improves video decode quality and frees the CPU from
+#     scheduling work. Matches nixos-hardware's
+#     common/gpu/intel/tiger-lake module.
 #   - boot.kernelPackages is intentionally NOT pinned here — the latest
 #     stable kernel from nixpkgs is fine for Tiger Lake. Per-host profiles
 #     can override if needed.
@@ -50,6 +54,9 @@
     custom.sysNixNvtopIntel.enable = true;
 
     boot.initrd.kernelModules = [ "i915" ]; # early KMS — clean transition from firmware to kernel framebuffer
+    boot.kernelParams = [
+      "i915.enable_guc=3" # GuC submission + HuC firmware loading (Gen11+); see https://wiki.archlinux.org/title/intel_graphics
+    ];
 
     hardware.enableRedistributableFirmware = true; # Intel GuC/HuC firmware blobs
 

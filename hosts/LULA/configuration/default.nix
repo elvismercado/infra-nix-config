@@ -19,6 +19,9 @@
     ../../../modules/systems/nixos/graphics/intel_iris_xe.nix
     ../../../modules/systems/nixos/ssd
 
+    # Laptop chassis quirks
+    ../../../modules/systems/nixos/laptop/lenovo_thinkpad_t14_gen2.nix
+
     # Memory
     ../../../modules/systems/nixos/memory/zram.nix
     ../../../modules/systems/nixos/memory/earlyoom.nix
@@ -71,6 +74,9 @@
   custom.sysNixIntelTigerLakeI51135g7.enable = true;
   custom.sysNixIntelIrisXe.enable = true;
   custom.sysNixSsd.enable = true;
+
+  # Laptop chassis quirks (backlight + touchpad + TrackPoint)
+  custom.sysNixLenovoThinkpadT14IntelGen2.enable = true;
 
   # Memory — hibernation supported (swap partition >= RAM, set via install.sh --swap-size)
   custom.sysNixZram.enable = true;

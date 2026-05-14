@@ -87,6 +87,7 @@ modules/
       display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
       graphics/              #   AMD, Intel Arc, Intel Iris Xe, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom
+      laptop/                #   Lenovo ThinkPad T14 Gen 2 (Intel) chassis quirks
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
       nix/                   #   Flakes, garbage collection

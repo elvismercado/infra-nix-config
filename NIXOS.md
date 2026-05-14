@@ -123,6 +123,8 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/graphics/utilities/nvtop-nvidia.nix`      | `custom.sysNixNvtopNvidia.enable`                                       |
 | **Input**                                                |                                                                         |
 | `systems/nixos/input/wacom.nix`                          | `custom.sysNixWacom.enable`                                             |
+| **Laptop**                                               |                                                                         |
+| `systems/nixos/laptop/lenovo_thinkpad_t14_gen2.nix`      | `custom.sysNixLenovoThinkpadT14IntelGen2.enable`                        |
 | **Mouse**                                                |                                                                         |
 | `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`                                     |
 | **Power**                                                |                                                                         |
