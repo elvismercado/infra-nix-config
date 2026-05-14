@@ -18,28 +18,37 @@
 #
 # Opt-in feature toggles:
 #   custom.hmPlasmaCommon.systray.weather.enable
-#     Adds the weather widget to the systray. Requires
+#     Pins the weather widget to the systray's `shown` list (always
+#     visible in the bar, not hidden in the popup). Requires
 #     `userSettings.weatherLocation` (asserted) — typically supplied via
 #     the private overlay in
 #     `nix-config-private/hosts/<HOST>/user-settings.nix`:
 #       weatherLocation = {
-#         name = "The Hague";                              # human label, not read by widget
-#         source = "wttr.in|weather|The Hague,NL";         # REQUIRED
+#         name = "The Hague";                              # human label, reference only
+#         source = "wttr.in|weather|The Hague,NL";         # reference only (see KNOWN LIMITATION)
 #         latitude = "52.0731027233998";                   # reference only
 #         longitude = "4.292356634891381";                 # reference only
-#         updateIntervalMinutes = 30;                       # optional, default 60
+#         updateIntervalMinutes = 30;                       # reference only
 #       };
-#     `source` is the literal value the KDE weather applet writes to
-#     `[Configuration][WeatherStation] source=` in its appletsrc entry.
-#     Format is `<provider>|weather|<location-id>`. wttr.in is the
-#     simplest provider — location id is just `City,CC` (or any string
-#     wttr.in accepts; see `wttr.in/:help`). For bbcukmet / noaa /
-#     envcan you typically have to configure the widget once via the
-#     GUI on a throwaway machine, then read the resulting `source=`
-#     line out of `~/.config/plasma-org.kde.plasma.desktop-appletsrc`.
-#     `latitude`/`longitude` are kept in the overlay as inert reference
-#     data — not consumed by the widget, useful if we ever wire a
-#     different provider or a 3rd-party widget that needs coordinates.
+#
+#     KNOWN LIMITATION (TODO: revisit when plasma-manager fixes this):
+#     Per-widget config for systray-embedded widgets (provider, location,
+#     update interval) is NOT declaratively writable today.
+#     plasma-manager's `systemTray.items.configs` option exists but its
+#     convert function silently drops the values — KDE's plasma
+#     scripting API can't reach into nested containments, and upstream's
+#     `modules/widgets/system-tray.nix` has the relevant block commented
+#     out with the note "Uncomment this if plasma scripting API ever
+#     adds support for nested containments".
+#     Consequence: the weather widget appears in the tray but shows
+#     "no location configured" until the user right-clicks it and picks
+#     a provider + location once. Plasma persists that choice across
+#     reboots in `~/.config/plasma-org.kde.plasma.desktop-appletsrc`.
+#     The `source` / `updateIntervalMinutes` / `latitude` / `longitude`
+#     fields are kept in the overlay schema as inert reference data so
+#     they're already in place once we can wire them — either when
+#     upstream plasma-manager gains the capability, or via a
+#     `home.activation` post-switch `kwriteconfig6` patcher (see TODO.md).
 #
 #   custom.hmPlasmaCommon.hotCorners.enable (default: true)
 #     When `false`, disables all four screen-edge "hot corner" actions
@@ -72,14 +81,13 @@ let
         "org.kde.plasma.lock_keys"
       ]
       ++ lib.optional weatherEnabled "org.kde.plasma.weather";
-    configs = lib.optionalAttrs weatherEnabled {
-      "org.kde.plasma.weather".config.WeatherStation = {
-        # `source` is the verbatim key the KDE weather applet reads.
-        # Format: "<provider>|weather|<location-id>". See header.
-        source = weather.source;
-        updateInterval = weather.updateIntervalMinutes or 60;
-      };
-    };
+    # NOTE: per-widget config (e.g. weather provider/location) cannot be
+    # set declaratively here — plasma-manager silently drops
+    # `systemTray.items.configs` for nested-containment widgets. See the
+    # KNOWN LIMITATION block in this file's header. User configures the
+    # weather widget once via right-click → Configure; Plasma persists
+    # the choice in `plasma-org.kde.plasma.desktop-appletsrc`.
+    configs = { };
   };
 
   digitalClockWidget = {
@@ -143,10 +151,9 @@ in
         assertion = !weatherEnabled || weather != null;
         message = "custom.hmPlasmaCommon.systray.weather.enable requires userSettings.weatherLocation (typically set in nix-config-private/hosts/<HOST>/user-settings.nix)";
       }
-      {
-        assertion = !weatherEnabled || weather == null || (weather ? source);
-        message = "userSettings.weatherLocation.source is required when custom.hmPlasmaCommon.systray.weather.enable = true. Format: \"<provider>|weather|<location-id>\", e.g. \"wttr.in|weather|The Hague,NL\".";
-      }
+      # NOTE: no assertion on `weather.source` — the field is currently
+      # inert reference data (see KNOWN LIMITATION in header). Re-enable
+      # an assertion when we wire the activation-script patcher.
     ];
 
     home.packages = [
