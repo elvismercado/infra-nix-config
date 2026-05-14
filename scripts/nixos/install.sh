@@ -880,6 +880,22 @@ generate_hardware_config() {
   cat "$hw_config"
   echo "────────────────────────────────────────────"
   echo ""
+
+  # Commit the new file in the deployed repo. `nixos-install --flake .#<HOST>`
+  # evaluates as `git+file:///<repo>?ref=...&rev=<HEAD>`, which only sees
+  # files at HEAD — untracked `hardware-configuration.nix` would be invisible
+  # at eval time and the build aborts with `path '...hardware-configuration.nix'
+  # does not exist`. Plain `git add` (no commit) is unreliable here because the
+  # explicit `rev=` pin in the URL bypasses the working tree/index entirely.
+  # No push: install.sh has no SSH key for the user; postinstall.sh handles
+  # publishing once the user has a working auth setup.
+  info "Committing hardware-configuration.nix to the deployed repo (local-only)..."
+  ( cd "${REPO_DIR}" && \
+    git -c user.name=installer -c user.email=installer@localhost add -- \
+      "hosts/${FLAKE_HOST}/configuration/hardware-configuration.nix" && \
+    git -c user.name=installer -c user.email=installer@localhost commit -q \
+      -m "${FLAKE_HOST}: install-time hardware-configuration.nix" \
+  ) || fatal "Failed to commit hardware-configuration.nix in ${REPO_DIR}."
 }
 
 # ──────────────────────────────────────────────────────────────

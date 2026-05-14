@@ -317,33 +317,55 @@ step_commit_hardware_config() {
 
   cd "$REPO_DIR"
 
-  # Check if the file has uncommitted changes
-  if git diff --quiet -- "$hw_config" && git diff --cached --quiet -- "$hw_config"; then
-    # Also check if it's untracked
-    if ! git ls-files --others --exclude-standard | grep -q "$hw_config"; then
-      info "hardware-configuration.nix is already committed — nothing to do."
+  # Working-tree changes (uncommitted edits or untracked file) take priority:
+  # commit them first, then continue to the push check below.
+  if ! git diff --quiet -- "$hw_config" \
+     || ! git diff --cached --quiet -- "$hw_config" \
+     || git ls-files --others --exclude-standard | grep -q "$hw_config"; then
+
+    info "hardware-configuration.nix has uncommitted changes."
+    if confirm "Commit hardware-configuration.nix?"; then
+      git add "$hw_config"
+      git commit -m "${HOST}: update hardware-configuration.nix"
+    else
+      info "Skipped commit."
       echo ""
       return
     fi
   fi
 
-  info "hardware-configuration.nix has uncommitted changes."
-  if confirm "Commit and push hardware-configuration.nix?"; then
-    git add "$hw_config"
-    git commit -m "${HOST}: update hardware-configuration.nix"
-
-    if git remote get-url origin &>/dev/null; then
-      info "Pushing to remote..."
-      git push
-      info "Pushed successfully."
-    else
-      warn "No remote configured — committed locally only."
-    fi
+  # File is committed. Check if there are unpushed commits touching it
+  # (install.sh makes a local-only commit during install, so this is the
+  # common path for first-time hosts).
+  if ! git remote get-url origin &>/dev/null; then
+    info "hardware-configuration.nix is committed; no remote configured."
     echo ""
-  else
-    info "Skipped."
-    echo ""
+    return
   fi
+
+  local upstream
+  upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+  if [[ -z "$upstream" ]]; then
+    info "hardware-configuration.nix is committed; no upstream branch set — nothing to push."
+    echo ""
+    return
+  fi
+
+  if [[ -z "$(git log --oneline "${upstream}..HEAD" -- "$hw_config" 2>/dev/null)" ]]; then
+    info "hardware-configuration.nix is already pushed — nothing to do."
+    echo ""
+    return
+  fi
+
+  info "hardware-configuration.nix is committed locally but not pushed."
+  if confirm "Push to remote?"; then
+    info "Pushing to remote..."
+    git push
+    info "Pushed successfully."
+  else
+    info "Skipped push."
+  fi
+  echo ""
 }
 
 # ──────────────────────────────────────────────────────────────
