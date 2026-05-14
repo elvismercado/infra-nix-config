@@ -37,7 +37,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Bootloader:** GRUB with sleek dark theme (1080p, single-OS, 2 s timeout)
 - **Desktop:** KDE Plasma + SDDM (Wayland)
 - **CPU/GPU:** Intel Tiger Lake i5-1135G7 (`custom.sysNixIntelTigerLakeI51135g7`)
-  + Intel Iris Xe (`custom.sysNixIntelIrisXe`, VA-API via iHD)
+  - Intel Iris Xe (`custom.sysNixIntelIrisXe`, VA-API via iHD)
 - **Memory:** zram + earlyoom + hibernation (swap partition >= 16 GB RAM)
 - **Power:** power-profiles-daemon — Performance / Balanced / Power-saver
   via the KDE Battery widget
