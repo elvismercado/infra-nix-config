@@ -76,7 +76,9 @@ in
       # place to see "what can I open" and "what's open right now".
       # Non-floating + `lengthMode = "fill"` gives a true edge-to-edge
       # taskbar; `dodgewindows` lets maximized apps reclaim the full
-      # screen height.
+      # screen height. Two flanking expanding panel spacers center the
+      # task icons within the full-width panel — `alignment` has no
+      # effect when the panel is in fill mode.
       {
         location = "bottom";
         height = 56;
@@ -84,6 +86,7 @@ in
         lengthMode = "fill";
         hiding = "dodgewindows";
         widgets = [
+          { panelSpacer = { expanding = true; }; }
           {
             iconTasks = {
               launchers = [
@@ -93,6 +96,7 @@ in
               ];
             };
           }
+          { panelSpacer = { expanding = true; }; }
         ];
       }
     ];
