@@ -3,10 +3,6 @@
 Linux laptop — Lenovo ThinkPad T14 Gen 2 (2021), Intel Tiger Lake.
 Personal machine for a non-technical user, set up as a low-friction host.
 
-> **Migration in progress.** LULA was previously a 2026 MacBook Neo
-> (aarch64-darwin / nix-darwin). New hardware below; NixOS install and
-> repo wiring land in a follow-up round. See [Status](#status).
-
 ## Hardware
 
 | Component | Model                                                       |
@@ -31,53 +27,32 @@ Personal machine for a non-technical user, set up as a low-friction host.
 
 ### Biometrics
 
-- Fingerprint reader — expected to work via `fprintd` on NixOS.
-- IR camera (Windows Hello face unlock) — **Linux-side loss**, no
-  practical equivalent.
+- Fingerprint reader — supported via `fprintd` (not wired in this round;
+  see [Future work](#future-work)).
+- IR camera (Windows Hello face unlock) — no Linux equivalent.
 
-## Status
-
-This host is mid-migration from macOS to NixOS:
-
-- ✅ **Round 1 (done):** specs and cross-host docs updated to reflect the
-  new hardware. `user-settings.nix` already declares
-  `system = "x86_64-linux"` and `desktopEnvironment = "kde-plasma"`.
-- ⏳ **Round 2 (pending):** install NixOS on the laptop, capture
-  `hardware-configuration.nix`, rewrite `configuration/` and
-  `home-manager/` for KDE Plasma + NetworkManager + fprintd + TLP /
-  power-profiles + PipeWire + Bluetooth, swap the Brave façade from
-  darwin to linux, retire `users.knownUsers` / Homebrew / cask wiring,
-  flip `metadata.os` to `"nixos"`, and move LULA in `flake/hosts.nix`
-  from `darwinHosts` to `nixosHosts`.
-
-Until Round 2 ships, `metadata.os` stays `"darwin"` so the flake keeps
-evaluating. **Do not run `darwin-rebuild` against the new hardware** —
-the macOS-shaped configuration cannot apply on Linux.
-
-### Expected Linux-side losses vs the old macOS host
-
-- IR-camera face unlock (Windows Hello). Use the fingerprint reader.
-- AppCleaner (cask-only). No declarative-uninstall workflow planned.
-- macOS-style System Settings panes (Trackpad, Power, Security). Replaced
-  by KDE System Settings + the relevant `custom.sysNix*` modules.
-
-## Configuration overview (planned)
+## Configuration overview
 
 - **OS:** NixOS 25.11 (Xantusia), x86_64-linux, stable channel
-- **Desktop:** KDE Plasma + SDDM
-- **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
-- **Networking:** NetworkManager, Bluetooth
+- **Bootloader:** GRUB with sleek dark theme (1080p, single-OS, 5 s timeout)
+- **Desktop:** KDE Plasma + SDDM (Wayland)
+- **CPU/GPU:** Intel Tiger Lake i5-1135G7 (`custom.sysNixIntelTigerLakeI51135g7`)
+  + Intel Iris Xe (`custom.sysNixIntelIrisXe`, VA-API via iHD)
+- **Memory:** zram + earlyoom + hibernation (swap partition >= 16 GB RAM)
+- **Power:** power-profiles-daemon — Performance / Balanced / Power-saver
+  via the KDE Battery widget
+- **Networking:** NetworkManager (auto-enabled by `custom.sysNixUser`)
 - **Audio:** PipeWire
+- **Bluetooth:** enabled
 - **Environment:** UI language, regional formats, and timezone come from
-  the `nix-config-private` overlay. Falls back to `en-GB` / `Etc/UTC`
+  the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
   when the overlay is missing.
 - **Fonts:** Nerd Fonts, Google Fonts
-- **Power:** TLP / power-profiles-daemon (laptop-tuned)
-- **Security:** fingerprint reader (`fprintd`)
+- **Shell:** Bash with completions, Starship prompt (`pastel-powerline`)
 - **CLI:** Fastfetch, mpv, SSH, shell aliases — no dev tooling, no
   Syncthing.
 
-## Installed applications (planned)
+## Installed applications
 
 LULA intentionally runs a minimal app set:
 
@@ -86,13 +61,46 @@ LULA intentionally runs a minimal app set:
   (`custom.appBrave.extensions = []`). The user can install whatever
   they want from the Chrome Web Store.
 - **LocalSend** — cross-device file sharing.
+- **mpv** — media player.
+
+## Install
+
+This host is installed using the same flow as any other NixOS host in
+this flake. See [scripts/nixos/INSTALL.md](../../scripts/nixos/INSTALL.md)
+for the full procedure. Recommended invocation for LULA's single 256 GB
+NVMe with hibernation-capable swap:
+
+```bash
+bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
+  --host LULA --efi-size 1G --swap-size 20G
+```
+
+After reboot, log in as `lula` (initial password: `lula`), change it with
+`passwd`, and rebuild:
+
+```bash
+sudo nixos-rebuild switch --flake .#LULA
+```
 
 ## Useful commands
 
 ```bash
-# After Round 2 — rebuild and switch
+# Rebuild and switch
 sudo nixos-rebuild switch --flake .#LULA
 
 # Or use the shell alias from anywhere
 switch
+
+# Power profile
+powerprofilesctl get
+powerprofilesctl set performance   # or balanced / power-saver
 ```
+
+## Future work
+
+- **Fingerprint login.** The reader is supported by `fprintd`. Wire
+  `custom.sysNixFprintd.enable = true;` and run `fprintd-enroll`
+  post-install when desired.
+- **Declarative KDE Plasma config.** Defaults from KDE's first-run
+  wizard for now; pin theme/panel/taskbar via `hmPlasmaConfig` once
+  preferences settle.

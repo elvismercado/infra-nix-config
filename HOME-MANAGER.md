@@ -13,11 +13,6 @@ In this repo, Home Manager is integrated as a **system module** on every NixOS a
 | LULA   | x86_64-linux  | stable  | NixOS module   |
 | EDGE   | x86_64-darwin | stable  | darwin module  |
 
-> LULA is mid-migration from macOS to NixOS. The table reflects the
-> target state. Until Round 2 ships, the host's `metadata.os` is still
-> `"darwin"` so the flake keeps evaluating — see
-> [hosts/LULA/README.md](hosts/LULA/README.md).
-
 ## Apply
 
 Home Manager config is applied as part of the system rebuild:
@@ -25,7 +20,7 @@ Home Manager config is applied as part of the system rebuild:
 ```bash
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
-sudo nixos-rebuild switch --flake .#LULA   # after Round 2
+sudo nixos-rebuild switch --flake .#LULA
 darwin-rebuild switch --flake .#EDGE
 ```
 

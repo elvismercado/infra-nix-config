@@ -20,10 +20,8 @@
     ../../../modules/home-manager/all/ssh.nix
     ../../../modules/home-manager/all/starship.nix
 
-    # Apps
-
-    # macOS
-    ../../../modules/home-manager/darwin/aliases.nix
+    # Linux
+    ../../../modules/home-manager/linux/aliases.nix
   ];
 
   # Base
@@ -38,8 +36,6 @@
   custom.hmStarship.enable = true;
   custom.hmStarship.style = "pastel-powerline";
 
-  # Apps
-
-  # macOS
-  custom.hmDarwinAliases.enable = true;
+  # Linux
+  custom.hmLinuxAliases.enable = true;
 }

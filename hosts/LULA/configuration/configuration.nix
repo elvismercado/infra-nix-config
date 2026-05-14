@@ -1,22 +1,13 @@
-# Manage dotfiles and user packages
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running 'nixos-help').
 
-{ userSettings, ... }:
+{ ... }:
 
 {
-  nixpkgs.hostPlatform = userSettings.system;
-  system.stateVersion = 6; # required
-  system.primaryUser = userSettings.username; # required for homebrew.enable and other per-user options
-  nix.enable = false; # using determinate installer
-
-  # macOS auto-updates — this laptop should stay current without manual
-  # intervention. These keys live under the SoftwareUpdate domain and are
-  # forwarded to /Library/Preferences/com.apple.SoftwareUpdate.plist by
-  # nix-darwin's CustomUserPreferences.
-  system.defaults.CustomUserPreferences."com.apple.SoftwareUpdate" = {
-    AutomaticCheckEnabled = true; # check for updates daily
-    AutomaticDownload = 1; # download in background
-    CriticalUpdateInstall = 1; # install security updates automatically
-    ConfigDataInstall = 1; # install system data files automatically
-    AutomaticallyInstallMacOSUpdates = true; # install macOS updates automatically
-  };
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. Set at first install of the system; do not
+  # bump just because the channel moves forward — see configuration.nix(5).
+  system.stateVersion = "25.11";
 }

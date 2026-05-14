@@ -4,15 +4,11 @@ NixOS system configuration is managed through `flake/nixos.nix`. Each NixOS host
 
 ## Current Hosts
 
-| Host   | Architecture | Channel | User   | Notes                                                           |
-| ------ | ------------ | ------- | ------ | --------------------------------------------------------------- |
-| JIN    | x86_64-linux | stable  | jin    | Desktop — Ryzen 9 3900X / Radeon R7 430                         |
-| FENNEC | x86_64-linux | stable  | fennec | Desktop — Ryzen 9 5900X / RTX 3080                              |
-| LULA   | x86_64-linux | stable  | lula   | Laptop — ThinkPad T14 Gen 2 / i5-1135G7 — **migration pending** |
-
-> LULA's NixOS install and host-config rewrite land in Round 2 of the
-> macOS → NixOS migration. Until then, `metadata.os = "darwin"` keeps
-> the flake evaluating — see [hosts/LULA/README.md](hosts/LULA/README.md).
+| Host   | Architecture | Channel | User   | Notes                                             |
+| ------ | ------------ | ------- | ------ | ------------------------------------------------- |
+| JIN    | x86_64-linux | stable  | jin    | Desktop — Ryzen 9 3900X / Radeon R7 430           |
+| FENNEC | x86_64-linux | stable  | fennec | Desktop — Ryzen 9 5900X / RTX 3080                |
+| LULA   | x86_64-linux | stable  | lula   | Laptop — ThinkPad T14 Gen 2 / i5-1135G7 / Iris Xe |
 
 ## Rebuild
 
@@ -22,7 +18,7 @@ Rebuild the system configuration from the flake:
 # Rebuild using the host's flake configuration
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
-sudo nixos-rebuild switch --flake .#LULA   # after Round 2
+sudo nixos-rebuild switch --flake .#LULA
 
 # Rebuild from the current directory (uses hostname to find config)
 sudo nixos-rebuild switch --flake .
@@ -101,9 +97,11 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/cpu/amd/zenpower.nix`                     | `custom.sysNixAmdZenpower.enable`                                       |
 | `systems/nixos/cpu/amd/zen-kernel.nix`                   | `custom.sysNixZenKernel.enable`                                         |
 | `systems/nixos/cpu/amd/mitigations-off.nix`              | `custom.sysNixCpuMitigationsOff.enable`                                 |
+| `systems/nixos/cpu/intel/base.nix`                       | `custom.sysNixIntelCpu.enable`                                          |
 | **CPU Profiles** (import one per host)                   |                                                                         |
 | `systems/nixos/cpu/amd/ryzen_9_3900x.nix`                | `custom.sysNixAmdRyzen93900x.enable`                                    |
 | `systems/nixos/cpu/amd/ryzen_9_5900x.nix`                | `custom.sysNixAmdRyzen95900x.enable`                                    |
+| `systems/nixos/cpu/intel/tiger_lake_i5_1135g7.nix`       | `custom.sysNixIntelTigerLakeI51135g7.enable`                            |
 | **Desktop Environment**                                  |                                                                         |
 | `systems/nixos/desktop_environment/cosmic.nix`           | `custom.sysNixCosmicDesktop.enable`                                     |
 | `systems/nixos/desktop_environment/kde_plasma.nix`       | `custom.sysNixKdePlasma.enable`                                         |
@@ -114,6 +112,7 @@ Modules default to `false` — importing without enabling has no effect.
 | **Graphics**                                             |                                                                         |
 | `systems/nixos/graphics/amd_radeon_r7_430.nix`           | `custom.sysNixAmdRadeonR7430.enable`                                    |
 | `systems/nixos/graphics/intel_arc_a380-intel-driver.nix` | `custom.sysNixIntelArcIntelDriver.enable`                               |
+| `systems/nixos/graphics/intel_iris_xe.nix`               | `custom.sysNixIntelIrisXe.enable`                                       |
 | `systems/nixos/graphics/nvidia_gtx_1060.nix`             | `custom.sysNixNvidiaGtx1060.enable`                                     |
 | `systems/nixos/graphics/nvidia_rtx_3070_lhr.nix`         | `custom.sysNixNvidiaRtx3070Lhr.enable`                                  |
 | `systems/nixos/graphics/nvidia_rtx_3080.nix`             | `custom.sysNixNvidiaRtx3080.enable`                                     |
@@ -126,6 +125,8 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/input/wacom.nix`                          | `custom.sysNixWacom.enable`                                             |
 | **Mouse**                                                |                                                                         |
 | `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`                                     |
+| **Power**                                                |                                                                         |
+| `systems/nixos/power/power-profiles-daemon.nix`          | `custom.sysNixPowerProfilesDaemon.enable`                               |
 | **Security**                                             |                                                                         |
 | `systems/nixos/security/fprintd.nix`                     | `custom.sysNixFprintd.enable`                                           |
 | `systems/nixos/security/yubikey.nix`                     | `custom.sysNixYubikey.enable`                                           |

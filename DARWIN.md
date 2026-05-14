@@ -8,12 +8,6 @@ macOS system configuration is managed through `flake/darwin.nix` using [nix-darw
 | ---- | ------------- | ------- | ----- | ------------------------------ |
 | EDGE | x86_64-darwin | stable  | elvis | 2018 MacBook Pro 15", Intel i9 |
 
-> **LULA migrated to NixOS** (Lenovo ThinkPad T14 Gen 2). See
-> [NIXOS.md](NIXOS.md) and [hosts/LULA/README.md](hosts/LULA/README.md).
-> While Round 2 of the migration is in progress, LULA's `metadata.os`
-> remains `"darwin"` so the flake still evaluates, but it is not listed
-> here as a darwin host.
-
 ## Rebuild
 
 Rebuild the system configuration from the flake:

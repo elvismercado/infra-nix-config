@@ -82,13 +82,15 @@ modules/
       apps/                  #   ADB, Coolercontrol, embedded, libvirtd, sunshine
       bootloader/            #   GRUB, systemd-boot, Plymouth, GRUB/Plymouth themes
       cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
+      cpu/intel/             #   Intel base + CPU profiles (Tiger Lake i5-1135G7)
       desktop_environment/   #   KDE Plasma, COSMIC
       display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
-      graphics/              #   AMD, Intel Arc, NVIDIA, nomodeset, nvtop
+      graphics/              #   AMD, Intel Arc, Intel Iris Xe, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
       nix/                   #   Flakes, garbage collection
+      power/                 #   power-profiles-daemon
       security/              #   YubiKey, fprintd
       ssd/                   #   SSD optimisations (fstrim)
       system/                #   Console, fonts, i18n, network tuning, time, user
