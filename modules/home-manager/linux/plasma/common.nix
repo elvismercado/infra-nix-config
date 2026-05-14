@@ -55,6 +55,12 @@
 #     (Overview, Activities, etc.). Useful on hosts where accidental
 #     corner triggers are more annoying than useful.
 #
+#   custom.hmPlasmaCommon.singleClickToOpen (default: true)
+#     When `false`, files and folders open on double-click and a
+#     single-click only selects (Windows / macOS Finder behavior).
+#     Useful on hosts whose primary user expects desktop-OS click
+#     semantics rather than KDE's default web-style single-click.
+#
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
 #                                    weather conditionally appended.
@@ -133,6 +139,16 @@ in
         plasma-nm rewrites them to the system keyfile.
       '';
     };
+
+    singleClickToOpen = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `false`, files and folders open on double-click and a
+        single-click only selects them (Windows / macOS Finder
+        behavior). When `true` (KDE default), a single-click opens.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -182,7 +198,7 @@ in
       };
 
       workspace = {
-        clickItemTo = "open";
+        clickItemTo = if cfg.singleClickToOpen then "open" else "select";
         splashScreen.theme = "None";
       };
 

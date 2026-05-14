@@ -48,4 +48,6 @@
   custom.hmPlasmaCommon.systray.weather.enable = true;
   custom.hmPlasmaCommon.hotCorners.enable = false;
   custom.hmPlasmaCommon.kwallet.enable = false;
+  # Double-click to open files/folders (Windows / macOS Finder behavior).
+  custom.hmPlasmaCommon.singleClickToOpen = false;
 }
