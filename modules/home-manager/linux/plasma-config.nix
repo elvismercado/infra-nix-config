@@ -15,6 +15,19 @@
 #   - Desktop icons arranged top-to-bottom, left-aligned
 #   - Top + bottom panels pinned to screen index 0 (KScreen priority 1 = M1 on FENNEC)
 #
+# Optional: weather widget in the system tray.
+# Reads `userSettings.weatherLocation` (typically supplied via the private
+# overlay in `nix-config-private/hosts/<HOST>/user-settings.nix`):
+#   weatherLocation = {
+#     name = "The Hague";              # station label shown in the widget
+#     latitude = "52.0731027233998";   # reserved (provider wired manually for now)
+#     longitude = "4.292356634891381"; # reserved (provider wired manually for now)
+#     updateIntervalMinutes = 30;       # optional, default 60
+#   };
+# We declaratively set the station label and refresh interval; the data
+# provider (wttr.in / BBC / NOAA / ...) is selected manually in the widget
+# UI on first launch. When `weatherLocation` is unset, no widget is added.
+#
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/plasma-config.nix ];
 #   custom.hmPlasmaConfig.enable = true;
@@ -32,8 +45,13 @@
     custom.hmPlasmaConfig.enable = lib.mkEnableOption "macOS-style KDE Plasma layout (top menu bar, floating dock, centered KRunner)";
   };
 
-  config = lib.mkIf config.custom.hmPlasmaConfig.enable {
-    assertions = [
+  config = lib.mkIf config.custom.hmPlasmaConfig.enable (
+    let
+      weather = userSettings.weatherLocation or null;
+      hasWeather = weather != null;
+    in
+    {
+      assertions = [
       {
         assertion = (userSettings.desktopEnvironment or null) == "kde-plasma";
         message = "custom.hmPlasmaConfig requires KDE Plasma (set desktopEnvironment = \"kde-plasma\" in user-settings.nix)";
@@ -77,11 +95,25 @@
               systemTray = {
                 icons.scaleToFit = true;
                 items = {
-                  shown = [
-                    "org.kde.plasma.bluetooth"
-                    "org.kde.plasma.cameraindicator"
-                    "org.kde.plasma.lock_keys"
-                  ];
+                  shown =
+                    [
+                      "org.kde.plasma.bluetooth"
+                      "org.kde.plasma.cameraindicator"
+                      "org.kde.plasma.lock_keys"
+                    ]
+                    ++ lib.optional hasWeather "org.kde.plasma.weather";
+                  configs = lib.optionalAttrs hasWeather {
+                    # Raw passthrough — plasma-manager has no typed weather
+                    # widget. Keys map to the upstream Plasma 6 weather
+                    # applet's `[Configuration][WeatherStation]` group.
+                    # We set only the station label and refresh interval;
+                    # the data provider (wttr.in / BBC / NOAA / ...) is
+                    # picked manually in the widget UI on first launch.
+                    "org.kde.plasma.weather".config.WeatherStation = {
+                      weatherStationName = weather.name;
+                      updateInterval = weather.updateIntervalMinutes or 60;
+                    };
+                  };
                 };
               };
             }
@@ -171,5 +203,6 @@
       # setting, not KWin's call.
       configFile."kwinrc"."Windows".Placement = "UnderMouse";
     };
-  };
+    }
+  );
 }
