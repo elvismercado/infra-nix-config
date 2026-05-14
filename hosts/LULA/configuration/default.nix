@@ -65,7 +65,7 @@
 
   # Bootloader — single-OS laptop, friendly default timeout, 1080p panel
   custom.sysNixGrub.enable = true;
-  custom.sysNixGrub.timeout = 5;
+  custom.sysNixGrub.timeout = 2;
   custom.sysNixGrub.gfxmodeEfi = "1920x1080,auto";
   custom.sysNixGrub.fontSize = 24;
   custom.sysNixGrubThemeSleek.enable = true;
