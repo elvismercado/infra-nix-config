@@ -176,6 +176,7 @@
   # Apps (cross-layer façades)
   custom.appSignal.enable = true;
   custom.appLibreoffice.enable = true;
+  custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;

@@ -86,11 +86,11 @@
       "logi-options+" # Logitech Options+ — MX Anywhere 2S/3 (BT + Logi receiver)
       # `insync` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/insync.nix (toggle custom.appInsync.enable).
-      # `libreoffice`, `localsend`, `raspberry-pi-imager`, and
+      # `libreoffice`, `localsend`, `onlyoffice`, `raspberry-pi-imager`, and
       # `yubico-authenticator` casks are owned by Option 3 app façades under
       # modules/apps/darwin/ (toggles custom.appLibreoffice.enable,
-      # custom.appLocalsend.enable, custom.appRpiImager.enable,
-      # custom.appYubicoAuthenticator.enable).
+      # custom.appLocalsend.enable, custom.appOnlyoffice.enable,
+      # custom.appRpiImager.enable, custom.appYubicoAuthenticator.enable).
       # `sweet-home3d` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/sweet-home3d.nix (toggle custom.appSweetHome3d.enable).
       "the-unarchiver"

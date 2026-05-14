@@ -37,6 +37,7 @@
     ../../../modules/apps/darwin/vscode.nix
     ../../../modules/apps/darwin/signal-desktop.nix
     ../../../modules/apps/darwin/libreoffice.nix
+    ../../../modules/apps/darwin/onlyoffice.nix
     ../../../modules/apps/darwin/rpi-imager.nix
     ../../../modules/apps/darwin/localsend.nix
     ../../../modules/apps/darwin/yubico-authenticator.nix
@@ -84,6 +85,7 @@
   custom.appVscode.enable = true; # cask + HM settings; see modules/apps/darwin/vscode.nix
   custom.appSignal.enable = true;
   custom.appLibreoffice.enable = true;
+  custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;

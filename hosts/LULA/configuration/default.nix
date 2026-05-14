@@ -56,6 +56,7 @@
     ../../../modules/apps/linux/brave.nix
     ../../../modules/apps/linux/localsend.nix
     ../../../modules/apps/linux/mpv.nix
+    ../../../modules/apps/linux/onlyoffice.nix
   ];
 
   # Nix
@@ -115,4 +116,5 @@
   custom.appBrave.extensions = [ ];
   custom.appLocalsend.enable = true;
   custom.appMpv.enable = true;
+  custom.appOnlyoffice.enable = true;
 }
