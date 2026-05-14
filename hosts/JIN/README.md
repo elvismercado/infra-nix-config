@@ -22,6 +22,10 @@ NixOS desktop — AMD Ryzen 9 / Radeon R7 430
 
 BIOS POSTs on **M1** ✅. For the shared KVM / monitor / TV topology, see [DISPLAYS.md](../../DISPLAYS.md).
 
+The Radeon R7 430 is **DisplayPort 1.2 (HBR2)**, so M1 is capped at **4K@60Hz**
+on this host. The M27U's native 160Hz needs DP 1.4 (HBR3) and is only available
+on FENNEC. At 1080p the GPU can drive M1 up to 120Hz cleanly.
+
 ## M.2 connectors
 
 | Slot | Location      | Lanes       | Connected to | Use         |
