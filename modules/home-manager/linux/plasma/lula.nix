@@ -48,14 +48,12 @@ in
         lengthMode = "fill";
         floating = false;
         widgets = [
-          # Classic Kickoff menu — small corner menu, leaves the
-          # desktop visible. Familiar Windows-Start-style for less
-          # tech-savvy users. Shipped alongside the Application
-          # Dashboard below so the user can try both and decide.
-          "org.kde.plasma.kickoff"
-
           # Application Dashboard — full-screen grid, easy for users
-          # unfamiliar with cascading menus.
+          # unfamiliar with cascading menus. Lives in the top-left
+          # corner; the classic Kickoff menu sits in the bottom-left
+          # corner of the bottom dock as an alternative launcher
+          # (and as the de-facto power menu, since Kickerdash exposes
+          # only Leave/Restart/Shutdown).
           "org.kde.plasma.kickerdash"
 
           # Flexible spacer pushes the rest to the right
@@ -84,7 +82,9 @@ in
       # taskbar; `dodgewindows` lets maximized apps reclaim the full
       # screen height. Two flanking expanding panel spacers center the
       # task icons within the full-width panel — `alignment` has no
-      # effect when the panel is in fill mode.
+      # effect when the panel is in fill mode. Kickoff sits flush-left
+      # — outside the centered group — so it doesn't shift the visual
+      # center of the iconTasks strip.
       {
         location = "bottom";
         height = 56;
@@ -92,6 +92,11 @@ in
         lengthMode = "fill";
         hiding = "dodgewindows";
         widgets = [
+          # Classic Kickoff menu in the bottom-left corner. Familiar
+          # Windows-Start-style launcher and the full session/power
+          # button row (Lock, Logout, Switch User, Suspend, Hibernate,
+          # Reboot, Shutdown) which Kickerdash does not expose.
+          "org.kde.plasma.kickoff"
           { panelSpacer = { expanding = true; }; }
           {
             iconTasks = {

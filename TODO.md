@@ -41,7 +41,7 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 2. ~~Confirm-on-logout.~~ ✅ Done 2026-05-14 — `custom.hmPlasmaCommon.confirmLogout.enable`.
 3. Lock panel layout (prevent accidental drag-off). — see Safety nets entry; needs research before implementing.
 4. ~~Klipper clipboard history limited to ~5 entries (privacy + clutter).~~ ✅ Done 2026-05-14 — `klipperrc [General] MaxClipItems=5`.
-5. ~~Replace Application Dashboard with classic Kickoff.~~ ✅ Partial 2026-05-14 — Kickoff added **alongside** Kickerdash on LULA's top panel for a try-out period; collapse to one once the user picks.
+5. ~~Replace Application Dashboard with classic Kickoff.~~ ✅ Partial 2026-05-14 — Kickoff relocated to the bottom panel's left corner (flush-left, outside the centered iconTasks group); Kickerdash stays in the top-left. Trial: which launcher does she actually reach for? Kickoff also serves as the power menu since Kickerdash only exposes Leave/Restart/Shutdown.
 
 #### High impact
 
