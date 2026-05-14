@@ -722,6 +722,11 @@ format_partitions() {
 
   info "Creating swap (${part_swap})..."
   mkswap -L "$LABEL_SWAP" "$part_swap"
+
+  # Wait for udev to (re)populate /dev/disk/by-label/* after mkfs/mkswap.
+  # Without this, mount_partitions can race and fail with
+  #   mount: /mnt: fsconfig() failed: /dev/disk/by-label/nixos: Can't lookup blockdev.
+  udevadm settle --timeout=30
 }
 
 # ──────────────────────────────────────────────────────────────
