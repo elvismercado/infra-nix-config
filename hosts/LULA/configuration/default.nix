@@ -1,70 +1,128 @@
-# Manage dotfiles and user packages
-
-{
-  pkgs,
-  ...
-}:
+{ ... }:
 
 {
   imports = [
     # Host
+    ./hardware-configuration.nix
     ./configuration.nix
-    # enable-flakes.nix is not needed — Determinate Nix already enables flakes,
-    # and nix.enable = false means nix.settings is not managed by nix-darwin.
-    ./user.nix
 
-    # Darwin / UI
-    ../../../modules/systems/darwin/control-center.nix
-    ../../../modules/systems/darwin/system-preferences.nix
-    ../../../modules/systems/darwin/trackpad.nix
+    # Nix
+    ../../../modules/systems/nixos/nix/enable-flakes.nix
+    ../../../modules/systems/nixos/nix/garbage.nix
 
-    # Darwin / System
-    ../../../modules/systems/darwin/packages.nix
-    ../../../modules/systems/darwin/fonts.nix
-    ../../../modules/systems/darwin/power.nix
-    ../../../modules/systems/darwin/security.nix
-    ../../../modules/systems/darwin/time.nix
-    ../../../modules/systems/darwin/i18n.nix
+    # Bootloader
+    ../../../modules/systems/nixos/bootloader/grub.nix
+    ../../../modules/systems/nixos/bootloader/grub-theme-sleek.nix
 
-    # Shared
+    # Hardware
+    ../../../modules/systems/nixos/cpu/intel/tiger_lake_i5_1135g7.nix
+    ../../../modules/systems/nixos/graphics/intel_iris_xe.nix
+    ../../../modules/systems/nixos/ssd
+
+    # Laptop chassis quirks
+    ../../../modules/systems/nixos/laptop/lenovo_thinkpad_t14_gen2.nix
+
+    # Memory
+    ../../../modules/systems/nixos/memory/zram.nix
+    ../../../modules/systems/nixos/memory/earlyoom.nix
+    ../../../modules/systems/nixos/memory/hibernation.nix
+
+    # System
+    ../../../modules/systems/nixos/packages.nix
     ../../../modules/systems/shared/bash.nix
+    ../../../modules/systems/nixos/system/user.nix
+    ../../../modules/systems/nixos/system/console.nix
+    ../../../modules/systems/nixos/system/time.nix
+    ../../../modules/systems/nixos/system/i18n.nix
+    ../../../modules/systems/nixos/system/fonts.nix
+
+    # Display
+    ../../../modules/systems/nixos/display_manager/sddm.nix
+    ../../../modules/systems/nixos/display_manager/sddm-input-config.nix
+    ../../../modules/systems/nixos/desktop_environment/kde_plasma.nix
+
+    # Peripherals
+    ../../../modules/systems/nixos/bluetooth.nix
+    ../../../modules/systems/nixos/pipewire.nix
+
+    # Power
+    ../../../modules/systems/nixos/power/power-profiles-daemon.nix
+
+    # Services
+    ../../../modules/systems/nixos/fwupd.nix
+    ../../../modules/systems/nixos/postinstall.nix
+    ../../../modules/systems/nixos/security/fprintd.nix
 
     # Apps (cross-layer façades — see modules/apps/)
-    ../../../modules/apps/darwin/brave.nix
-    ../../../modules/apps/darwin/localsend.nix
-    ../../../modules/apps/darwin/mpv.nix
+    ../../../modules/apps/linux/brave.nix
+    ../../../modules/apps/linux/localsend.nix
+    ../../../modules/apps/linux/mpv.nix
+    ../../../modules/apps/linux/nextcloud.nix
+    ../../../modules/apps/linux/onlyoffice.nix
   ];
 
-  environment.shells = [ pkgs.bashInteractive ];
+  # Nix
+  custom.sysNixEnableFlakes.enable = true;
+  custom.sysGc.enable = true;
 
-  # Homebrew — minimal set for this host. AppCleaner is the only must-have GUI
-  # tool that isn't covered by an Option 3 app façade.
-  homebrew = {
-    enable = true;
-    casks = [
-      "appcleaner"
-    ];
-  };
+  # Bootloader — single-OS laptop, friendly default timeout, 1080p panel
+  custom.sysNixGrub.enable = true;
+  custom.sysNixGrub.timeout = 2;
+  custom.sysNixGrub.gfxmodeEfi = "1920x1080,auto";
+  custom.sysNixGrub.fontSize = 24;
+  custom.sysNixGrubThemeSleek.enable = true;
+  custom.sysNixGrubThemeSleek.style = "dark";
 
-  # Darwin / UI
-  custom.sysDarControlCenter.enable = true;
-  custom.sysDarPreferences.enable = true;
-  custom.sysDarTrackpad.enable = true;
+  # Hardware
+  custom.sysNixIntelTigerLakeI51135g7.enable = true;
+  custom.sysNixIntelIrisXe.enable = true;
+  custom.sysNixSsd.enable = true;
 
-  # Darwin / System
+  # Laptop chassis quirks (backlight + touchpad + TrackPoint)
+  custom.sysNixLenovoThinkpadT14IntelGen2.enable = true;
+
+  # Memory — hibernation supported (swap partition >= RAM, set via install.sh --swap-size)
+  custom.sysNixZram.enable = true;
+  custom.sysNixEarlyoom.enable = true;
+  custom.sysNixHibernate.enable = true;
+
+  # System
   custom.sysPackages.enable = true;
-  custom.sysFonts.enable = true;
-  custom.sysDarPower.enable = true;
-  custom.sysDarSecurity.enable = true;
-  custom.sysDarTimezone.enable = true;
-  custom.sysDarI18n.enable = true;
-
-  # Shared
   custom.sysBashCompletion.enable = true;
+  custom.sysNixUser.enable = true;
+  custom.sysNixConsole.enable = true;
+  custom.sysNixTimezone.enable = true;
+  custom.sysNixI18n.enable = true;
+  custom.sysFonts.enable = true;
 
-  # Apps (cross-layer façades)
+  # Display — single built-in 14" panel; KDE handles ad-hoc external displays
+  # via its own GUI. No multi-monitor / display-profiles modules wired.
+  custom.sysNixSddm.enable = true;
+  custom.sysNixSddmInputConfig.enable = true;
+  custom.sysNixKdePlasma.enable = true;
+
+  # Peripherals
+  custom.sysNixBluetooth.enable = true;
+  custom.sysNixPipewire.enable = true;
+
+  # Power — KDE-native Performance/Balanced/Power-saver via Battery widget
+  custom.sysNixPowerProfilesDaemon.enable = true;
+
+  # Services
+  custom.sysNixFwupd.enable = true;
+  custom.sysNixPostinstall.enable = true;
+  custom.sysNixFprintd.enable = true;
+
+  # Apps (cross-layer façades) — minimal persona for a non-technical user.
+  # Brave with two managed extensions: Bitwarden for passwords and
+  # Floccus to keep bookmarks in sync via Nextcloud.
   custom.appBrave.enable = true;
-  custom.appBrave.extensions = [ ]; # vanilla Brave for a non-power-user host
+  custom.appBrave.extensions = [
+    "nngceckbapebfimnlniiiahkandclblb" # Bitwarden
+    "fnaicdffflnofjppbagibeoednhnbjhg" # Floccus bookmark sync
+  ];
   custom.appLocalsend.enable = true;
   custom.appMpv.enable = true;
+  custom.appNextcloud.enable = true;
+  custom.appOnlyoffice.enable = true;
 }

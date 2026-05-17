@@ -238,18 +238,22 @@ let
         local raw
         raw=$(kscreen-doctor --outputs 2>/dev/null) || { echo "{}"; return; }
 
-        # Step 1: Extract connector names, output IDs, and current mode from
-        # kscreen-doctor. Outputs "connector|id|currentRes" per connected output.
+        # Step 1: Extract connector names, output IDs, current mode, and the
+        # full mode list from kscreen-doctor. Outputs
+        # "connector|id|currentRes|mode1 mode2 ..." per connected output,
+        # where each modeN is "WxH@RR" with the leading "N:" index and any
+        # "!"/"*" markers stripped.
         local parsed
         parsed=$(echo "$raw" | sed 's/\x1b\[[0-9;]*m//g' | awk '
           /^Output:/ {
             if (connector != "" && connected) {
-              print connector "|" id "|" current_res
+              print connector "|" id "|" current_res "|" modes
             }
             id = $2
             connector = $3
             connected = 0
             current_res = ""
+            modes = ""
           }
           /connected/ && !/disconnected/ {
             if (/^[[:space:]]+connected/) connected = 1
@@ -257,20 +261,23 @@ let
           /Modes:/ || /^[[:space:]]+[0-9]+:[0-9]+x[0-9]+@/ {
             n = split($0, tokens, " ")
             for (i = 1; i <= n; i++) {
-              if (tokens[i] ~ /^[0-9]+:/) {
+              if (tokens[i] ~ /^[0-9]+:[0-9]+x[0-9]+@/) {
                 t = tokens[i]
                 sub(/^[0-9]+:/, "", t)
-                if (t ~ /\*/) {
+                is_current = (t ~ /\*/)
+                gsub(/[!*]/, "", t)
+                if (is_current) {
                   ct = t
                   sub(/@.*/, "", ct)
                   current_res = ct
                 }
+                if (modes == "") modes = t; else modes = modes " " t
               }
             }
           }
           END {
             if (connector != "" && connected) {
-              print connector "|" id "|" current_res
+              print connector "|" id "|" current_res "|" modes
             }
           }
         ')
@@ -280,9 +287,11 @@ let
         # Step 2: Build JSON with max resolution from DRM sysfs.
         # /sys/class/drm/card*-CONNECTOR/modes lists true hardware modes
         # (one "WxH" per line), bypassing KWin's mode-list caching.
+        # Mode list (with refresh rates) comes from kscreen-doctor and is
+        # emitted as a JSON array per output for pick_mode validation.
         local json="{"
         local first=1
-        while IFS='|' read -r connector id current_res; do
+        while IFS='|' read -r connector id current_res modes_str; do
           [ -z "$connector" ] && continue
 
           # Read max resolution from sysfs
@@ -308,13 +317,102 @@ let
             log "Warning: sysfs modes not found for $connector, using current resolution"
           fi
 
+          # Build modes JSON array from space-separated list. Word-splitting
+          # on $modes_str is intentional: it's a space-separated list of
+          # "WxH@RR" tokens with no embedded whitespace.
+          local modes_json="[]"
+          if [ -n "$modes_str" ]; then
+            # shellcheck disable=SC2086
+            modes_json=$(printf '%s\n' $modes_str | jq -R . | jq -s -c .)
+          fi
+
           [ "$first" -eq 0 ] && json+=","
-          json+="\"''${connector}\":{\"id\":\"''${id}\",\"resolution\":\"''${max_res}\",\"currentResolution\":\"''${current_res}\"}"
+          json+="\"''${connector}\":{\"id\":\"''${id}\",\"resolution\":\"''${max_res}\",\"currentResolution\":\"''${current_res}\",\"modes\":''${modes_json}}"
           first=0
         done <<< "$parsed"
         json+="}"
 
         echo "$json"
+      }
+
+      # Validate a requested resolution+rate against an output's actual mode
+      # list. Echoes the mode string to use as the kscreen-doctor `mode.` arg
+      # (e.g. "3840x2160@60") and logs a warning when falling back. Echoes an
+      # empty string if no mode at the requested resolution exists at all
+      # (caller should then skip the mode arg entirely).
+      #
+      # Strategy:
+      #   1. Exact integer-rate match (e.g. requested 60 matches "...@60.00").
+      #   2. Same resolution, closest available rate -- with a warning.
+      #   3. Resolution unavailable -- empty + warning.
+      pick_mode() {
+        local connector="$1"
+        local topology="$2"
+        local want_res="$3"
+        local want_rate="$4"
+
+        # Pull the modes array; default to empty if missing.
+        local modes_json
+        modes_json=$(echo "$topology" | jq -c --arg c "$connector" '.[$c].modes // []')
+
+        # If we have no list at all (older kscreen-doctor / parser fallback),
+        # trust the caller and just echo the requested mode.
+        if [ "$modes_json" = "[]" ] || [ -z "$modes_json" ]; then
+          if [ -n "$want_rate" ]; then
+            echo "''${want_res}@''${want_rate}"
+          else
+            echo "$want_res"
+          fi
+          return
+        fi
+
+        # All rates available at the requested resolution.
+        local rates
+        rates=$(echo "$modes_json" | jq -r --arg r "$want_res" '
+          map(select(startswith($r + "@")) | sub("^.*@"; "") | tonumber) | .[]
+        ')
+
+        if [ -z "$rates" ]; then
+          log "  Warning: $connector has no mode at resolution $want_res -- skipping mode arg"
+          echo ""
+          return
+        fi
+
+        # No rate requested -- just echo the resolution.
+        if [ -z "$want_rate" ]; then
+          echo "$want_res"
+          return
+        fi
+
+        # Exact integer-rate match wins.
+        local exact
+        exact=$(echo "$rates" | awk -v r="$want_rate" '{ if (int($1) == int(r)) { print $1; exit } }')
+        if [ -n "$exact" ]; then
+          echo "''${want_res}@''${want_rate}"
+          return
+        fi
+
+        # Closest available rate.
+        local closest
+        closest=$(echo "$rates" | awk -v r="$want_rate" '
+          BEGIN { best = -1; best_diff = 1e9 }
+          {
+            d = $1 - r; if (d < 0) d = -d
+            if (d < best_diff) { best_diff = d; best = $1 }
+          }
+          END { if (best >= 0) printf "%g", best }
+        ')
+
+        if [ -n "$closest" ]; then
+          log "  Warning: $connector requested ''${want_res}@''${want_rate} unavailable, using ''${want_res}@''${closest}"
+          # kscreen-doctor accepts both "60" and "60.00" -- pass the actual
+          # advertised rate verbatim so the match is unambiguous.
+          echo "''${want_res}@''${closest}"
+          return
+        fi
+
+        # Defensive fallback (should be unreachable).
+        echo "$want_res"
       }
 
       # Find the best matching profile for the current topology
@@ -464,14 +562,38 @@ let
         echo "''${x},0"
       }
 
-      # Apply a profile's output settings
+      # Apply a profile's output settings.
+      #
+      # kscreen-doctor aborts the entire batch on the first invalid arg
+      # ("Output mode WxH@RR not found." -> nothing else is applied). To
+      # localize failures, we build args per output and invoke
+      # kscreen-doctor once per output. Any per-output non-zero return is
+      # logged but does NOT prevent the remaining outputs from being
+      # applied.
       apply_profile() {
         local profile_name="$1"
         local topology="$2"
         local profile_outputs
         profile_outputs=$(get_profile_outputs "$profile_name")
 
-        local args=()
+        local failed=()
+        local fallback_modes=()
+
+        # Helper: invoke kscreen-doctor for a single output's arg list.
+        # Logs the command, captures non-zero into the `failed` array.
+        # Args: <connector> <output_id> <arg1> [arg2 ...]
+        apply_output_args() {
+          local _conn="$1"; shift
+          local _id="$1"; shift
+          if [ "$#" -eq 0 ]; then
+            return
+          fi
+          log "  Applying ($_conn id=$_id): kscreen-doctor $*"
+          if ! kscreen-doctor "$@"; then
+            log "  Warning: kscreen-doctor failed for $_conn (id=$_id)"
+            failed+=("$_conn")
+          fi
+        }
 
         # Iterate over each output in the profile
         local connectors
@@ -486,38 +608,47 @@ let
             continue
           fi
 
+          local out_args=()
+
           # Check enable/disable
           local enabled
           enabled=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].enable')
           if [ "$enabled" = "false" ]; then
-            args+=("output.$output_id.disable")
+            out_args+=("output.$output_id.disable")
             log "  $connector (id=$output_id): disable"
+            apply_output_args "$connector" "$output_id" "''${out_args[@]}"
             continue
           fi
 
-          args+=("output.$output_id.enable")
+          out_args+=("output.$output_id.enable")
 
           # Scale
           local scale
           scale=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].scale // empty')
           if [ -n "$scale" ]; then
-            args+=("output.$output_id.scale.$scale")
+            out_args+=("output.$output_id.scale.$scale")
           fi
 
-          # Mode (resolution@refreshRate)
+          # Mode (resolution@refreshRate) -- validated against the output's
+          # actual mode list. Falls back to closest rate or skips entirely
+          # if the resolution itself is unavailable.
           local cfg_resolution
           cfg_resolution=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].resolution // empty')
           local refresh_rate
           refresh_rate=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].refreshRate // empty')
           if [ -n "$cfg_resolution" ] || [ -n "$refresh_rate" ]; then
-            # Use configured resolution, fall back to current
             local mode_res
             mode_res="''${cfg_resolution:-$(echo "$topology" | jq -r --arg c "$connector" '.[$c].currentResolution // empty')}"
-            local mode_rate="''${refresh_rate}"
-            if [ -n "$mode_res" ] && [ -n "$mode_rate" ]; then
-              args+=("output.$output_id.mode.''${mode_res}@''${mode_rate}")
-            elif [ -n "$mode_res" ]; then
-              args+=("output.$output_id.mode.''${mode_res}")
+            if [ -n "$mode_res" ]; then
+              local mode_str
+              mode_str=$(pick_mode "$connector" "$topology" "$mode_res" "$refresh_rate")
+              if [ -n "$mode_str" ]; then
+                out_args+=("output.$output_id.mode.''${mode_str}")
+                # Track outputs that ended up on a non-exact match for the summary line.
+                if [ -n "$refresh_rate" ] && [ "$mode_str" != "''${mode_res}@''${refresh_rate}" ]; then
+                  fallback_modes+=("$connector->$mode_str")
+                fi
+              fi
             fi
           fi
 
@@ -525,7 +656,7 @@ let
           local orientation
           orientation=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].orientation // empty')
           if [ -n "$orientation" ]; then
-            args+=("output.$output_id.rotation.$orientation")
+            out_args+=("output.$output_id.rotation.$orientation")
           fi
 
           # Position
@@ -538,32 +669,33 @@ let
             else
               actual_pos="$position"
             fi
-            args+=("output.$output_id.position.$actual_pos")
+            out_args+=("output.$output_id.position.$actual_pos")
           else
-            # No explicit position → reset to origin so previously-anchored
+            # No explicit position -> reset to origin so previously-anchored
             # outputs don't keep stale x-offsets after a topology change.
-            args+=("output.$output_id.position.0,0")
+            out_args+=("output.$output_id.position.0,0")
           fi
 
-          # Brightness (best-effort) — convert 0.0-1.0 to 0-100 for kscreen-doctor
+          # Brightness (best-effort) -- convert 0.0-1.0 to 0-100 for kscreen-doctor
           local brightness
           brightness=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].brightness // empty')
           if [ -n "$brightness" ]; then
             local brightness_pct
             brightness_pct=$(awk "BEGIN { printf \"%d\", $brightness * 100 }")
-            args+=("output.$output_id.brightness.$brightness_pct")
+            out_args+=("output.$output_id.brightness.$brightness_pct")
           fi
 
-          # Primary — mark as the primary output (panel/launcher anchor).
+          # Primary -- mark as the primary output (panel/launcher anchor).
           # Plasma 6 uses `priority.N` (N=1 = primary); the legacy
           # `output.<id>.primary` arg was deprecated upstream.
           local primary
           primary=$(echo "$profile_outputs" | jq -r --arg c "$connector" '.[$c].primary // false')
           if [ "$primary" = "true" ]; then
-            args+=("output.$output_id.priority.1")
+            out_args+=("output.$output_id.priority.1")
           fi
 
           log "  $connector (id=$output_id): res=$cfg_resolution scale=$scale refresh=$refresh_rate orient=$orientation pos=$position bright=$brightness primary=$primary"
+          apply_output_args "$connector" "$output_id" "''${out_args[@]}"
         done
 
         # Auto-arrange any connected outputs not mentioned in the profile:
@@ -605,9 +737,12 @@ let
           if [ "$in_profile" = "false" ]; then
             local tc_id tc_res tc_w
             tc_id=$(echo "$topology" | jq -r --arg c "$tc" '.[$c].id')
-            args+=("output.$tc_id.enable")
-            args+=("output.$tc_id.position.''${rightmost_x},0")
+            local tc_args=(
+              "output.$tc_id.enable"
+              "output.$tc_id.position.''${rightmost_x},0"
+            )
             log "  $tc (id=$tc_id): not in profile, auto-placing at x=$rightmost_x"
+            apply_output_args "$tc" "$tc_id" "''${tc_args[@]}"
             tc_res=$(echo "$topology" | jq -r --arg c "$tc" '.[$c].currentResolution // empty')
             if [ -n "$tc_res" ]; then
               tc_w=$(echo "$tc_res" | cut -d'x' -f1)
@@ -616,9 +751,12 @@ let
           fi
         done
 
-        if [ ''${#args[@]} -gt 0 ]; then
-          log "Applying: kscreen-doctor ''${args[*]}"
-          kscreen-doctor "''${args[@]}" || log "Warning: kscreen-doctor returned non-zero"
+        # Summary lines for visibility in `systemctl --user status`.
+        if [ "''${#fallback_modes[@]}" -gt 0 ]; then
+          log "Note: outputs using fallback modes: ''${fallback_modes[*]}"
+        fi
+        if [ "''${#failed[@]}" -gt 0 ]; then
+          log "Note: ''${#failed[@]} output(s) failed to apply: ''${failed[*]}"
         fi
       }
 

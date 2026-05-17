@@ -6,14 +6,19 @@
 
 let
   # --- JIN display profile building blocks ---
-  # M1: dual-mode primary on DP-1 (4K @ 160Hz scale 1.7  /  1080p @ 320Hz scale 1.0)
+  # M1: dual-mode primary on DP-1 (4K @ 60Hz scale 1.7  /  1080p @ 120Hz scale 1.0)
   # M2: portrait on DP-2 (1920x1200 @ 100Hz, rotated right)
   # Layout when both present: M1 (primary) → M2 (right of M1)
+  #
+  # Refresh rates are constrained by the GPU: AMD Radeon R7 430 is DisplayPort
+  # 1.2 (HBR2, ~17.28 Gbps), capped at 4K@60. The M27U's native 160Hz needs
+  # DP 1.4 (HBR3) — see FENNEC for that. At 1080p, DP 1.2 + the M27U's modes
+  # max out at 120Hz cleanly.
 
   m1At4k = {
     resolution = "3840x2160";
     scale = 1.7;
-    refreshRate = 160;
+    refreshRate = 60;
     orientation = "normal";
     brightness = 1.0;
     primary = true;
@@ -22,7 +27,7 @@ let
   m1AtHd = {
     resolution = "1920x1080";
     scale = 1.0;
-    refreshRate = 320;
+    refreshRate = 120;
     orientation = "normal";
     brightness = 1.0;
     primary = true;
@@ -76,7 +81,7 @@ in
     ../../../modules/home-manager/linux/aliases.nix
 
     # Linux / KDE Plasma
-    ../../../modules/home-manager/linux/plasma-config.nix
+    ../../../modules/home-manager/linux/plasma/macos.nix
     ../../../modules/home-manager/linux/window-shortcuts.nix
     ../../../modules/home-manager/linux/display-profiles.nix
     ../../../modules/home-manager/linux/sddm-monitor-layout.nix
@@ -119,7 +124,9 @@ in
 
   # Apps
   custom.hmAndroid.enable = true;
-  custom.hmPlasmaConfig.enable = true;
+  custom.hmPlasmaMacos.enable = true;
+  custom.hmPlasmaCommon.systray.weather.enable = true;
+  custom.hmPlasmaCommon.kwallet.enable = false;
   custom.hmWindowShortcuts.enable = true;
   custom.hmVscode.enable = true;
 
@@ -195,7 +202,7 @@ in
   custom.hmStrawberry.enable = true;
 
   # Autostart — launch tray-friendly apps at login. Window state
-  # (start minimized) is enforced by KWin rules in custom.hmPlasmaConfig
+  # (start minimized) is enforced by KWin rules in custom.hmPlasmaCommon
   # because the per-app flags below aren't reliably honoured on Wayland.
   # The flags are kept as defense in depth.
   # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing).

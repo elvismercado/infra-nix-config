@@ -1,4 +1,4 @@
-# Cross-host metadata for LULA (2026 MacBook Neo, Apple A-series).
+# Cross-host metadata for LULA (Lenovo ThinkPad T14 Gen 2 — Intel i5-1135G7).
 #
 # Personal laptop for a non-technical user. Not part of the Syncthing
 # mesh, so no entry exists in the sibling `nix-config-private` repo
@@ -6,5 +6,5 @@
 {
   hostname = "LULA";
   managed = true;
-  os = "darwin";
+  os = "nixos";
 }

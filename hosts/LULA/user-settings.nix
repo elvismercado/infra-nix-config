@@ -1,10 +1,10 @@
 {
   username = "lula"; # username or name of the system user
   hostname = "LULA"; # as description or hostname
-  system = "aarch64-darwin"; # 2026 MacBook Neo — Apple A-series silicon
+  system = "x86_64-linux"; # Lenovo ThinkPad T14 Gen 2 — Intel i5-1135G7 (Tiger Lake)
   channel = "stable"; # "stable" or "unstable"
-  # timeZone provided by the private overlay (nix-config-private); defaults to Etc/UTC.
-  uid = 501; # required for users.knownUsers — find with `id -u <username>`
+  # timeZone / language / regionalFormat provided by the private overlay (nix-config-private).
+  uid = 1000; # default NixOS uid for the first normal user — verify with `id -u lula`
   repoPath = "git/nix-config"; # relative to $HOME
-  desktopEnvironment = null; # macOS — DE managed by the OS
+  desktopEnvironment = "kde-plasma"; # KDE Plasma + SDDM (matches JIN/FENNEC)
 }

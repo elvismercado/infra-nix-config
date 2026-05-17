@@ -45,5 +45,13 @@
         hashKnownHosts = true;
       };
     };
+
+    # Ensure the ControlPath socket directory exists before ssh tries to bind.
+    # Without this, the first connection fails with:
+    #   unix_listener: cannot bind to path ~/.ssh/sockets/...: No such file or directory
+    home.activation.createSshSocketsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run mkdir -p "$HOME/.ssh/sockets"
+      run chmod 700 "$HOME/.ssh/sockets"
+    '';
   };
 }

@@ -12,12 +12,12 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 
 ## Hosts
 
-| Host   | System             | Architecture   | Channel | Docs                               |
-| ------ | ------------------ | -------------- | ------- | ---------------------------------- |
-| JIN    | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/JIN/README.md)    |
-| FENNEC | NixOS              | x86_64-linux   | stable  | [Hardware](hosts/FENNEC/README.md) |
-| EDGE   | macOS (nix-darwin) | x86_64-darwin  | stable  | [Hardware](hosts/EDGE/README.md)   |
-| LULA   | macOS (nix-darwin) | aarch64-darwin | stable  | [Hardware](hosts/LULA/README.md)   |
+| Host   | System             | Architecture  | Channel | Docs                               |
+| ------ | ------------------ | ------------- | ------- | ---------------------------------- |
+| JIN    | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/JIN/README.md)    |
+| FENNEC | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/FENNEC/README.md) |
+| LULA   | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/LULA/README.md)   |
+| EDGE   | macOS (nix-darwin) | x86_64-darwin | stable  | [Hardware](hosts/EDGE/README.md)   |
 
 ## Quick Commands
 
@@ -25,10 +25,10 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 # NixOS — rebuild system
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
+sudo nixos-rebuild switch --flake .#LULA
 
 # macOS — rebuild system
 darwin-rebuild switch --flake .#EDGE
-darwin-rebuild switch --flake .#LULA
 ```
 
 > Home Manager is integrated as a system module on all hosts, so it is applied as part of the system rebuild above. Standalone `home-manager switch` is reserved for future non-NixOS/non-darwin hosts (e.g. Ubuntu, Arch) registered in `homeManagerHosts`.
@@ -78,13 +78,16 @@ modules/
       apps/                  #   ADB, Coolercontrol, embedded, libvirtd, sunshine
       bootloader/            #   GRUB, systemd-boot, Plymouth, GRUB/Plymouth themes
       cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
+      cpu/intel/             #   Intel base + CPU profiles (Tiger Lake i5-1135G7)
       desktop_environment/   #   KDE Plasma, COSMIC
       display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
-      graphics/              #   AMD, Intel Arc, NVIDIA, nomodeset, nvtop
+      graphics/              #   AMD, Intel Arc, Intel Iris Xe, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom
+      laptop/                #   Lenovo ThinkPad T14 Gen 2 (Intel) chassis quirks
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
       nix/                   #   Flakes, garbage collection
+      power/                 #   power-profiles-daemon
       security/              #   YubiKey, fprintd
       ssd/                   #   SSD optimisations (fstrim)
       system/                #   Console, fonts, i18n, network tuning, time, user

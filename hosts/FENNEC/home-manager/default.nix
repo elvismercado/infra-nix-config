@@ -105,7 +105,7 @@ in
     ../../../modules/home-manager/linux/display-profiles.nix
 
     # Linux / KDE Plasma
-    ../../../modules/home-manager/linux/plasma-config.nix
+    ../../../modules/home-manager/linux/plasma/macos.nix
     ../../../modules/home-manager/linux/sddm-monitor-layout.nix
     ../../../modules/home-manager/linux/kwin-tiling.nix
 
@@ -256,7 +256,9 @@ in
   };
 
   # Linux / KDE Plasma
-  custom.hmPlasmaConfig.enable = true;
+  custom.hmPlasmaMacos.enable = true;
+  custom.hmPlasmaCommon.systray.weather.enable = true;
+  custom.hmPlasmaCommon.kwallet.enable = false;
 
   # Linux / Gaming
   custom.hmGaming.enable = true;
@@ -270,7 +272,7 @@ in
   custom.hmLinutil.enable = true;
 
   # Autostart — launch tray-friendly apps at login. Window state (start
-  # minimized) is enforced by KWin rules in custom.hmPlasmaConfig because
+  # minimized) is enforced by KWin rules in custom.hmPlasmaCommon because
   # the per-app flags below aren't reliably honoured on Wayland. The
   # flags are kept as defense in depth.
   # Note: Syncthing autostarts via its systemd user service (custom.hmSyncthing);

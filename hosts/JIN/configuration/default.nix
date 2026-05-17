@@ -74,6 +74,7 @@
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/linux/signal-desktop.nix
     ../../../modules/apps/linux/libreoffice.nix
+    ../../../modules/apps/linux/onlyoffice.nix
     ../../../modules/apps/linux/rpi-imager.nix
     ../../../modules/apps/linux/localsend.nix
     ../../../modules/apps/linux/yubico-authenticator.nix
@@ -176,6 +177,7 @@
   # Apps (cross-layer façades)
   custom.appSignal.enable = true;
   custom.appLibreoffice.enable = true;
+  custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;

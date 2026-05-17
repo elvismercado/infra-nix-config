@@ -1,51 +1,109 @@
 # LULA
 
-macOS laptop — 2026 MacBook Neo, Apple A-series silicon. Personal
-machine for a non-technical user, set up as a low-friction host.
+Linux laptop — Lenovo ThinkPad T14 Gen 2 (2021), Intel Tiger Lake.
+Personal machine for a non-technical user, set up as a low-friction host.
 
 ## Hardware
 
-| Component | Model                            |
-| --------- | -------------------------------- |
-| Machine   | MacBook Neo, 2026                |
-| CPU       | Apple A-series silicon (aarch64) |
-| GPU       | Integrated (Apple GPU)           |
-| RAM       | (fill in after delivery)         |
-| Storage   | (fill in after delivery)         |
+| Component | Model                                                       |
+| --------- | ----------------------------------------------------------- |
+| Machine   | Lenovo ThinkPad T14 Gen 2 (model `20W0004DMH`, June 2021)   |
+| CPU       | Intel Core i5-1135G7 (Tiger Lake, 4C/8T, 2.4–4.2 GHz, 8 MB) |
+| iGPU      | Intel Iris Xe Graphics                                      |
+| RAM       | 16 GB DDR4-3200 (2× 8 GB SODIMM, 1 slot upgradeable)        |
+| Storage   | 256 GB PCIe NVMe SSD                                        |
+| Display   | 14" FHD IPS 1920×1080, 400 nits, 1200:1 contrast            |
+| Battery   | 91% capacity, 245 cycles                                    |
+| BIOS      | 1.69 (5 Jan 2026)                                           |
+| PSU       | Lenovo USB-C 65 W                                           |
+| Build     | MIL-STD-810G (spill-resistant keyboard with drainage)       |
+
+### Connectivity
+
+- HDMI, 2× USB-A, 2× USB-C (both Thunderbolt 4)
+- 3.5 mm headset, RJ45 Ethernet
+- Wi-Fi 6E, Bluetooth 5.x
+- microSD card reader
+
+### Biometrics
+
+- Fingerprint reader — enabled via `fprintd`. Enrol fingers in **System
+  Settings → Users → Fingerprint Authentication**, or run `fprintd-enroll`
+  from a shell. Once enrolled, the print works for login, sudo, and
+  polkit prompts.
+- IR camera (Windows Hello face unlock) — no Linux equivalent.
 
 ## Configuration overview
 
-- **OS:** macOS Tahoe (nix-darwin), aarch64-darwin, stable channel
-- **Nix Daemon:** Managed by Determinate installer (`nix.enable = false`)
-- **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
-- **Networking:** WakeOnLAN, hostname/computerName/localHostName/SMB
-- **Environment:** UI language, regional formats, and timezone are configured via the `nix-config-private` overlay. Falls back to `en-GB` / `Etc/UTC` when the overlay is missing.
-- **System Preferences:** Control Center, System Preferences, Trackpad,
-  Power, Security (all managed)
+- **OS:** NixOS 25.11 (Xantusia), x86_64-linux, stable channel
+- **Bootloader:** GRUB with sleek dark theme (1080p, single-OS, 2 s timeout)
+- **Desktop:** KDE Plasma + SDDM (Wayland)
+- **CPU/GPU:** Intel Tiger Lake i5-1135G7 (`custom.sysNixIntelTigerLakeI51135g7`)
+  - Intel Iris Xe (`custom.sysNixIntelIrisXe`, VA-API via iHD)
+- **Memory:** zram + earlyoom + hibernation (swap partition >= 16 GB RAM)
+- **Power:** power-profiles-daemon — Performance / Balanced / Power-saver
+  via the KDE Battery widget
+- **Networking:** NetworkManager (auto-enabled by `custom.sysNixUser`)
+- **Audio:** PipeWire
+- **Bluetooth:** enabled
+- **Biometrics:** fprintd (fingerprint login, sudo, polkit)
+- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock with a corner Kickoff menu (flush-left) and centered pinned/running apps. Kickoff doubles as the power menu (Lock / Logout / Switch User / Suspend / Hibernate / Reboot / Shutdown) since Kickerdash exposes only Leave/Restart/Shutdown. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). 36px Breeze_Snow cursor with bouncing click feedback (`cursor.enable = true`). Logout / shutdown asks for confirmation (`confirmLogout.enable = true`). Klipper clipboard history capped at 5 entries. UI fonts bumped to 14pt (12pt small, 13pt mono) for easier reading on the 14" panel. Weather widget enabled for Terneuzen.
+- **Trackpad:** natural scrolling, tap-to-click, disable-while-typing (declared per-device via `programs.plasma.input.touchpads`).
+- **Environment:** UI language, regional formats, and timezone come from
+  the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
+  when the overlay is missing.
 - **Fonts:** Nerd Fonts, Google Fonts
-- **System Packages:** git, gh, nano
-- **macOS auto-updates:** enabled (system + security + data files)
-- **Garbage Collection:** Disabled — Determinate Nix manages its own GC
+- **Shell:** Bash with completions, Starship prompt (`pastel-powerline`)
 - **CLI:** Fastfetch, mpv, SSH, shell aliases — no dev tooling, no
-  Rectangle, no Syncthing.
+  Syncthing.
 
 ## Installed applications
 
 LULA intentionally runs a minimal app set:
 
 - **Brave** — primary browser. Managed policies (debrand + privacy) are
-  applied, but **no force-installed extensions** (`custom.appBrave.extensions = []`).
-  The user can install whatever they want from the Chrome Web Store.
+  applied. Two managed extensions are force-installed:
+  **Bitwarden** (passwords) and **Floccus** (bookmark sync against
+  Nextcloud). The user can install whatever else they want from the
+  Chrome Web Store on top.
+- **Nextcloud** — desktop sync client (systemd user service, tray
+  icon, autostart). Backs Floccus' bookmark sync.
 - **LocalSend** — cross-device file sharing.
-- **AppCleaner** (Homebrew cask) — clean uninstaller for the rare cases
-  where the user installs something manually.
+- **mpv** — media player.
+
+## Install
+
+This host is installed using the same flow as any other NixOS host in
+this flake. See [scripts/nixos/INSTALL.md](../../scripts/nixos/INSTALL.md)
+for the full procedure. Recommended invocation for LULA's single 256 GB
+NVMe with hibernation-capable swap:
+
+```bash
+bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
+  --host LULA --efi-size 1G --swap-size 20G
+```
+
+After reboot, log in as `lula` (initial password: `lula`), change it with
+`passwd`, and rebuild:
+
+```bash
+sudo nixos-rebuild switch --flake .#LULA
+```
 
 ## Useful commands
 
 ```bash
 # Rebuild and switch
-sudo darwin-rebuild switch --flake .#LULA
+sudo nixos-rebuild switch --flake .#LULA
 
 # Or use the shell alias from anywhere
 switch
+
+# Power profile
+powerprofilesctl get
+powerprofilesctl set performance   # or balanced / power-saver
 ```
+
+## Future work
+
+_None tracked at the moment._
