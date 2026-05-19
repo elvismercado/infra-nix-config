@@ -58,9 +58,7 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 
 #### Notifications & focus
 
-- [ ] **Disable Activities entirely.** `kded` Activities plugins off. Activities are powerful and dangerous — easy to switch into an empty one and "lose everything".
 - [ ] **Lengthen notification timeout** from 5s → 10s. `programs.plasma.configFile."plasmanotifyrc"` `[Notifications] PopupTimeout=10000`.
-- [ ] **Disable system sounds** for non-notification events (window close, error beeps). Keep notification sounds on.
 - [ ] **Pin click-to-focus explicitly.** `programs.plasma.kwin.focus.policy = "ClickToFocus";` (defensive — already default but worth pinning).
 
 #### Discoverability
