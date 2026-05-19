@@ -147,5 +147,13 @@ in
         pointSize = 12;
       };
     };
+
+    # Keep window borders on maximized windows. Non-technical users
+    # navigate by window chrome - removing borders/titlebar when
+    # maximized makes it harder to tell where one window ends and
+    # the next begins, and removes the visible close/minimize buttons.
+    # KDE's default is already `false` here; pinned defensively in
+    # case a future Plasma theme/preset flips it on.
+    programs.plasma.kwin.borderlessMaximizedWindows = false;
   };
 }
