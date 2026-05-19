@@ -25,18 +25,29 @@ let
 
   # Public flake repo + sibling private overlay.
   # Convention (matches setup.sh / install.sh / flake.nix
-  # `git+file:../nix-config-private`): the private repo lives next to
-  # the public one, so derive its path from `repoPath`'s parent dir.
+  # `github:elvismercado/nix-config-private`): the private repo lives
+  # next to the public one on disk, so derive its path from
+  # `repoPath`'s parent dir.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
   privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/nix-config-private";
 
+  # Auth token for the private GitHub flake input. Evaluated at
+  # alias-execution time by the user's shell - before any `sudo` - so
+  # the token is captured from the user's `gh` CLI session and passed
+  # through to nix (daemon or user-side). Required because the
+  # `github:` URL scheme uses the GitHub tarball API, which honours
+  # `access-tokens` but cannot use the git credential helper.
+  # Prerequisite: `gh auth login` (one-time, per user per host).
+  tokenOpt = ''--option access-tokens "github.com=$(gh auth token)"'';
+
   # Guarded one-liner that refreshes the `private` flake input lock
-  # against the local sibling repo. Silent no-op when the sibling is
-  # missing or not a git repo (e.g. fresh hosts, install.sh stubs). The
-  # `--flake` arg means it works even when invoked from a different cwd.
-  # `2>/dev/null || true` swallows nix's "warning: updating lock file"
-  # noise and keeps the alias chainable on `&&`.
-  bumpPrivate = "{ if [ -d ${privateRepo} ] && git -C ${privateRepo} rev-parse --git-dir >/dev/null 2>&1; then nix flake update private --flake ${publicRepo} 2>/dev/null || true; fi; }";
+  # against the upstream GitHub repo. Silent no-op when the local
+  # sibling clone is missing (gate kept so workflow stays consistent
+  # with `switchbumpprivate` / `switchpull`). The `--flake` arg means
+  # it works even when invoked from a different cwd. `2>/dev/null ||
+  # true` swallows nix's "warning: updating lock file" noise and keeps
+  # the alias chainable on `&&`.
+  bumpPrivate = "{ if [ -d ${privateRepo} ] && git -C ${privateRepo} rev-parse --git-dir >/dev/null 2>&1; then nix flake update private --flake ${publicRepo} ${tokenOpt} 2>/dev/null || true; fi; }";
 in
 
 {
@@ -50,15 +61,15 @@ in
 
       # Nix workflow aliases
       switchcd = "cd ${publicRepo}";
-      switchupdate = "cd ${publicRepo} && nix flake update";
-      switchcheck = "cd ${publicRepo} && ${bumpPrivate} && nix flake check";
+      switchupdate = "cd ${publicRepo} && nix flake update ${tokenOpt}";
+      switchcheck = "cd ${publicRepo} && ${bumpPrivate} && nix flake check ${tokenOpt}";
       switchtrusted = "nix config show | grep trusted-users";
 
       # Explicit one-shot: refresh the `private` lock entry, commit,
       # and push. Use after editing the private overlay to ship the
       # bump to other hosts. `switchcheck` / `switch` already refresh
       # the lock locally; this one persists the change.
-      switchbumpprivate = "cd ${publicRepo} && nix flake update private && git add flake.lock && git commit -m 'flake.lock: bump private input' && git push";
+      switchbumpprivate = "cd ${publicRepo} && nix flake update private ${tokenOpt} && git add flake.lock && git commit -m 'flake.lock: bump private input' && git push";
 
       # Git sync: fast-forward both the public repo and the private
       # sibling. Public failure aborts (--ff-only refuses on local
