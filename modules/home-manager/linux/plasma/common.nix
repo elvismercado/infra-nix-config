@@ -71,6 +71,14 @@
 #     When `true`, Plasma asks for confirmation (with a 30-second
 #     countdown auto-cancel) before logout / restart / shutdown.
 #
+#   custom.hmPlasmaCommon.dolphin.enable (default: false)
+#     When `true`, writes a curated `dolphinrc` preset aimed at less
+#     technical users: full path in the title bar, status bar visible,
+#     hover tooltips, archive browsing, file-picker defaulting to
+#     Details view, and "open externally-called folder in existing
+#     window" behaviour (closest declarative thing to single-window
+#     mode - the tabs feature itself cannot be hidden declaratively).
+#
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
 #                                    weather conditionally appended.
@@ -182,6 +190,20 @@ in
         power menu.
       '';
     };
+
+    dolphin.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        When `true`, writes a curated `dolphinrc` preset aimed at
+        less technical users: full path in the title bar, status bar
+        visible, hover tooltips, archive browsing, file picker
+        defaulting to Details view, and "open externally-called
+        folder in existing window" behaviour (closest declarative
+        approximation of single-window mode - Dolphin's tabs feature
+        itself has no kill switch).
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -283,6 +305,23 @@ in
           BottomLeft = "None";
           BottomRight = "None";
         };
+      }
+      # Dolphin preset - sensible defaults for non-technical users.
+      # `OpenExternallyCalledFolderInNewTab=false` is the closest
+      # declarative thing to "single-window mode": when another app
+      # asks the desktop to open a folder (e.g. browser "Show in
+      # folder"), Dolphin focuses an existing window/tab instead of
+      # spawning a new one. Dolphin's own Ctrl+T tabs remain available.
+      // lib.optionalAttrs cfg.dolphin.enable {
+        "dolphinrc"."General" = {
+          BrowseThroughArchives = true;
+          ShowFullPath = true;
+          ShowToolTips = true;
+          ShowStatusBar = true;
+          OpenExternallyCalledFolderInNewTab = false;
+          RememberOpenedTabs = false;
+        };
+        "dolphinrc"."KFileDialog Settings"."View Style" = "DetailsView";
       };
     };
   };

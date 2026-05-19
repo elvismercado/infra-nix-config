@@ -54,6 +54,10 @@
   custom.hmPlasmaCommon.cursor.enable = true;
   # Confirm before logout / restart / shutdown.
   custom.hmPlasmaCommon.confirmLogout.enable = true;
+  # Dolphin preset for non-technical users: full path in title, status
+  # bar, tooltips, archives-as-folders, file-picker defaults to
+  # Details view, externally-opened folders reuse an existing window.
+  custom.hmPlasmaCommon.dolphin.enable = true;
 
   # Klipper — keep clipboard history short. Limits the privacy /
   # confusion footprint of "the last 20 things you copied are visible
