@@ -78,9 +78,16 @@
 #     "open externally-called folder in existing window" behaviour
 #     (closest declarative thing to single-window mode - the tabs
 #     feature itself cannot be hidden declaratively). Hover tooltips
-#     are explicitly OFF: KDE's tooltip-show delay for Dolphin's KIO
+#     are governed by the separate `dolphin.showToolTips` sub-option
+#     (default off because KDE's tooltip-show delay for Dolphin's KIO
 #     file tooltips is hardcoded too short to be useful, and there is
-#     no declarative key to slow it down.
+#     no declarative key to slow it down). Hosts where the popup
+#     speed is acceptable can opt back in.
+#
+#   custom.hmPlasmaCommon.dolphin.showToolTips (default: false)
+#     Only applies when `dolphin.enable` is `true`. Flip to `true` to
+#     re-enable Dolphin's hover file tooltips. LULA leaves this off;
+#     FENNEC and JIN turn it on.
 #
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
@@ -204,9 +211,21 @@ in
         view, and "open externally-called folder in existing window"
         behaviour (closest declarative approximation of single-window
         mode - Dolphin's tabs feature itself has no kill switch).
-        Hover file tooltips are explicitly disabled because KDE's
-        show-delay for Dolphin's KIO tooltips is hardcoded too short
-        to be useful and there is no declarative key to slow it down.
+        Hover file tooltips are governed by the separate
+        `dolphin.showToolTips` sub-option.
+      '';
+    };
+
+    dolphin.showToolTips = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Only applies when `dolphin.enable` is `true`. When `false`
+        (default), Dolphin's hover file tooltips are suppressed -
+        KDE's tooltip-show delay for Dolphin's KIO tooltips is
+        hardcoded too short to be useful for non-technical users and
+        there is no declarative key to slow it down. Flip to `true`
+        on hosts where the popup speed is acceptable.
       '';
     };
   };
@@ -321,7 +340,7 @@ in
         "dolphinrc"."General" = {
           BrowseThroughArchives = true;
           ShowFullPath = true;
-          ShowToolTips = false;
+          ShowToolTips = cfg.dolphin.showToolTips;
           ShowStatusBar = true;
           OpenExternallyCalledFolderInNewTab = false;
           RememberOpenedTabs = false;

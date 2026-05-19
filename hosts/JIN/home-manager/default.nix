@@ -127,6 +127,11 @@ in
   custom.hmPlasmaMacos.enable = true;
   custom.hmPlasmaCommon.systray.weather.enable = true;
   custom.hmPlasmaCommon.kwallet.enable = false;
+  # Dolphin preset: full path, status bar, archives-as-folders,
+  # file-picker defaults to Details view, externally-opened folders
+  # reuse an existing window. Hover tooltips enabled.
+  custom.hmPlasmaCommon.dolphin.enable = true;
+  custom.hmPlasmaCommon.dolphin.showToolTips = true;
   custom.hmWindowShortcuts.enable = true;
   custom.hmVscode.enable = true;
 
