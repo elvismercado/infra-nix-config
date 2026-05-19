@@ -44,29 +44,55 @@
 
     # Private overlay sibling repo (gitignored from the public tree).
     # Holds PII-bearing per-host fields (timeZone, language, regionalFormat,
-    # syncthing IDs/addresses). Expected to live next to this repo on disk:
+    # syncthing IDs/addresses).
     #
-    #   git clone <public>  nix-config
-    #   git clone <private> nix-config-private
+    # Fetched from a private GitHub repo via the `github:` URL scheme.
+    # `flake = false` means we treat it as a plain source tree.
     #
-    # `flake = false` means we treat it as a plain source tree, not a flake.
+    # ## Why `github:` and not `git+file:` / `path:` / `git+https:`
     #
-    # The `path:` scheme resolves the relative path against THIS flake's
-    # directory (not the process CWD), per Nix 2.26+ behaviour
-    # (https://github.com/NixOS/nix/issues/12281, PR #10089). This is the
-    # official replacement for the now-deprecated `git+file:../...` form
-    # that warned on every rebuild.
+    # Migrated 2026-05-19. Earlier forms all failed for different reasons:
     #
-    # Unlike `git+file:`, `path:` copies the directory wholesale rather
-    # than just the git-tracked files — so uncommitted edits in the
-    # sibling repo ARE picked up. No `git add && commit` round-trip
-    # required to test an overlay change.
+    #   - `git+file:../nix-config-private` (sibling-on-disk) emits a
+    #     deprecation warning on every rebuild
+    #     (https://github.com/NixOS/nix/issues/12281) and is slated for
+    #     removal.
     #
-    # If the sibling is missing, `nix flake check` (and any rebuild) will
-    # fail with `cannot read input 'private'`. Bootstrap by cloning the
-    # sibling — see README "PII & Secrets Discipline".
+    #   - `path:../nix-config-private` — broken on Determinate Nix 3.20.0
+    #     / Nix 2.34.6. The parent flake is copied into the store first,
+    #     so `outPath` resolves to `/nix/store/HASH-source/../nix-config-private`
+    #     (escapes the store). `pathExists` then trips
+    #     "is too short to be a valid store path". The bare-path-value
+    #     form `url = ../foo` uses the same fetcher and is equally broken.
+    #
+    #   - `git+https://github.com/...` — daemon-side fetcher shells out
+    #     to the git subprocess, which does NOT consult Nix's
+    #     `access-tokens` setting. `sudo nixos-rebuild` prompts for a
+    #     git username/password and fails. Same root cause for
+    #     `git+ssh://` (root has no SSH key for GitHub).
+    #
+    #   - `github:` — uses the GitHub tarball API instead of the git
+    #     protocol. This path DOES honour `access-tokens`, so the
+    #     daemon authenticates cleanly when invoked as
+    #     `--option access-tokens "github.com=$(gh auth token)"`.
+    #
+    # ## Auth model
+    #
+    # The token is injected per-invocation via `gh auth token` in the
+    # `switch*` aliases in `modules/home-manager/{linux,darwin}/aliases.nix`.
+    # Nothing committed, nothing in `/etc/nix/nix.conf`. Each rebuilder
+    # needs `gh auth login` (one-time, per user per host).
+    #
+    # ## Workflow caveat
+    #
+    # `git+file:` / `path:` read from the local sibling, so edits were
+    # visible without pushing. `github:` fetches from GitHub, so edits
+    # MUST be both committed AND pushed before they show up in a
+    # rebuild. The `bumpPrivate` step in the switch aliases auto-pushes
+    # the sibling before refreshing the lock, preserving the
+    # "edit + switch" UX.
     private = {
-      url = "path:../nix-config-private";
+      url = "github:elvismercado/nix-config-private";
       flake = false;
     };
   };
