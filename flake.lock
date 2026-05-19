@@ -334,11 +334,11 @@
     "private": {
       "flake": false,
       "locked": {
-        "lastModified": 1778777761,
-        "narHash": "sha256-p4ssG2UT/Iutbu/y23fso+bpseVRqIp/X4mSBozB1YE=",
+        "lastModified": 1778791019,
+        "narHash": "sha256-RAVvzVTdABoLRrvx0xi5vRZpKVTvRI9R82OF9vdQQ9I=",
         "ref": "refs/heads/main",
-        "rev": "eac896e4f686fc84ec82b9687249d5a1e1cad04b",
-        "revCount": 6,
+        "rev": "11680ed9b500e5d74280d2aa6d8827cf3a2d9d1b",
+        "revCount": 7,
         "type": "git",
         "url": "file:../nix-config-private"
       },
