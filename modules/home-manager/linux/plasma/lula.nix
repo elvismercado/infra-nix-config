@@ -112,13 +112,40 @@ in
       }
     ];
 
-    # NOTE: UI fonts are left at Plasma defaults (10pt Noto Sans /
-    # Hack Nerd Font) and legibility on the 14" 1080p panel is handled
-    # instead by a one-time global UI scale set via System Settings →
-    # Display & Monitor → Global Scale (recommended 125%). On Plasma 6
-    # Wayland the scale lives in `~/.local/state/kwinoutputconfig.json`,
-    # keyed by monitor EDID, and is not portably writable from
-    # plasma-manager (see plasma-manager issue #243 and the "Display
-    # scaling" section of `hosts/LULA/README.md`).
+    # UI fonts — Plasma 6 defaults plus exactly +2pt across every
+    # category. A single conservative step up that preserves KDE's
+    # intended size hierarchy (small still ~80% of general, window
+    # title still bold) and gives the 14" 1080p panel a bit of breathing
+    # room without fighting Plasma's pixel-perfect layouts. For stronger
+    # magnification the user can layer a global UI scale on top via
+    # System Settings (see "Display scaling" in
+    # `hosts/LULA/README.md`).
+    programs.plasma.fonts = {
+      general = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      menu = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      toolbar = {
+        family = "Noto Sans";
+        pointSize = 12;
+      };
+      windowTitle = {
+        family = "Noto Sans";
+        pointSize = 12;
+        weight = "bold"; # matches Plasma 6 default (WM.activeFont is bold)
+      };
+      small = {
+        family = "Noto Sans";
+        pointSize = 10;
+      };
+      fixedWidth = {
+        family = "Hack Nerd Font";
+        pointSize = 12;
+      };
+    };
   };
 }
