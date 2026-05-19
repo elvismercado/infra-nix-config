@@ -20,11 +20,13 @@
 #     and for launching individual KCMs (e.g. `kcmshell6 kcm_fonts`).
 #
 # Opt-in feature toggles:
-#   custom.hmPlasmaCommon.systray.weather.enable
+#   custom.hmPlasmaCommon.systray.weather.enable (default: true)
 #     Pins the weather widget to the systray's `shown` list (always
-#     visible in the bar, not hidden in the popup). Requires
-#     `userSettings.weatherLocation` (asserted) — typically supplied via
-#     the private overlay in
+#     visible in the bar, not hidden in the popup). Defaults to `true`
+#     on every Plasma host; set `false` on hosts that don't want it,
+#     or that don't have `userSettings.weatherLocation`. Requires
+#     `userSettings.weatherLocation` when `true` (asserted) — typically
+#     supplied via the private overlay in
 #     `nix-config-private/hosts/<HOST>/user-settings.nix`:
 #       weatherLocation = {
 #         name = "The Hague";                              # human label, reference only
@@ -155,10 +157,17 @@ in
   options.custom.hmPlasmaCommon = {
     enable = lib.mkEnableOption "shared KDE Plasma baseline (always-on tweaks consumed by layout modules)";
 
-    systray.weather.enable = lib.mkEnableOption ''
-      weather widget in the systray. Requires `userSettings.weatherLocation`
-      (typically set via the private overlay)
-    '';
+    systray.weather.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `true` (default), pins the weather widget to the systray's
+        `shown` list (always visible in the bar). Requires
+        `userSettings.weatherLocation` to be set (asserted); typically
+        supplied via the private overlay. Set `false` on Plasma hosts
+        that don't want the widget or that have no location overlay.
+      '';
+    };
 
     hotCorners.enable = lib.mkOption {
       type = lib.types.bool;

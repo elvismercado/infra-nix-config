@@ -257,7 +257,6 @@ in
 
   # Linux / KDE Plasma
   custom.hmPlasmaMacos.enable = true;
-  custom.hmPlasmaCommon.systray.weather.enable = true;
   custom.hmPlasmaCommon.kwallet.enable = false;
   # Dolphin preset: full path, status bar, archives-as-folders,
   # file-picker defaults to Details view, externally-opened folders
