@@ -13,6 +13,11 @@
 #   - No splash screen (Plymouth handles boot splash)
 #   - Login starts with empty session (no app restore)
 #   - New windows open under the cursor (UnderMouse placement)
+#   - Click-to-focus pinned explicitly (defensive - already the KDE
+#     default, but pinned so a future Plasma default flip doesn't
+#     silently switch parent-style hosts to focus-follows-mouse)
+#   - Notification popup timeout bumped from 5s to 10s (gives slower
+#     readers enough time to finish a notification before it vanishes)
 #   - Desktop icons arranged top-to-bottom, left-aligned
 #   - Webcamoid (Qt webcam app, replaces Kamoso)
 #   - Plasma config CLI tools (`kreadconfig6`, `kwriteconfig6`, `kcmshell6`)
@@ -362,7 +367,19 @@ in
       };
 
       configFile = {
-        "kwinrc"."Windows".Placement = "UnderMouse";
+        "kwinrc"."Windows" = {
+          Placement = "UnderMouse";
+          # Pin click-to-focus explicitly. Already the KDE default;
+          # writing it defensively so a future upstream default flip
+          # (e.g. to FocusFollowsMouse) can't silently change behaviour
+          # on parent-style hosts.
+          FocusPolicy = "ClickToFocus";
+        };
+        # Bump notification popup timeout from the 5s default to 10s.
+        # Cheap quality-of-life win on every Plasma host - slower
+        # readers get enough time to finish a notification before it
+        # vanishes; faster readers can still dismiss manually.
+        "plasmanotifyrc"."Notifications".PopupTimeout = 10000;
       }
       # KWallet kill switch — disable the daemon and suppress the
       # first-run wizard. Without a Secret Service agent, plasma-nm /

@@ -58,8 +58,8 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 
 #### Notifications & focus
 
-- [ ] **Lengthen notification timeout** from 5s → 10s. `programs.plasma.configFile."plasmanotifyrc"` `[Notifications] PopupTimeout=10000`.
-- [ ] **Pin click-to-focus explicitly.** `programs.plasma.kwin.focus.policy = "ClickToFocus";` (defensive — already default but worth pinning).
+- [x] **Lengthen notification timeout** from 5s → 10s. ✅ Done 2026-05-19 — always-on baseline in [modules/home-manager/linux/plasma/common.nix](modules/home-manager/linux/plasma/common.nix); writes `plasmanotifyrc [Notifications] PopupTimeout=10000` whenever `custom.hmPlasmaCommon.enable` is set. Applies to LULA, FENNEC, JIN.
+- [x] **Pin click-to-focus explicitly.** ✅ Done 2026-05-19 — always-on baseline in [modules/home-manager/linux/plasma/common.nix](modules/home-manager/linux/plasma/common.nix); writes `kwinrc [Windows] FocusPolicy=ClickToFocus` (plasma-manager has no typed option for it, so set directly via `configFile`). Defensive against a future Plasma default flip.
 
 #### Discoverability
 
