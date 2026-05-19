@@ -62,7 +62,7 @@ in
       # Nix workflow aliases
       switchcd = "cd ${publicRepo}";
       switchupdate = "cd ${publicRepo} && nix flake update ${tokenOpt}";
-      switchcheck = "cd ${publicRepo} && ${bumpPrivate} && nix flake check ${tokenOpt}";
+      switchcheck = "cd ${publicRepo} && nix flake check ${tokenOpt}";
       switchtrusted = "nix config show | grep trusted-users";
 
       # Explicit one-shot: refresh the `private` lock entry, commit,
