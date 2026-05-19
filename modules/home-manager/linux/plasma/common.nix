@@ -74,10 +74,13 @@
 #   custom.hmPlasmaCommon.dolphin.enable (default: false)
 #     When `true`, writes a curated `dolphinrc` preset aimed at less
 #     technical users: full path in the title bar, status bar visible,
-#     hover tooltips, archive browsing, file-picker defaulting to
-#     Details view, and "open externally-called folder in existing
-#     window" behaviour (closest declarative thing to single-window
-#     mode - the tabs feature itself cannot be hidden declaratively).
+#     archive browsing, file-picker defaulting to Details view, and
+#     "open externally-called folder in existing window" behaviour
+#     (closest declarative thing to single-window mode - the tabs
+#     feature itself cannot be hidden declaratively). Hover tooltips
+#     are explicitly OFF: KDE's tooltip-show delay for Dolphin's KIO
+#     file tooltips is hardcoded too short to be useful, and there is
+#     no declarative key to slow it down.
 #
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
@@ -197,11 +200,13 @@ in
       description = ''
         When `true`, writes a curated `dolphinrc` preset aimed at
         less technical users: full path in the title bar, status bar
-        visible, hover tooltips, archive browsing, file picker
-        defaulting to Details view, and "open externally-called
-        folder in existing window" behaviour (closest declarative
-        approximation of single-window mode - Dolphin's tabs feature
-        itself has no kill switch).
+        visible, archive browsing, file picker defaulting to Details
+        view, and "open externally-called folder in existing window"
+        behaviour (closest declarative approximation of single-window
+        mode - Dolphin's tabs feature itself has no kill switch).
+        Hover file tooltips are explicitly disabled because KDE's
+        show-delay for Dolphin's KIO tooltips is hardcoded too short
+        to be useful and there is no declarative key to slow it down.
       '';
     };
   };
@@ -316,7 +321,7 @@ in
         "dolphinrc"."General" = {
           BrowseThroughArchives = true;
           ShowFullPath = true;
-          ShowToolTips = true;
+          ShowToolTips = false;
           ShowStatusBar = true;
           OpenExternallyCalledFolderInNewTab = false;
           RememberOpenedTabs = false;
