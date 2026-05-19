@@ -15,6 +15,9 @@
 #   - New windows open under the cursor (UnderMouse placement)
 #   - Desktop icons arranged top-to-bottom, left-aligned
 #   - Webcamoid (Qt webcam app, replaces Kamoso)
+#   - Plasma config CLI tools (`kreadconfig6`, `kwriteconfig6`, `kcmshell6`)
+#     on `PATH` for inspecting / scripting `kdeglobals` and `*rc` files
+#     and for launching individual KCMs (e.g. `kcmshell6 kcm_fonts`).
 #
 # Opt-in feature toggles:
 #   custom.hmPlasmaCommon.systray.weather.enable
@@ -294,6 +297,12 @@ in
 
     home.packages = [
       pkgs.webcamoid
+      # Plasma config CLI tools — kreadconfig6 / kwriteconfig6 (from
+      # kconfig) for reading/writing kdeglobals and *rc files from the
+      # shell; kcmshell6 (from kcmutils) for opening individual KCMs
+      # (e.g. `kcmshell6 kcm_fonts`).
+      pkgs.kdePackages.kconfig
+      pkgs.kdePackages.kcmutils
     ];
 
     programs.plasma = {
