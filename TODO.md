@@ -51,10 +51,10 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 
 #### Visibility & legibility
 
-- [ ] **Global UI scaling 110–125%.** Different from font bump — scales the whole UI (padding, scrollbars, controls). 14" 1080p panel benefits enormously. `kscreen` per-monitor scale factor.
-- [ ] **High-contrast color scheme.** `programs.plasma.workspace.colorScheme = "BreezeHighContrast";`. Sharper window borders, selection, disabled-vs-enabled states.
-- [ ] **Always-visible scrollbars.** Plasma 6 hides them until hover; she never sees how long a list is. `kdeglobals` `[KDE] AnimateButtonHovers=...` + Qt scrollbar policy override.
-- [ ] **Animated cursor when launching apps** (bouncy cursor while app starts). KWin effect, telegraphs "click registered, just wait".
+- [x] **Global UI scaling 110–125%.** ✅ Done 2026-05-19 — declarative scaling is not viable on Plasma 6 Wayland (per-output scale lives in `~/.local/state/kwinoutputconfig.json`, keyed by EDID, written by KWin itself; plasma-manager [#243](https://github.com/nix-community/plasma-manager/issues/243) has no option for it and the X11-era `kdeglobals [KScreen] ScreenScaleFactors` is ignored by KWin Wayland for window placement). Resolved instead by resetting LULA's font bump back to Plasma defaults in [modules/home-manager/linux/plasma/lula.nix](modules/home-manager/linux/plasma/lula.nix) and documenting the one-time GUI step (System Settings → Display & Monitor → Global Scale → 125%) under "Display scaling" in [hosts/LULA/README.md](hosts/LULA/README.md). KWin persists the scale across reboots.
+- [ ] ~~**High-contrast color scheme.**~~ **Skipped 2026-05-19** per user — keep the default Breeze colour scheme.
+- [ ] **Always-visible scrollbars.** ⚠️ **Blocked: no declarative or GUI path in Plasma 6.** Breeze hardcodes transient/overlay scrollbar behaviour at the Qt style level — there is no kdeglobals/breezerc key, and the upstream `kcms/style/stylesettings.kcfg` exposes no scrollbar visibility option. Only available workarounds are `QT_STYLE_OVERRIDE=fusion` (replaces the entire widget style, visually inconsistent with the rest of Plasma) or per-app QSS overlays (not global). Park until upstream Breeze adds the setting, or revisit with the heavier `QT_STYLE_OVERRIDE` hammer if needed.
+- [x] **Animated cursor when launching apps** (bouncy cursor while app starts). ✅ Done — already wired by `custom.hmPlasmaCommon.cursor.enable = true` on LULA, which sets `cursorFeedback = "Bouncing"` and `taskManagerFeedback = true` in [modules/home-manager/linux/plasma/common.nix](modules/home-manager/linux/plasma/common.nix).
 
 #### Notifications & focus
 

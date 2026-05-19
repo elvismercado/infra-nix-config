@@ -112,36 +112,13 @@ in
       }
     ];
 
-    # Larger UI fonts — default Plasma is 10pt Noto Sans, which is
-    # tight on a 14" 1080p panel for a non-technical user. Bumped to
-    # 14pt main / 12pt small / 13pt fixed-width. Hack Nerd Font is
-    # pulled in by `custom.sysFonts` and matches what Starship expects
-    # in the terminal.
-    programs.plasma.fonts = {
-      general = {
-        family = "Noto Sans";
-        pointSize = 14;
-      };
-      menu = {
-        family = "Noto Sans";
-        pointSize = 14;
-      };
-      toolbar = {
-        family = "Noto Sans";
-        pointSize = 14;
-      };
-      windowTitle = {
-        family = "Noto Sans";
-        pointSize = 14;
-      };
-      small = {
-        family = "Noto Sans";
-        pointSize = 12;
-      };
-      fixedWidth = {
-        family = "Hack Nerd Font";
-        pointSize = 13;
-      };
-    };
+    # NOTE: UI fonts are left at Plasma defaults (10pt Noto Sans /
+    # Hack Nerd Font) and legibility on the 14" 1080p panel is handled
+    # instead by a one-time global UI scale set via System Settings →
+    # Display & Monitor → Global Scale (recommended 125%). On Plasma 6
+    # Wayland the scale lives in `~/.local/state/kwinoutputconfig.json`,
+    # keyed by monitor EDID, and is not portably writable from
+    # plasma-manager (see plasma-manager issue #243 and the "Display
+    # scaling" section of `hosts/LULA/README.md`).
   };
 }

@@ -47,7 +47,7 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
 - **Biometrics:** fprintd (fingerprint login, sudo, polkit)
-- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock with a corner Kickoff menu (flush-left) and centered pinned/running apps. Kickoff doubles as the power menu (Lock / Logout / Switch User / Suspend / Hibernate / Reboot / Shutdown) since Kickerdash exposes only Leave/Restart/Shutdown. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). 36px Breeze_Snow cursor with bouncing click feedback (`cursor.enable = true`). Logout / shutdown asks for confirmation (`confirmLogout.enable = true`). Klipper clipboard history capped at 5 entries. UI fonts bumped to 14pt (12pt small, 13pt mono) for easier reading on the 14" panel. Weather widget enabled for Terneuzen.
+- **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock with a corner Kickoff menu (flush-left) and centered pinned/running apps. Kickoff doubles as the power menu (Lock / Logout / Switch User / Suspend / Hibernate / Reboot / Shutdown) since Kickerdash exposes only Leave/Restart/Shutdown. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). 36px Breeze_Snow cursor with bouncing click feedback (`cursor.enable = true`, also covers the "animated cursor while an app launches" pulse). Logout / shutdown asks for confirmation (`confirmLogout.enable = true`). Klipper clipboard history capped at 5 entries. UI fonts left at Plasma defaults (10pt Noto Sans); legibility on the 14" 1080p panel is handled by a one-time global UI scale set in System Settings (see [Display scaling](#display-scaling) below). Weather widget enabled for Terneuzen.
 - **Trackpad:** natural scrolling, tap-to-click, disable-while-typing (declared per-device via `programs.plasma.input.touchpads`).
 - **Environment:** UI language, regional formats, and timezone come from
   the `nix-config-private` overlay. Falls back to `en-GB` / `Europe/London`
@@ -89,6 +89,27 @@ After reboot, log in as `lula` (initial password: `lula`), change it with
 ```bash
 sudo nixos-rebuild switch --flake .#LULA
 ```
+
+## Display scaling
+
+LULA's 14" 1080p panel is small for default Plasma UI (10pt fonts, 1×
+scale). Rather than bumping fonts (which fights with KDE's pixel-perfect
+layouts), set a **global UI scale** once via System Settings:
+
+1. Open **System Settings → Display & Monitor**.
+2. Pick the laptop screen and set **Global Scale** to **125%** (or 110% / 150%
+   to taste; Plasma 6 supports fractional scaling natively on Wayland).
+3. Click **Apply**, then log out and back in for all apps to pick up the
+   new scale.
+
+Why this is not declarative: on Plasma 6 Wayland, the per-output scale
+lives in `~/.local/state/kwinoutputconfig.json`, keyed by the monitor's
+EDID, and is written by KWin itself when you touch the slider. plasma-manager
+has no `programs.plasma.workspace.scale` option ([plasma-manager #243](https://github.com/nix-community/plasma-manager/issues/243)),
+and the X11-era `kdeglobals [KScreen] ScreenScaleFactors` key is ignored by
+KWin Wayland for window placement. Once set, KWin persists the choice
+across reboots — only a manual factory reset or `rm ~/.local/state/kwinoutputconfig.json`
+would undo it.
 
 ## Useful commands
 
