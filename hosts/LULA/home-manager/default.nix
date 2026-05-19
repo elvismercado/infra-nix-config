@@ -59,6 +59,12 @@
   # Details view, externally-opened folders reuse an existing window.
   custom.hmPlasmaCommon.dolphin.enable = true;
 
+  # Unbind Meta+arrow quick-tile shortcuts (accidental-trigger surface
+  # when the Meta key gets bumped during typing). Drag-to-edge snapping
+  # stays enabled so the user can discover and learn the gesture
+  # organically.
+  custom.hmPlasmaCommon.quickTile.shortcuts.enable = false;
+
   # Klipper — keep clipboard history short. Limits the privacy /
   # confusion footprint of "the last 20 things you copied are visible
   # in the system tray" (Bitwarden passwords, Wi-Fi PSKs, addresses).

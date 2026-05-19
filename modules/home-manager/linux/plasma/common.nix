@@ -89,6 +89,22 @@
 #     re-enable Dolphin's hover file tooltips. LULA leaves this off;
 #     FENNEC and JIN turn it on.
 #
+#   custom.hmPlasmaCommon.quickTile.shortcuts.enable (default: true)
+#     When `false`, unbinds KWin's Quick Tile keyboard shortcuts (the
+#     eight Meta+arrow / diagonal combos) plus Meta+Up (Maximize) and
+#     Meta+Down (Minimize). Quick Tile capability stays available
+#     from the window menu and System Settings; only the
+#     accidental-trigger keyboard surface goes away. Useful on hosts
+#     where bumping the Meta key during normal typing makes windows
+#     jump unexpectedly.
+#
+#   custom.hmPlasmaCommon.quickTile.edgeDrag.enable (default: true)
+#     When `false`, disables KWin's drag-to-edge tiling and the
+#     drag-to-top-edge maximize gesture. Independent from
+#     `quickTile.shortcuts.enable` so hosts can leave edge-drag on as
+#     a discoverable / learnable gesture while still suppressing the
+#     accidental keyboard triggers.
+#
 # Helpers exposed to layout files (via `_module.args`):
 #   plasmaCommon.systrayItems     — attrset for `systemTray.items` with
 #                                    weather conditionally appended.
@@ -228,6 +244,31 @@ in
         on hosts where the popup speed is acceptable.
       '';
     };
+
+    quickTile.shortcuts.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `false`, unbinds KWin's Quick Tile keyboard shortcuts
+        (the eight Meta+arrow / diagonal combos) plus Meta+Up
+        (Maximize) and Meta+Down (Minimize). Quick Tile capability
+        remains available from the window menu and System Settings;
+        only the accidental-trigger keyboard surface is removed.
+      '';
+    };
+
+    quickTile.edgeDrag.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `false`, disables KWin's drag-to-edge tiling
+        (`ElectricBorderTiling`) and the drag-to-top-edge maximize
+        gesture (`ElectricBorderMaximize`). Independent from
+        `quickTile.shortcuts.enable` so hosts can leave edge-drag
+        snapping on as a discoverable / learnable gesture while still
+        suppressing the accidental keyboard triggers.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -346,6 +387,33 @@ in
           RememberOpenedTabs = false;
         };
         "dolphinrc"."KFileDialog Settings"."View Style" = "DetailsView";
+      }
+      # Edge-drag tiling kill switch. Disables both drag-to-side
+      # (tile to half-screen) and drag-to-top (maximize). The Meta+
+      # keyboard shortcuts are unbound separately via the
+      # `programs.plasma.shortcuts` block below when
+      # `quickTile.shortcuts.enable` is `false`.
+      // lib.optionalAttrs (!cfg.quickTile.edgeDrag.enable) {
+        "kwinrc"."Windows".ElectricBorderTiling = false;
+        "kwinrc"."Windows".ElectricBorderMaximize = false;
+      };
+
+      # Quick Tile keyboard shortcut kill switch. `mkForce` because
+      # plasma-manager seeds defaults at a lower priority - a plain
+      # assignment might not win the merge. Empty list = unbound.
+      shortcuts = lib.mkIf (!cfg.quickTile.shortcuts.enable) {
+        "kwin" = {
+          "Window Quick Tile Left" = lib.mkForce [ ];
+          "Window Quick Tile Right" = lib.mkForce [ ];
+          "Window Quick Tile Top" = lib.mkForce [ ];
+          "Window Quick Tile Bottom" = lib.mkForce [ ];
+          "Window Quick Tile Top Left" = lib.mkForce [ ];
+          "Window Quick Tile Top Right" = lib.mkForce [ ];
+          "Window Quick Tile Bottom Left" = lib.mkForce [ ];
+          "Window Quick Tile Bottom Right" = lib.mkForce [ ];
+          "Window Maximize" = lib.mkForce [ ];
+          "Window Minimize" = lib.mkForce [ ];
+        };
       };
     };
   };
