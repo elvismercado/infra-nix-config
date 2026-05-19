@@ -50,20 +50,23 @@
     #   git clone <private> nix-config-private
     #
     # `flake = false` means we treat it as a plain source tree, not a flake.
-    # `git+file:` (rather than `path:`) is used because plain
-    # `path:../nix-config-private` mis-parses on Determinate Nix as
-    # `error: 'nix-config-private' is too short to be a valid store path`.
-    # `git+file:` resolves the relative path against this flake's parent
-    # directory and copies the git-tracked files into the store.
     #
-    # Caveat: only committed overlay files are visible. Uncommitted edits
-    # in the sibling repo won't be picked up until you `git add && commit`.
+    # The `path:` scheme resolves the relative path against THIS flake's
+    # directory (not the process CWD), per Nix 2.26+ behaviour
+    # (https://github.com/NixOS/nix/issues/12281, PR #10089). This is the
+    # official replacement for the now-deprecated `git+file:../...` form
+    # that warned on every rebuild.
+    #
+    # Unlike `git+file:`, `path:` copies the directory wholesale rather
+    # than just the git-tracked files — so uncommitted edits in the
+    # sibling repo ARE picked up. No `git add && commit` round-trip
+    # required to test an overlay change.
     #
     # If the sibling is missing, `nix flake check` (and any rebuild) will
     # fail with `cannot read input 'private'`. Bootstrap by cloning the
     # sibling — see README "PII & Secrets Discipline".
     private = {
-      url = "git+file:../nix-config-private";
+      url = "path:../nix-config-private";
       flake = false;
     };
   };
