@@ -39,6 +39,28 @@
 
     custom.sysNixGrub.disableSplash = lib.mkEnableOption "disable the NixOS branded GRUB splash image (wordmark/snowflake)";
 
+    custom.sysNixGrub.useOSProber = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        When `true` (default), GRUB runs `os-prober` at install /
+        rebuild time to scan every block device for other operating
+        systems (Windows, other Linux installs) and adds them as menu
+        entries. Required on dual-boot hosts (e.g. FENNEC).
+
+        On single-OS hosts (a single NixOS install with no other
+        bootable partitions) set this to `false`. `os-prober` cannot
+        find anything to add and only produces noisy chroot errors on
+        every rebuild:
+
+            ERROR: mkdir /var/lock/dmraid
+            modprobe: can't change directory to '/lib/modules': No such file or directory
+
+        Those errors are harmless but train the eye to ignore real
+        `ERROR:` lines in the install / switch log.
+      '';
+    };
+
     custom.sysNixGrub.fontSize = lib.mkOption {
       type = lib.types.nullOr lib.types.int;
       default = null;
@@ -76,8 +98,9 @@
 
         # OS prober — auto-detect other OSes (Windows, other Linux) on disk
         # and add them as GRUB menu entries. NixOS includes the os-prober
-        # package automatically.
-        useOSProber = true;
+        # package automatically. Disable on single-OS hosts to silence
+        # noisy chroot errors (see `custom.sysNixGrub.useOSProber`).
+        useOSProber = config.custom.sysNixGrub.useOSProber;
 
         # Memtest86+ — memory diagnostic tool in the boot menu.
         # Reboot and select "Memtest86+" from the GRUB menu to test RAM.

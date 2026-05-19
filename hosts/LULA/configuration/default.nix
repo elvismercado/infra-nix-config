@@ -70,6 +70,7 @@
   custom.sysNixGrub.timeout = 2;
   custom.sysNixGrub.gfxmodeEfi = "1920x1080,auto";
   custom.sysNixGrub.fontSize = 24;
+  custom.sysNixGrub.useOSProber = false; # single-OS NixOS laptop
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
 
