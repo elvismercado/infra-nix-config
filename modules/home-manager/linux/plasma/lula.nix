@@ -85,6 +85,14 @@ in
       # effect when the panel is in fill mode. Kickoff sits flush-left
       # — outside the centered group — so it doesn't shift the visual
       # center of the iconTasks strip.
+      #
+      # TEMPORARY EXPERIMENT (2026-05-20): a second task strip using the
+      # classic `org.kde.plasma.taskmanager` (icons + window-title text,
+      # one button per window) is wired alongside `iconTasks` for A/B
+      # comparison. iconTasks remains the primary muscle-memory strip;
+      # the labelled strip is purely additive so the user can decide
+      # which mode she prefers. To revert: delete the second iconTasks
+      # block below (the one with `iconsOnly = false`).
       {
         location = "bottom";
         height = 56;
@@ -105,6 +113,20 @@ in
                 "applications:org.kde.dolphin.desktop"
                 "preferred://browser"
               ];
+            };
+          }
+          # Experimental classic task manager (icons + window titles,
+          # one button per window). Same plasma-manager `iconTasks`
+          # shorthand, but `iconsOnly = false` flips the emitted plasmoid
+          # to `org.kde.plasma.taskmanager`. No `launchers` here — the
+          # icon-only strip above already owns the pinned launchers, so
+          # this strip shows only running windows. `grouping.method =
+          # "none"` forces one button per window (the whole point of
+          # the experiment).
+          {
+            iconTasks = {
+              iconsOnly = false;
+              behavior.grouping.method = "none";
             };
           }
           { panelSpacer = { expanding = true; }; }
