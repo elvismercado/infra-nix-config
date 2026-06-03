@@ -78,7 +78,7 @@ Backlog of KDE Plasma + Dolphin + Brave tweaks aimed at non-tech-savvy / older u
 - [ ] **Klipper clipboard history → 5 entries** (currently 20+ default). Old passwords / addresses leaking into history is a privacy + cognitive-load problem. `programs.plasma.configFile."klipperrc"` `[General] MaxClipItems=5; KeepClipboardContents=true;`.
 - [ ] **Disable Plasma edit-mode shortcut** (Meta+D defaults). Accidental edit mode → accidental panel destruction.
 - [ ] **Force "show hidden files = no" in Dolphin.** Forever. Discovering `.config` and "tidying it up" is a real failure mode.
-- [ ] **Disable Shift+Delete** (bypass-trash). Trash-only, always.
+- [x] **Disable Shift+Delete** (bypass-trash). Trash-only, always. ✅ Done 2026-06-03 — added `custom.hmPlasmaCommon.dolphin.bypassTrashShortcut.enable` (default `true`) in [modules/home-manager/linux/plasma/common.nix](modules/home-manager/linux/plasma/common.nix); set `false` on LULA. Writes `kdeglobals [KDE] ShowDeleteAction=false` — KDE strips the "Delete" (permanent) action from Dolphin's menu and any KDE file dialog, which also disables Shift+Delete (the shortcut points at an action that no longer exists). Move-to-Trash via plain Delete unchanged; genuine permanent deletion still possible by emptying the trash (the deliberate extra step is the point).
 - [ ] **KDE Connect off** unless she actually uses it — pairing prompts confuse. Currently not enabled — verify and pin.
 - [ ] **Auto-lock screen after 15 min** (not 5). Long enough she doesn't keep seeing the login screen during normal use. `programs.plasma.kscreenlocker.timeout = 15;`.
 
