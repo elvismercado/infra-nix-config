@@ -113,6 +113,11 @@
   custom.sysNixFwupd.enable = true;
   custom.sysNixPostinstall.enable = true;
   custom.sysNixFprintd.enable = true;
+  # SDDM's password field swallows the "place finger" pam_conv prompt,
+  # which makes the typed password feel broken (you type, nothing
+  # happens, you swipe, in you go). Keep the greeter password-only;
+  # fingerprint still works for sudo, polkit, and the lock screen.
+  custom.sysNixFprintd.loginGreeter.enable = false;
 
   # Apps (cross-layer façades) — minimal persona for a non-technical user.
   # Brave with two managed extensions: Bitwarden for passwords and
