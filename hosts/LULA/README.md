@@ -27,10 +27,11 @@ Personal machine for a non-technical user, set up as a low-friction host.
 
 ### Biometrics
 
-- Fingerprint reader — enabled via `fprintd`. Enrol fingers in **System
-  Settings → Users → Fingerprint Authentication**, or run `fprintd-enroll`
-  from a shell. Once enrolled, the print works for login, sudo, and
-  polkit prompts.
+- Fingerprint reader — not wired. The Synaptics Prometheus sensor
+  (`06cb:00bd`) needs an out-of-tree TOD driver that nixpkgs does not
+  ship, and even with the in-tree fallback SDDM's greeter does not
+  surface the "place finger" prompt, which makes login confusing.
+  Disabled deliberately; password login only.
 - IR camera (Windows Hello face unlock) — no Linux equivalent.
 
 ## Configuration overview
@@ -46,7 +47,6 @@ Personal machine for a non-technical user, set up as a low-friction host.
 - **Networking:** NetworkManager (auto-enabled by `custom.sysNixUser`)
 - **Audio:** PipeWire
 - **Bluetooth:** enabled
-- **Biometrics:** fprintd (fingerprint login, sudo, polkit)
 - **Desktop config:** `hmPlasmaLula` layout — top panel with Application Dashboard launcher + system tray + clock, plus a full-width bottom dock with a corner Kickoff menu (flush-left) and centered pinned/running apps. Kickoff doubles as the power menu (Lock / Logout / Switch User / Suspend / Hibernate / Reboot / Shutdown) since Kickerdash exposes only Leave/Restart/Shutdown. No Global Menu. Hot corners disabled (`hotCorners.enable = false`). KWallet disabled (`kwallet.enable = false`) so Wi-Fi PSKs go straight into NetworkManager's system keyfile and the user never sees the wallet wizard. Files and folders open on double-click (`singleClickToOpen = false`, Windows / macOS Finder behavior). 36px Breeze_Snow cursor with bouncing click feedback (`cursor.enable = true`, also covers the "animated cursor while an app launches" pulse). Logout / shutdown asks for confirmation (`confirmLogout.enable = true`). Klipper clipboard history capped at 5 entries. UI fonts set to Plasma 6 defaults plus +2pt across every category (12pt general / menu / toolbar / window title / mono, 10pt small) for the 14" 1080p panel; stronger magnification can be layered on via the one-time GUI scale step under [Display scaling](#display-scaling). Weather widget enabled for Terneuzen.
 - **Trackpad:** natural scrolling, tap-to-click, disable-while-typing (declared per-device via `programs.plasma.input.touchpads`).
 - **Environment:** UI language, regional formats, and timezone come from
