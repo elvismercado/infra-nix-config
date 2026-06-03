@@ -57,11 +57,6 @@
   # bar, tooltips, archives-as-folders, file-picker defaults to
   # Details view, externally-opened folders reuse an existing window.
   custom.hmPlasmaCommon.dolphin.enable = true;
-  # Hide the "Delete" (permanent / bypass-trash) action from Dolphin
-  # and KDE file dialogs - also disables Shift+Delete. Move-to-Trash
-  # via plain Delete stays. Empty the trash for genuine permanent
-  # deletion (deliberate extra step, right friction level here).
-  custom.hmPlasmaCommon.dolphin.bypassTrashShortcut.enable = false;
 
   # Unbind Meta+arrow quick-tile shortcuts (accidental-trigger surface
   # when the Meta key gets bumped during typing). Drag-to-edge snapping

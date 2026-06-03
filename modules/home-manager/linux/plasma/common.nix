@@ -99,15 +99,6 @@
 #     re-enable Dolphin's hover file tooltips. LULA leaves this off;
 #     FENNEC and JIN turn it on.
 #
-#   custom.hmPlasmaCommon.dolphin.bypassTrashShortcut.enable (default: true)
-#     When `false`, removes the "Delete" (permanent / bypass-trash)
-#     action from Dolphin's right-click menu, the file-menu, and any
-#     KDE file dialog - and with it the Shift+Delete shortcut that
-#     triggers it. Move-to-Trash via plain Delete is unaffected.
-#     Implemented by pinning `kdeglobals [KDE] ShowDeleteAction=false`,
-#     which KDE apps read at startup; affects every KDE app, not just
-#     Dolphin (in practice Dolphin is the only surface that matters).
-#
 #   custom.hmPlasmaCommon.quickTile.shortcuts.enable (default: true)
 #     When `false`, unbinds KWin's Quick Tile keyboard shortcuts (the
 #     eight Meta+arrow / diagonal combos) plus Meta+Up (Maximize) and
@@ -271,20 +262,6 @@ in
       '';
     };
 
-    dolphin.bypassTrashShortcut.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = ''
-        When `false`, removes the "Delete" (permanent / bypass-trash)
-        action from Dolphin's right-click menu and from any KDE file
-        dialog, which also disables the Shift+Delete shortcut that
-        triggers it. Move-to-Trash via plain Delete is unaffected.
-        Implemented as `kdeglobals [KDE] ShowDeleteAction=false`; the
-        flag is read by every KDE app, but Dolphin is the only
-        practical surface that matters for the target persona.
-      '';
-    };
-
     quickTile.shortcuts.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -445,13 +422,6 @@ in
           RememberOpenedTabs = false;
         };
         "dolphinrc"."KFileDialog Settings"."View Style" = "DetailsView";
-      }
-      # Hide the "Delete" (permanent / bypass-trash) action in Dolphin
-      # and KDE file dialogs. KDE reads this from kdeglobals, not from
-      # dolphinrc - removing the action also disables Shift+Delete
-      # because the shortcut points at an action that no longer exists.
-      // lib.optionalAttrs (!cfg.dolphin.bypassTrashShortcut.enable) {
-        "kdeglobals"."KDE".ShowDeleteAction = false;
       }
       # Edge-drag tiling kill switch. Disables both drag-to-side
       # (tile to half-screen) and drag-to-top (maximize). The Meta+
