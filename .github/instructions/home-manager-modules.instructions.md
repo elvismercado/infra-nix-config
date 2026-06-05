@@ -11,7 +11,7 @@ Home-manager stable has restructured many `programs.*` modules. Top-level conven
 
 ### programs.ssh
 
-Options like `addKeysToAgent`, `serverAliveInterval`, `controlMaster`, `controlPath`, `controlPersist`, `hashKnownHosts`, `serverAliveCountMax` are per-host options — place them in `programs.ssh.matchBlocks."*"` (not top-level `programs.ssh`).
+Options like `AddKeysToAgent`, `ServerAliveInterval`, `ControlMaster`, `ControlPath`, `ControlPersist`, `HashKnownHosts`, `ServerAliveCountMax` are per-host options — place them in `programs.ssh.settings."*"` (not top-level `programs.ssh`) using upstream OpenSSH directive names (capitalized). The old `programs.ssh.matchBlocks` with camelCase aliases is deprecated.
 
 Set `programs.ssh.enableDefaultConfig = false` to avoid deprecation warnings about implicit defaults.
 

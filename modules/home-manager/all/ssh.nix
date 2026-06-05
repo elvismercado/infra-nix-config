@@ -4,7 +4,7 @@
 # Configures the SSH client with agent integration, connection keep-alive,
 # and connection reuse. Cross-platform (Linux + macOS).
 #
-# Host-specific blocks can be added via programs.ssh.matchBlocks in
+# Host-specific blocks can be added via programs.ssh.settings in
 # the host's home.nix or in this module.
 #
 # Usage:
@@ -28,21 +28,21 @@
       enableDefaultConfig = false;
 
       # Apply sensible defaults to all hosts (Host *)
-      matchBlocks."*" = {
+      settings."*" = {
         # Auto-add keys to ssh-agent on first use (no manual ssh-add needed)
-        addKeysToAgent = "yes";
+        AddKeysToAgent = "yes";
 
         # Keep connections alive — prevents idle disconnects (useful for VPS)
-        serverAliveInterval = 60;
-        serverAliveCountMax = 3;
+        ServerAliveInterval = 60;
+        ServerAliveCountMax = 3;
 
         # Reuse SSH connections — faster subsequent connections to the same host
-        controlMaster = "auto";
-        controlPath = "~/.ssh/sockets/%r@%h-%p";
-        controlPersist = "10m";
+        ControlMaster = "auto";
+        ControlPath = "~/.ssh/sockets/%r@%h-%p";
+        ControlPersist = "10m";
 
         # Hash known hosts for privacy (hides hostnames in ~/.ssh/known_hosts)
-        hashKnownHosts = true;
+        HashKnownHosts = true;
       };
     };
 
