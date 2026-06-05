@@ -126,5 +126,8 @@
   custom.appNextcloud.enable = true;
   custom.appOnlyoffice.enable = true;
   # Remote-desktop client/host for remote support of this non-technical user.
-  custom.appRustdesk.enable = true;
+  # Temporarily disabled: pkgs.rustdesk 1.4.6 fails to build on Linux
+  # (nixpkgs#527155 — non-deterministic cargo-vendor FOD hash). Re-enable once
+  # the 1.4.7 backport (PR #527831) reaches 26.05 and `nix flake update` lands it.
+  # custom.appRustdesk.enable = true;
 }
