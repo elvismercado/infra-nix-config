@@ -23,6 +23,8 @@
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
     ../../../modules/home-manager/linux/plasma/lula.nix
+    ../../../modules/home-manager/linux/autostart.nix
+    ../../../modules/home-manager/linux/trayscale.nix
   ];
 
   # Base
@@ -39,6 +41,16 @@
 
   # Linux
   custom.hmLinuxAliases.enable = true;
+
+  # Tailscale tray icon (Trayscale) — starts minimised to the system tray
+  # on login so remote support over the tailnet is one click away.
+  custom.hmTrayscale.enable = true;
+  custom.hmAutostart.enable = true;
+  custom.hmAutostart.entries.trayscale = {
+    name = "Trayscale";
+    exec = "trayscale --hide-window";
+    icon = "dev.deltadev.trayscale";
+  };
 
   # Linux / KDE Plasma — LULA layout (top tray panel + bottom dock,
   # no Global Menu). Weather widget pulls from the private overlay's

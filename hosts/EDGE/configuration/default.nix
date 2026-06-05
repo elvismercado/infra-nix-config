@@ -29,6 +29,7 @@
     ../../../modules/systems/darwin/security.nix
     ../../../modules/systems/darwin/time.nix
     ../../../modules/systems/darwin/i18n.nix
+    ../../../modules/systems/darwin/tailscale.nix
 
     # Shared
     ../../../modules/systems/shared/bash.nix
@@ -78,6 +79,7 @@
   custom.sysDarSecurity.enable = true;
   custom.sysDarTimezone.enable = true;
   custom.sysDarI18n.enable = true;
+  custom.sysDarTailscale.enable = true;
 
   # Shared
   custom.sysBashCompletion.enable = true;

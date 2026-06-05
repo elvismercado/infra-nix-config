@@ -86,7 +86,7 @@ modules/
       laptop/                #   Lenovo ThinkPad T14 Gen 2 (Intel) chassis quirks
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
-      network/               #   Wake-on-LAN
+      network/               #   Wake-on-LAN, Tailscale
       nix/                   #   Flakes, garbage collection
       power/                 #   power-profiles-daemon
       security/              #   YubiKey, fprintd
@@ -96,7 +96,7 @@ modules/
       brave-policies.nix     #   Brave managed policies (debrand + privacy + extensions)
       pipewire.nix           #   PipeWire audio server
     darwin/                  # Darwin-specific modules (Alacritty, Brave policies, Control Center, Dock,
-                             #   Finder, fonts, gc, packages, Power, Security, System Preferences, time, Trackpad)
+                             #   Finder, fonts, gc, packages, Power, Security, System Preferences, Tailscale, time, Trackpad)
     shared/                  # Cross-platform modules (bash, Brave policies data, fonts, garbage, packages, ssh)
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
     all/                     #   Aliases, Android, Ansible, Base, Bash, Fastfetch, fnm, Git,
@@ -107,7 +107,7 @@ modules/
                              #   Thunderbird, VS Code)
     linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, KWin tiling,
                              #   LinUtil, Packages, Plasma config, Shutdown disable outputs,
-                             #   Strawberry, Window shortcuts, plus wrappers (Brave, Discord,
+                             #   Strawberry, Trayscale, Window shortcuts, plus wrappers (Brave, Discord,
                              #   HandBrake, LibreWolf, Nextcloud, Syncthing, Thunderbird, VS Code)
     darwin/                  #   Rectangle, plus wrappers (Brave, Discord, HandBrake, LibreWolf,
                              #   Nextcloud, Syncthing, Thunderbird, VS Code)

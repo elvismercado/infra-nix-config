@@ -129,6 +129,7 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`                                     |
 | **Network**                                              |                                                                         |
 | `systems/nixos/network/wake-on-lan.nix`                  | `custom.sysNixWakeOnLan.enable`                                         |
+| `systems/nixos/network/tailscale.nix`                    | `custom.sysNixTailscale.enable`                                         |
 | **Power**                                                |                                                                         |
 | `systems/nixos/power/power-profiles-daemon.nix`          | `custom.sysNixPowerProfilesDaemon.enable`                               |
 | **Security**                                             |                                                                         |

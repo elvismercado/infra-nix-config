@@ -120,6 +120,7 @@ in
     ../../../modules/home-manager/linux/linutil.nix
     ../../../modules/home-manager/linux/autostart.nix
     ../../../modules/home-manager/linux/webcamoid.nix
+    ../../../modules/home-manager/linux/trayscale.nix
   ];
 
   # Base
@@ -319,7 +320,13 @@ in
       exec = "solaar --window=hide";
       icon = "solaar";
     };
+    trayscale = {
+      name = "Trayscale";
+      exec = "trayscale --hide-window";
+      icon = "dev.deltadev.trayscale";
+    };
   };
 
   custom.hmWebcamoid.enable = true;
+  custom.hmTrayscale.enable = true;
 }

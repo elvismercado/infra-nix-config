@@ -68,6 +68,7 @@ Modules use the same `custom.*` namespace pattern as NixOS. Import and enable in
 | `systems/darwin/power.nix`              | `custom.sysDarPower.enable`                                             |
 | `systems/darwin/security.nix`           | `custom.sysDarSecurity.enable`                                          |
 | `systems/darwin/system-preferences.nix` | `custom.sysDarPreferences.enable`                                       |
+| `systems/darwin/tailscale.nix`          | `custom.sysDarTailscale.enable`                                         |
 | `systems/darwin/time.nix`               | `custom.sysDarTimezone.enable`                                          |
 | `systems/darwin/trackpad.nix`           | `custom.sysDarTrackpad.enable`                                          |
 | **Shared** (cross-platform)             |                                                                         |

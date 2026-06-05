@@ -95,6 +95,7 @@ in
     # Linux / Apps
     ../../../modules/home-manager/linux/strawberry.nix
     ../../../modules/home-manager/linux/webcamoid.nix
+    ../../../modules/home-manager/linux/trayscale.nix
   ];
 
   # Host
@@ -237,7 +238,13 @@ in
       exec = "solaar --window=hide";
       icon = "solaar";
     };
+    trayscale = {
+      name = "Trayscale";
+      exec = "trayscale --hide-window";
+      icon = "dev.deltadev.trayscale";
+    };
   };
 
   custom.hmWebcamoid.enable = true;
+  custom.hmTrayscale.enable = true;
 }

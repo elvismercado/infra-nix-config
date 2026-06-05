@@ -43,6 +43,7 @@
 
     # Network
     ../../../modules/systems/nixos/network/wake-on-lan.nix
+    ../../../modules/systems/nixos/network/tailscale.nix
 
     # Display
     ../../../modules/systems/nixos/display_manager/sddm.nix
@@ -150,6 +151,7 @@
 
   # Network
   custom.sysNixWakeOnLan.enable = true;
+  custom.sysNixTailscale.enable = true;
 
   # Display
   custom.sysNixSddm.enable = true;

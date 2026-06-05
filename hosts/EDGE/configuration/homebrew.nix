@@ -75,6 +75,8 @@
       # modules/apps/darwin/mullvad-vpn.nix (toggle custom.appMullvadVpn.enable).
       # `proton-mail-bridge` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/proton-mail-bridge.nix (toggle custom.appProtonmailBridge.enable).
+      # `tailscale-app` cask is owned by the darwin system module at
+      # modules/systems/darwin/tailscale.nix (toggle custom.sysDarTailscale.enable).
 
       # Development
       # `visual-studio-code` cask is owned by the Option 3 app façade

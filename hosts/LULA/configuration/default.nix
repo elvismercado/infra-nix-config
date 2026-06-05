@@ -36,6 +36,9 @@
     ../../../modules/systems/nixos/system/i18n.nix
     ../../../modules/systems/nixos/system/fonts.nix
 
+    # Network
+    ../../../modules/systems/nixos/network/tailscale.nix
+
     # Display
     ../../../modules/systems/nixos/display_manager/sddm.nix
     ../../../modules/systems/nixos/display_manager/sddm-input-config.nix
@@ -95,6 +98,9 @@
   custom.sysNixTimezone.enable = true;
   custom.sysNixI18n.enable = true;
   custom.sysFonts.enable = true;
+
+  # Network
+  custom.sysNixTailscale.enable = true;
 
   # Display — single built-in 14" panel; KDE handles ad-hoc external displays
   # via its own GUI. No multi-monitor / display-profiles modules wired.
