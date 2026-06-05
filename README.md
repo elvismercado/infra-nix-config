@@ -86,6 +86,7 @@ modules/
       laptop/                #   Lenovo ThinkPad T14 Gen 2 (Intel) chassis quirks
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
+      network/               #   Wake-on-LAN
       nix/                   #   Flakes, garbage collection
       power/                 #   power-profiles-daemon
       security/              #   YubiKey, fprintd

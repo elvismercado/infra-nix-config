@@ -127,6 +127,8 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/laptop/lenovo_thinkpad_t14_gen2.nix`      | `custom.sysNixLenovoThinkpadT14IntelGen2.enable`                        |
 | **Mouse**                                                |                                                                         |
 | `systems/nixos/mouse/logitech.nix`                       | `custom.sysNixLogitechMouse.enable`                                     |
+| **Network**                                              |                                                                         |
+| `systems/nixos/network/wake-on-lan.nix`                  | `custom.sysNixWakeOnLan.enable`                                         |
 | **Power**                                                |                                                                         |
 | `systems/nixos/power/power-profiles-daemon.nix`          | `custom.sysNixPowerProfilesDaemon.enable`                               |
 | **Security**                                             |                                                                         |

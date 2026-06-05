@@ -38,6 +38,9 @@
     ../../../modules/systems/nixos/system/fonts.nix
     ../../../modules/systems/nixos/system/network-tuning.nix
 
+    # Network
+    ../../../modules/systems/nixos/network/wake-on-lan.nix
+
     # Display
     ../../../modules/systems/nixos/display_manager/sddm.nix
     ../../../modules/systems/nixos/display_manager/sddm-monitor-layout.nix
@@ -116,6 +119,9 @@
   custom.sysFonts.enable = true;
   custom.sysNixNetworkTuning.enable = true;
   custom.sysNixNetworkTuning.congestionControl = "cubic"; # gaming host — BBR collapses Steam/Akamai downloads to ~150 Mbps
+
+  # Network
+  custom.sysNixWakeOnLan.enable = true;
 
   # Display
   custom.sysNixSddm.enable = true;

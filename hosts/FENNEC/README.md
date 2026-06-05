@@ -117,6 +117,36 @@ Set `custom.sysNixGrub.timeout` high enough to comfortably select the OS at
 boot. The host currently uses `2` for a fast boot; bump to `3`–`5` if you find
 the window too tight for selecting Windows.
 
+## Wake-on-LAN
+
+Enabled via `custom.sysNixWakeOnLan.enable = true;`. NetworkManager sets
+`ethernet.wake-on-lan = magic` on every wired connection activation, so the
+NIC stays armed across reconnects, suspend/resume, and shutdown.
+
+BIOS prerequisites (ASUS PRIME X570-PRO, one-time):
+
+- **Advanced → APM Configuration → ErP Ready** = `Disabled`
+- **Advanced → APM Configuration → Power On By PCI-E** = `Enabled`
+
+Discover the MAC once on the host:
+
+```bash
+ip link show | awk '/link\/ether/{print $2; exit}'
+```
+
+Wake from any peer on the same L2 segment:
+
+```bash
+nix run nixpkgs#wakeonlan -- <MAC>
+```
+
+Verify after a switch:
+
+```bash
+nmcli -f connection.id,ethernet.wake-on-lan connection show
+nix shell nixpkgs#ethtool -c sudo ethtool <iface> | grep -i wake-on  # expect: Wake-on: g
+```
+
 ## Next steps
 
 1. Boot NixOS installer on the machine
