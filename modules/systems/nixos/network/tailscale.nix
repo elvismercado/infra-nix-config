@@ -5,6 +5,13 @@
 # UDP port, and relaxes reverse-path filtering (required for Tailscale's
 # direct-connection NAT traversal).
 #
+# Node registration:
+#   - Pre-authorizes the node at join (`authKeyParameters.preauthorized`) so
+#     tailnets with device approval enabled don't leave the host "waiting for
+#     approval" and stall the activation oneshot.
+#   - Makes the login user the Tailscale operator (`--operator=<user>`) so the
+#     `tailscale` CLI and the Trayscale tray GUI work without sudo.
+#
 # Authentication (non-interactive, per host):
 #   Each host has its OWN auth key in the private overlay repo at
 #   `nix-config-private/hosts/<HOSTNAME>/secrets/tailscale-authkey` (a
@@ -63,6 +70,17 @@ in
       enable = true;
       useRoutingFeatures = "client";
       inherit authKeyFile;
+
+      # Tailnets with device approval enabled leave a freshly-keyed node
+      # "waiting for approval", which stalls the `tailscale up` activation
+      # oneshot and leaves the host disconnected. Pre-authorize the node at
+      # join so the switch completes without a manual admin-console approval.
+      authKeyParameters.preauthorized = true;
+
+      # By default only root can drive tailscaled. Make the login user the
+      # operator so `tailscale` CLI and the Trayscale tray GUI work without
+      # sudo (fixes "user is not tailscale operator").
+      extraSetFlags = [ "--operator=${userSettings.username}" ];
     };
 
     networking.firewall = {
