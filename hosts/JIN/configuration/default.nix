@@ -73,6 +73,7 @@
     ../../../modules/systems/nixos/apps/embedded.nix
     ../../../modules/systems/nixos/apps/libvirtd.nix
     ../../../modules/systems/nixos/apps/coolercontrol.nix
+    ../../../modules/systems/nixos/apps/sunshine.nix
 
     # Apps (cross-layer façades — see modules/apps/)
     ../../../modules/apps/linux/signal-desktop.nix
@@ -181,6 +182,7 @@
   custom.sysNixCoolercontrol.enable = true;
   custom.sysNixEmbedded.enable = true;
   custom.sysNixLibvirtd.enable = true;
+  custom.sysNixSunshine.enable = true;
 
   # Apps (cross-layer façades)
   custom.appSignal.enable = true;
