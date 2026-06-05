@@ -163,8 +163,8 @@
   custom.appMullvadVpn.enable = true;
   custom.appBeeper.enable = true;
   custom.appFerdium.enable = true;
-  # Temporarily disabled: pkgs.rustdesk 1.4.6 fails to build on Linux
-  # (nixpkgs#527155 — non-deterministic cargo-vendor FOD hash). Re-enable once
-  # the 1.4.7 backport (PR #527831) reaches 26.05 and `nix flake update` lands it.
-  # custom.appRustdesk.enable = true;
+  # Interim: uses pkgs.rustdesk-flutter (1.4.5) while pkgs.rustdesk (1.4.6)
+  # fails to build (nixpkgs#527155). Revert the package in
+  # modules/apps/linux/rustdesk.nix once the 1.4.7 backport (PR #527831) lands.
+  custom.appRustdesk.enable = true;
 }
