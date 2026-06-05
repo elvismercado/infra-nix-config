@@ -69,7 +69,6 @@
     ../../../modules/systems/nixos/postinstall.nix
 
     # Apps
-    ../../../modules/systems/nixos/apps/adb.nix
     ../../../modules/systems/nixos/apps/embedded.nix
     ../../../modules/systems/nixos/apps/libvirtd.nix
     ../../../modules/systems/nixos/apps/coolercontrol.nix
@@ -176,7 +175,6 @@
   custom.sysNixPostinstall.enable = true;
 
   # Apps
-  custom.sysNixAdb.enable = true;
   custom.sysNixCoolercontrol.enable = true;
   custom.sysNixEmbedded.enable = true;
   custom.sysNixLibvirtd.enable = true;

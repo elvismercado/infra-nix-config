@@ -75,7 +75,7 @@ hosts/
 modules/
   systems/
     nixos/                   # NixOS system modules (toggleable, custom.* namespace)
-      apps/                  #   ADB, Coolercontrol, embedded, libvirtd, sunshine
+      apps/                  #   Coolercontrol, embedded, libvirtd, sunshine
       bootloader/            #   GRUB, systemd-boot, Plymouth, GRUB/Plymouth themes
       cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
       cpu/intel/             #   Intel base + CPU profiles (Tiger Lake i5-1135G7)

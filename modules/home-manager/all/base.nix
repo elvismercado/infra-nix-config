@@ -33,8 +33,6 @@
       cbonsai # ASCII bonsai tree generator with live-growing mode
       genact # Fake activity generator (npm install, kernel compile, etc.)
 
-      mullvad-closest # Find Mullvad servers with the lowest latency at your location
-
       headsetcontrol # Sidetone and Battery status for Logitech G930, G533, G633, G933 SteelSeries Arctis 7/PRO 2019 and Corsair VOID (Pro)
     ];
 
