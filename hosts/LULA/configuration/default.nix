@@ -58,6 +58,7 @@
     ../../../modules/apps/linux/mpv.nix
     ../../../modules/apps/linux/nextcloud.nix
     ../../../modules/apps/linux/onlyoffice.nix
+    ../../../modules/apps/linux/rustdesk.nix
   ];
 
   # Nix
@@ -124,4 +125,6 @@
   custom.appMpv.enable = true;
   custom.appNextcloud.enable = true;
   custom.appOnlyoffice.enable = true;
+  # Remote-desktop client/host for remote support of this non-technical user.
+  custom.appRustdesk.enable = true;
 }

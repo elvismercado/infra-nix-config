@@ -86,6 +86,8 @@
       "logi-options+" # Logitech Options+ — MX Anywhere 2S/3 (BT + Logi receiver)
       # `insync` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/insync.nix (toggle custom.appInsync.enable).
+      # `rustdesk` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/rustdesk.nix (toggle custom.appRustdesk.enable).
       # `libreoffice`, `localsend`, `onlyoffice`, `raspberry-pi-imager`, and
       # `yubico-authenticator` casks are owned by Option 3 app façades under
       # modules/apps/darwin/ (toggles custom.appLibreoffice.enable,

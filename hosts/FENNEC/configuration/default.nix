@@ -77,6 +77,7 @@
     ../../../modules/apps/linux/mullvad-vpn.nix
     ../../../modules/apps/linux/beeper.nix
     ../../../modules/apps/linux/ferdium.nix
+    ../../../modules/apps/linux/rustdesk.nix
   ];
 
   # Nix
@@ -160,4 +161,5 @@
   custom.appMullvadVpn.enable = true;
   custom.appBeeper.enable = true;
   custom.appFerdium.enable = true;
+  custom.appRustdesk.enable = true;
 }

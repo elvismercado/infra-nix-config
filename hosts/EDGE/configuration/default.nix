@@ -59,6 +59,7 @@
     ../../../modules/apps/darwin/shotcut.nix
     ../../../modules/apps/darwin/sweet-home3d.nix
     ../../../modules/apps/darwin/moonlight.nix
+    ../../../modules/apps/darwin/rustdesk.nix
   ];
 
   environment.shells = [ pkgs.bashInteractive ];
@@ -107,4 +108,5 @@
   custom.appShotcut.enable = true;
   custom.appSweetHome3d.enable = true;
   custom.appMoonlight.enable = true;
+  custom.appRustdesk.enable = true;
 }

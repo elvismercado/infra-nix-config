@@ -97,6 +97,7 @@
     ../../../modules/apps/linux/shotcut.nix
     ../../../modules/apps/linux/sweet-home3d.nix
     ../../../modules/apps/linux/moonlight.nix
+    ../../../modules/apps/linux/rustdesk.nix
   ];
 
   # Host
@@ -203,4 +204,5 @@
   custom.appShotcut.enable = true;
   custom.appSweetHome3d.enable = true;
   custom.appMoonlight.enable = true;
+  custom.appRustdesk.enable = true;
 }
