@@ -14,6 +14,7 @@ nixpkgs.lib.genAttrs (builtins.attrNames homeManagerHosts) (
     userSettings = homeManagerHosts.${hostName}.userSettings;
     selectedNixpkgs = selectNixpkgs userSettings;
     selectedHomeManager = selectHomeManager userSettings;
+    isLinux = builtins.match ".*linux.*" userSettings.system != null;
   in
   selectedHomeManager.lib.homeManagerConfiguration {
     pkgs = selectedNixpkgs.legacyPackages.${userSettings.system};
@@ -21,9 +22,9 @@ nixpkgs.lib.genAttrs (builtins.attrNames homeManagerHosts) (
       { nixpkgs.config.allowUnfree = true; }
       homeManagerHosts.${hostName}.home
     ]
+    ++ nixpkgs.lib.optional isLinux { targets.genericLinux.enable = true; }
     ++ nixpkgs.lib.optional (
-      builtins.match ".*linux.*" userSettings.system != null
-      && (userSettings.desktopEnvironment or null) == "kde-plasma"
+      isLinux && (userSettings.desktopEnvironment or null) == "kde-plasma"
     ) inputs.plasma-manager.homeModules.plasma-manager;
     extraSpecialArgs = {
       outputs = self.outputs;

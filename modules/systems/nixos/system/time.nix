@@ -26,7 +26,7 @@
   config = lib.mkIf config.custom.sysNixTimezone.enable {
     time.timeZone =
       userSettings.timeZone or (lib.warn
-        "userSettings.timeZone unset for host '${userSettings.hostname}'; defaulting to Europe/London. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+        "userSettings.timeZone unset for host '${userSettings.hostname}'; defaulting to Europe/London. Set it in infra-nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
         "Europe/London");
   };
 }

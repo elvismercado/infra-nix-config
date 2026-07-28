@@ -42,7 +42,7 @@
     # determinate.url = "github:DeterminateSystems/determinate";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
-    # Private overlay sibling repo (gitignored from the public tree).
+    # Private overlay companion repo.
     # Holds PII-bearing per-host fields (timeZone, language, regionalFormat,
     # syncthing IDs/addresses).
     #
@@ -53,14 +53,14 @@
     #
     # Migrated 2026-05-19. Earlier forms all failed for different reasons:
     #
-    #   - `git+file:../nix-config-private` (sibling-on-disk) emits a
+    #   - `git+file:../infra-nix-config-private` (sibling-on-disk) emits a
     #     deprecation warning on every rebuild
     #     (https://github.com/NixOS/nix/issues/12281) and is slated for
     #     removal.
     #
-    #   - `path:../nix-config-private` — broken on Determinate Nix 3.20.0
+    #   - `path:../infra-nix-config-private` — broken on Determinate Nix 3.20.0
     #     / Nix 2.34.6. The parent flake is copied into the store first,
-    #     so `outPath` resolves to `/nix/store/HASH-source/../nix-config-private`
+    #     so `outPath` resolves to `/nix/store/HASH-source/../infra-nix-config-private`
     #     (escapes the store). `pathExists` then trips
     #     "is too short to be a valid store path". The bare-path-value
     #     form `url = ../foo` uses the same fetcher and is equally broken.
@@ -88,11 +88,10 @@
     # `git+file:` / `path:` read from the local sibling, so edits were
     # visible without pushing. `github:` fetches from GitHub, so edits
     # MUST be both committed AND pushed before they show up in a
-    # rebuild. The `bumpPrivate` step in the switch aliases auto-pushes
-    # the sibling before refreshing the lock, preserving the
-    # "edit + switch" UX.
+    # rebuild. Commit and push companion-repo edits first, then use
+    # `switchbumpprivate` to refresh and publish the public lock entry.
     private = {
-      url = "github:elvismercado/nix-config-private";
+      url = "github:elvismercado/infra-nix-config-private";
       flake = false;
     };
   };

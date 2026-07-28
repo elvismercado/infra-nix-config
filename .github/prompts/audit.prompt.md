@@ -1,4 +1,4 @@
-Perform a comprehensive audit of this nix-config repo. Look for issues in 5 categories:
+Perform a comprehensive audit of this infra-nix-config repo. Look for issues in 5 categories:
 
 P1 — Security & Correctness: Things that could cause data loss, security holes, or wrong behavior.
 P2 — Robustness & Reliability: Failure modes, missing validation, silent errors, race conditions.

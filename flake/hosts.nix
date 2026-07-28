@@ -10,7 +10,7 @@ let
     let
       publicUserSettings = import ../hosts/${hostName}/user-settings.nix;
       # Private overlay merged in from the `private` flake input
-      # (sibling `nix-config-private` repo). Holds PII-bearing fields like
+      # (companion `infra-nix-config-private` repo). Holds PII-bearing fields like
       # `timeZone`, `language`, `regionalFormat`. The `pathExists` guard
       # handles the case where the sibling exists but a per-host overlay
       # file hasn't been created yet (e.g. a freshly-added host).

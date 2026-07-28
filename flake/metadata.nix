@@ -12,7 +12,7 @@
 # listed there are ever built. The `managed` flag in metadata is for
 # documentation and future tooling, not load-bearing for builds.
 #
-# ## Public/private split
+# ## Intended public/private split
 #
 # Hosts come in two flavours:
 #
@@ -22,8 +22,8 @@
 #                         Holds non-sensitive descriptors: `hostname`,
 #                         `managed = true`, `os`.
 #       * PRIVATE overlay — `hosts/<HOST>/metadata.nix` in the sibling
-#                         `nix-config-private` repo (expected at
-#                         `../nix-config-private/` relative to this repo
+#                         `infra-nix-config-private` repo (expected at
+#                         `../infra-nix-config-private/` relative to this repo
 #                         root). Holds privacy-sensitive fields like
 #                         Syncthing device IDs and per-peer LAN addresses.
 #
@@ -33,13 +33,11 @@
 #     any host present only on the private side so these still surface
 #     in cross-host data (e.g. the syncthing peer map).
 #
-# This loader merges the private overlay on top of the public stub via
-# `lib.recursiveUpdate` (private wins). When the private sibling is
-# absent (CI, fresh checkout, outside contributor), the merge is a
-# no-op and the loader returns the public stubs unchanged — unmanaged
-# hosts simply don't appear. Consumers like `syncthing-peers.nix`
-# already filter out peers without an `id`, so a missing private repo
-# degrades to an empty/shrunk peer map rather than a build failure.
+# The merge below is the intended behavior. Normal flake evaluation copies
+# this repository into the Nix store before evaluating it, so the relative
+# sibling path cannot currently reach the live private checkout. In that path,
+# `private` is empty and consumers see only public stubs. Replacing this legacy
+# lookup with `inputs.private` is tracked in TODO.md and intentionally deferred.
 #
 # Returns:
 #   {
@@ -61,10 +59,9 @@ let
 
   public = lib.genAttrs publicHostNames (name: import (hostsDir + "/${name}/metadata.nix"));
 
-  # Sibling private repo. Path literal resolves at flake-eval time;
-  # `builtins.pathExists` returns `false` cleanly when the sibling is
-  # absent, so this is pure-eval safe.
-  privateMetadata = ../../nix-config-private/metadata.nix;
+  # Legacy sibling lookup. In normal flake evaluation this resolves relative
+  # to the Nix store copy, not the live checkout, and therefore returns false.
+  privateMetadata = ../../infra-nix-config-private/metadata.nix;
   private =
     if builtins.pathExists privateMetadata
     then import privateMetadata { inherit lib; }

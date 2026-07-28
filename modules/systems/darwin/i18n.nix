@@ -34,7 +34,7 @@
 
 let
   language = userSettings.language or (lib.warn
-    "userSettings.language unset for host '${userSettings.hostname}'; defaulting to en-GB. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+    "userSettings.language unset for host '${userSettings.hostname}'; defaulting to en-GB. Set it in infra-nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
     "en-GB");
   regionalFormat = userSettings.regionalFormat or language;
   toApple = t: builtins.replaceStrings [ "-" ] [ "_" ] t;

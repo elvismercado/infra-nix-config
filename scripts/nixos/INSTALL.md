@@ -40,19 +40,19 @@ sudo -i
 ```bash
 nix-shell -p gh git --run '
   gh auth login -h github.com -p https -w &&
-  gh repo clone elvismercado/nix-config /tmp/nix-config
+  gh repo clone elvismercado/infra-nix-config /tmp/infra-nix-config
 '
 ```
 
-> `gh auth login` is optional but recommended: it lets `install.sh` clone
-> the private sibling (`elvismercado/nix-config-private`) automatically.
-> Skip it (Ctrl-C past the prompt) if you only need the public repo + the
-> installer's stub fallback.
+> `gh auth login` is currently required for the private GitHub flake input
+> and lets `install.sh` clone the local companion
+> (`elvismercado/infra-nix-config-private`). The retained local stub does
+> not yet replace that input; the offline flow is tracked in `TODO.md`.
 
 **Run the installer (interactive — prompts for host, disks, and sizes):**
 
 ```bash
-bash /tmp/nix-config/scripts/nixos/install.sh
+bash /tmp/infra-nix-config/scripts/nixos/install.sh
 ```
 
 > **Interactive mode**: Run with no arguments and the script will prompt for
@@ -68,7 +68,7 @@ bash /tmp/nix-config/scripts/nixos/install.sh
 **2-drive install — OS on first disk, /home on second disk:**
 
 ```bash
-bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
+bash /tmp/infra-nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
   --host JIN --efi-size 2G --swap-size 48G \
   --home-disk /dev/nvme1n1
 ```
@@ -76,7 +76,7 @@ bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
 **Reinstall OS but keep existing /home data on second drive:**
 
 ```bash
-bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
+bash /tmp/infra-nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
   --host JIN --efi-size 2G --swap-size 48G \
   --home-disk /dev/nvme1n1 --keep-home
 ```
@@ -84,14 +84,14 @@ bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
 **Single-disk install — no separate /home:**
 
 ```bash
-bash /tmp/nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
+bash /tmp/infra-nix-config/scripts/nixos/install.sh /dev/nvme0n1 \
   --host JIN --efi-size 2G --swap-size 48G
 ```
 
 **Single-disk install — with /home partition:**
 
 ```bash
-bash /tmp/nix-config/scripts/nixos/install.sh /dev/sda \
+bash /tmp/infra-nix-config/scripts/nixos/install.sh /dev/sda \
   --host MYHOST --efi-size 512M --swap-size 16G \
   --home-size 200G
 ```
@@ -108,7 +108,7 @@ The script will:
 3. Partition the OS disk (GPT: EFI + root + swap)
 4. Partition the home disk, if provided — or mount it as-is with `--keep-home`
 5. Format and mount everything under `/mnt`
-6. Deploy the flake repo to `/mnt/home/<user>/git/nix-config`
+6. Deploy the flake repo to `/mnt/home/<user>/git/infra-nix-config`
 7. Generate `hardware-configuration.nix` for the current machine
 8. Run `nixos-install --flake …#<HOST>`
 
@@ -365,8 +365,8 @@ findmnt --real
 Clone the repo, then look up the username from `user-settings.nix`:
 
 ```bash
-REPO_NAME=nix-config
-nix-shell -p gh git --run "gh repo clone elvismercado/nix-config /tmp/${REPO_NAME}"
+REPO_NAME=infra-nix-config
+nix-shell -p gh git --run "gh repo clone elvismercado/infra-nix-config /tmp/${REPO_NAME}"
 
 # Read the username and UID for this host
 TARGET_USER=$(sed -n 's/.*username[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "/tmp/${REPO_NAME}/hosts/${HOST}/user-settings.nix")
@@ -392,30 +392,31 @@ rm -rf "/tmp/${REPO_NAME}"
 > chown -R "${TARGET_UID}:100" "/mnt/home/${TARGET_USER}/git"
 > ```
 
-### 7.5. Provision the private sibling
+### 7.5. Provision the local private companion
 
-The flake declares `inputs.private = { url = "git+file:../nix-config-private";
-flake = false; }` in `flake.nix`. Without that sibling on disk next to
-`nix-config`, `nixos-install` aborts at flake evaluation with
-`cannot read input 'private'`.
+The flake fetches `inputs.private` from the private GitHub repository
+`elvismercado/infra-nix-config-private`. A sibling checkout supports private
+overlay editing and sync workflows. It does not currently feed the legacy
+metadata loader during normal flake evaluation. The retained stub below does
+not override the GitHub input; both gaps are tracked in `TODO.md`.
 
 **If you have access to the real private repo**, clone it next to the
 public one (HTTPS works for the owner with cached credentials; otherwise
 use SSH or pre-stage via USB/SSH before reaching this step):
 
 ```bash
-PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/nix-config-private"
-nix-shell -p git --run "git clone https://github.com/elvismercado/nix-config-private.git '$PRIVATE_DIR'"
+PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/infra-nix-config-private"
+nix-shell -p git --run "git clone https://github.com/elvismercado/infra-nix-config-private.git '$PRIVATE_DIR'"
 chown -R "${TARGET_UID}:100" "$PRIVATE_DIR"
 ```
 
-**If you do not have access** (or just want the installer to keep moving),
-write a stub repo with an empty `user-settings.nix` for this host. The
-modules will fall back to Europe/London + en-GB and emit `lib.warn`
-lines on each rebuild until you replace the stub later.
+**If the companion clone is unavailable**, the retained flow writes a local
+stub with an empty `user-settings.nix` for this host. This preserves the local
+editing shape for a future input override, but does not currently make a
+no-access installation succeed.
 
 ```bash
-PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/nix-config-private"
+PRIVATE_DIR="/mnt/home/${TARGET_USER}/git/infra-nix-config-private"
 nix-shell -p git --run "
   set -e
   git init -q -b main '$PRIVATE_DIR'
@@ -428,16 +429,15 @@ nix-shell -p git --run "
 chown -R "${TARGET_UID}:100" "$PRIVATE_DIR"
 ```
 
-> `git+file:` only sees committed files — the stub MUST be an initialised
-> git repo with at least one commit. A bare directory with an unstaged
-> `user-settings.nix` will not satisfy the flake input.
+> The stub remains an initialised, committed git repository for the planned
+> local-input override. The current `github:` input does not consume it.
 
 To upgrade a stub later (after first boot + `gh auth login`):
 
 ```bash
 cd ~/git
-rm -rf nix-config-private
-gh repo clone elvismercado/nix-config-private
+rm -rf infra-nix-config-private
+gh repo clone elvismercado/infra-nix-config-private
 ```
 
 `postinstall.sh` offers this as an interactive step.
@@ -504,7 +504,7 @@ postinstall
 Or run it directly:
 
 ```bash
-bash ~/git/nix-config/scripts/nixos/postinstall.sh
+bash ~/git/infra-nix-config/scripts/nixos/postinstall.sh
 ```
 
 The script handles:
@@ -515,8 +515,9 @@ The script handles:
 4. Generating an SSH key (ed25519, with hostname + timestamp comment)
 5. Authenticating with GitHub (`gh auth login`)
 6. Adding the SSH key to GitHub
-7. Verifying a NixOS rebuild (`nixos-rebuild switch`)
-8. Committing and pushing `hardware-configuration.nix`
+7. Replacing a local private stub with the real companion repository
+8. Verifying a NixOS rebuild (`nixos-rebuild switch`)
+9. Committing and pushing `hardware-configuration.nix`
 
 The script is safe to re-run — it detects what's already done and skips
 completed steps.
@@ -533,7 +534,7 @@ passwd
 sudo passwd root
 
 # Verify the system rebuilds
-cd ~/git/nix-config
+cd ~/git/infra-nix-config
 sudo nixos-rebuild switch --flake .#$HOST
 
 # Commit the hardware configuration
@@ -542,23 +543,25 @@ git commit -m "$HOST: update hardware-configuration.nix"
 git push
 ```
 
-### Private metadata sibling (auto-cloned, stubbed on failure)
+### Private metadata companion (locally cloned, stub retained on failure)
 
-The flake declares a sibling repo `nix-config-private` as a `flake = false`
-input (see `flake.nix`). It holds PII-bearing per-host fields (Syncthing
-device IDs, LAN addresses, `timeZone`, `language`, `regionalFormat`) and
-must be present on disk for any rebuild to evaluate.
+The flake declares `infra-nix-config-private` as a private GitHub
+`flake = false` input. It holds PII-bearing per-host fields (Syncthing device
+IDs, LAN addresses, `timeZone`, `language`, `regionalFormat`). The input
+currently supplies private user settings and secrets. The local sibling
+checkout supports editing and sync; private metadata loading remains deferred
+in `TODO.md`.
 
 `install.sh` provisions a sibling automatically using a tiered cascade
 (first success wins):
 
 1. **Pre-staged**: a sibling already at
-   `/mnt/home/<user>/git/nix-config-private` (e.g. copied in via SSH/USB
+  `/mnt/home/<user>/git/infra-nix-config-private` (e.g. copied in via SSH/USB
    before `install.sh`) is left alone.
 2. **`gh` already authenticated**: if `gh auth status` succeeds in the
    live ISO shell — i.e. you ran `nix-shell -p gh --run "gh auth login -w"`
    before invoking `install.sh` — the installer uses
-   `gh repo clone elvismercado/nix-config-private`.
+  `gh repo clone elvismercado/infra-nix-config-private`.
 3. **Interactive `gh auth login`**: the installer prompts (30-second
    default-no, so unattended installs don't hang) to authenticate with
    GitHub via the web/device-code flow. You'll get a one-time code to
@@ -566,24 +569,23 @@ must be present on disk for any rebuild to evaluate.
    real repo.
 4. **Stub fallback**: writes an initialised git repo containing
    `hosts/<HOST>/user-settings.nix = { }` and a stub README, then
-   commits it. `git+file:` only sees committed files, so the commit is
-   mandatory. The empty overlay triggers `lib.warn` fallbacks
-   (Europe/London, en-GB) on every rebuild until replaced.
+  commits it. This retains the expected local shape for a future input
+  override, but does not replace the current GitHub flake input.
 
 `install.sh` exports `GIT_TERMINAL_PROMPT=0` for the cascade so any
 stray git auth prompt fails fast instead of hanging on a hidden TTY
 prompt. It also prints `[Tier X]` info lines around every step so
 silent `nix-shell` cache fetches don't look like a hang.
 
-If tiers 1-3 succeed, you're done — no warnings on first rebuild. If
-the cascade lands on the stub, replace it with the real overlay after
-first boot:
+If tiers 1-3 succeed, the local companion is ready. If the cascade lands on
+the stub, replace it with the real companion after first boot. Private GitHub
+access is still required by the current flake input either way:
 
 ```bash
 cd ~/git
-rm -rf nix-config-private
-gh repo clone elvismercado/nix-config-private
-# Next `nixos-rebuild switch` picks up the merged metadata.
+rm -rf infra-nix-config-private
+gh repo clone elvismercado/infra-nix-config-private
+# Commit and push private changes before refreshing the locked input.
 ```
 
 `postinstall.sh` includes an interactive step (`step_private_overlay`)
@@ -613,7 +615,7 @@ installer does not touch disks other than the one you specify.
    ```
 4. Fix the configuration and rebuild:
    ```bash
-   cd /home/$TARGET_USER/git/nix-config
+  cd /home/$TARGET_USER/git/infra-nix-config
    nixos-rebuild switch --flake .#$HOST
    ```
 5. Exit and reboot:
@@ -628,7 +630,7 @@ If you change disks or partitions after install:
 
 ```bash
 nixos-generate-config --show-hardware-config \
-  > ~/git/nix-config/hosts/$HOST/configuration/hardware-configuration.nix
+  > ~/git/infra-nix-config/hosts/$HOST/configuration/hardware-configuration.nix
 
 sudo nixos-rebuild switch --flake .#$HOST
 ```
@@ -641,7 +643,7 @@ If the EFI boot entry is missing, boot from USB and:
 mount /dev/disk/by-label/nixos /mnt
 mount /dev/disk/by-label/BOOT /mnt/boot
 nixos-enter --root /mnt
-nixos-rebuild boot --flake /home/$TARGET_USER/git/nix-config#$HOST
+nixos-rebuild boot --flake /home/$TARGET_USER/git/infra-nix-config#$HOST
 exit
 reboot
 ```

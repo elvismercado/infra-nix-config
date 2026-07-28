@@ -9,7 +9,7 @@
 #                                 Same BCP 47 dash form. Defaults to `language`
 #                                 when unset.
 #
-# Both fields typically live in the private overlay (nix-config-private). When
+# Both fields typically live in the private overlay (infra-nix-config-private). When
 # absent (public repo standalone), both fall back to "en-GB".
 #
 # A four-locale pad (en_GB, nl_NL, es_ES, en_US) is generated unconditionally so
@@ -28,7 +28,7 @@
 
 let
   language = userSettings.language or (lib.warn
-    "userSettings.language unset for host '${userSettings.hostname}'; defaulting to en-GB. Set it in nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
+    "userSettings.language unset for host '${userSettings.hostname}'; defaulting to en-GB. Set it in infra-nix-config-private/hosts/${userSettings.hostname}/user-settings.nix."
     "en-GB");
   regionalFormat = userSettings.regionalFormat or language;
   toPosix = t: (builtins.replaceStrings [ "-" ] [ "_" ] t) + ".UTF-8";

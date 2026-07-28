@@ -5,7 +5,7 @@
 # Every step is optional and can be skipped.
 #
 # Usage:
-#   bash ~/git/nix-config/scripts/nixos/postinstall.sh
+#   bash ~/git/infra-nix-config/scripts/nixos/postinstall.sh
 #   # or use the 'postinstall' shell alias
 
 set -euo pipefail
@@ -53,7 +53,7 @@ detect_environment() {
 
   if [[ ! -d "$REPO_DIR" ]]; then
     error "Config repo not found at ${REPO_DIR}"
-    error "Expected the nix-config repo to be cloned during install."
+    error "Expected the infra-nix-config repo to be cloned during install."
     exit 1
   fi
 
@@ -222,7 +222,7 @@ step_gh_ssh_key() {
 # Step 7: Replace stub private overlay with the real repo
 # ──────────────────────────────────────────────────────────────
 step_private_overlay() {
-  local private_dir="$HOME/git/nix-config-private"
+  local private_dir="$HOME/git/infra-nix-config-private"
 
   if [[ ! -d "$private_dir" ]]; then
     info "No private sibling at ${private_dir} — nothing to upgrade. Skipping."
@@ -238,40 +238,38 @@ step_private_overlay() {
   fi
 
   warn "Private sibling at ${private_dir} is the install.sh stub."
-  warn "While the stub is in place, time/locale fall back to Europe/London + en-GB"
-  warn "with lib.warn lines on every rebuild."
+  warn "The local stub does not replace the GitHub-backed private flake input."
 
   if ! command -v gh &>/dev/null || ! gh auth status &>/dev/null; then
     warn "gh CLI not authenticated — cannot upgrade the stub automatically."
     warn "Run 'gh auth login' first, then re-run postinstall — or upgrade manually:"
-    warn "  cd ~/git && rm -rf nix-config-private && gh repo clone elvismercado/nix-config-private"
+    warn "  cd ~/git && rm -rf infra-nix-config-private && gh repo clone elvismercado/infra-nix-config-private"
     echo ""
     return
   fi
 
-  if ! confirm "Replace the stub with the real elvismercado/nix-config-private repo?"; then
+  if ! confirm "Replace the stub with the real elvismercado/infra-nix-config-private repo?"; then
     info "Skipped — stub remains in place."
     echo ""
     return
   fi
 
-  # Move the stub aside so a failed clone doesn't leave the user without
-  # any sibling at all (which would break the next rebuild).
+  # Move the stub aside so a failed clone can restore the local companion.
   local stub_backup
-  stub_backup=$(mktemp -d -t nix-config-private-stub.XXXXXX)
+  stub_backup=$(mktemp -d -t infra-nix-config-private-stub.XXXXXX)
   info "Backing up stub to ${stub_backup}..."
-  mv "$private_dir" "$stub_backup/nix-config-private"
+  mv "$private_dir" "$stub_backup/infra-nix-config-private"
 
-  if gh repo clone elvismercado/nix-config-private "$private_dir"; then
+  if gh repo clone elvismercado/infra-nix-config-private "$private_dir"; then
     info "Real private sibling cloned. Removing stub backup..."
     rm -rf "$stub_backup"
     info "Done. Next rebuild will pick up real timezone / locale values."
   else
     error "gh repo clone failed. Restoring the stub from ${stub_backup}..."
-    mv "$stub_backup/nix-config-private" "$private_dir"
+    mv "$stub_backup/infra-nix-config-private" "$private_dir"
     rm -rf "$stub_backup"
     warn "Stub restored. Fix the auth issue and re-run postinstall, or upgrade manually:"
-    warn "  cd ~/git && rm -rf nix-config-private && gh repo clone elvismercado/nix-config-private"
+    warn "  cd ~/git && rm -rf infra-nix-config-private && gh repo clone elvismercado/infra-nix-config-private"
   fi
   echo ""
 }

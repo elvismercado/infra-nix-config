@@ -94,7 +94,8 @@ let
   # Declarative peer cluster — derived from per-host `metadata.nix` files
   # via the shared `flake/metadata.nix` loader. Self is filtered out by
   # hostname; peers with no captured `syncthing.id` are skipped (they
-  # stage in metadata as commented-out IDs and appear here once filled in).
+  # stage in metadata as commented-out IDs). Private metadata input wiring
+  # is deferred in TODO.md, so normal flake builds currently see no peers.
   peers = import ./syncthing-peers.nix { inherit lib userSettings; };
 in
 {

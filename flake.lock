@@ -337,13 +337,13 @@
         "lastModified": 1780693947,
         "narHash": "sha256-5+vi4O6btN7mKbMsjtLbKe+sLCZk2AyaopmpSB4nTSA=",
         "owner": "elvismercado",
-        "repo": "nix-config-private",
+        "repo": "infra-nix-config-private",
         "rev": "72cd2611c2ab4ad631f9e6d265fe1d4fd615c23f",
         "type": "github"
       },
       "original": {
         "owner": "elvismercado",
-        "repo": "nix-config-private",
+        "repo": "infra-nix-config-private",
         "type": "github"
       }
     },

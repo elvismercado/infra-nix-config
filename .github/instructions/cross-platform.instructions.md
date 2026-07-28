@@ -7,7 +7,7 @@ description: "Cross-platform module placement and the Option 1 / Option 2 / Opti
 
 ### Repository scope
 
-This repo manages **NixOS** and **macOS (nix-darwin)** hosts. Windows is **out of scope** — declarative Windows configuration lives in the separate `elvismercado/windows-config` repository. WSL distributions running inside Windows are treated as Linux and may live here as standalone home-manager hosts.
+This repo manages full **NixOS** hosts, **macOS** hosts through nix-darwin, and user configuration on other Linux distributions through standalone Home Manager. Windows is **out of scope**; declarative Windows configuration lives in the separate `elvismercado/infra-windows-config` repository. WSL distributions are treated as standalone Linux Home Manager hosts.
 
 Within scope, every home-manager module falls into one of these placements:
 

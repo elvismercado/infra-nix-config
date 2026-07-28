@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "infra-nix-config",
+			"path": "."
+		},
+		{
+			"name": "infra-nix-config-private",
+			"path": "../infra-nix-config-private"
+		}
+	],
+	"settings": {}
+}

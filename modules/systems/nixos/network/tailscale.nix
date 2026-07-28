@@ -14,7 +14,7 @@
 #
 # Authentication (non-interactive, per host):
 #   Each host has its OWN auth key in the private overlay repo at
-#   `nix-config-private/hosts/<HOSTNAME>/secrets/tailscale-authkey` (a
+#   `infra-nix-config-private/hosts/<HOSTNAME>/secrets/tailscale-authkey` (a
 #   single-line key), reached here via the `private` flake input and keyed on
 #   `userSettings.hostname` — the same per-host overlay convention used for
 #   `user-settings.nix` (see flake/hosts.nix). When the file is present the
@@ -30,8 +30,8 @@
 # Manual prerequisite (one-time, per host):
 #   1. Tailscale admin console → Settings → Keys → Generate auth key
 #      (Ephemeral + a tag, short expiry).
-#   2. Write the key to nix-config-private/hosts/<HOSTNAME>/secrets/tailscale-authkey.
-#   3. git commit && git push in nix-config-private (only pushed files are
+#   2. Write the key to infra-nix-config-private/hosts/<HOSTNAME>/secrets/tailscale-authkey.
+#   3. git commit && git push in infra-nix-config-private (only pushed files are
 #      visible to the flake build).
 #
 # Verification after a switch:

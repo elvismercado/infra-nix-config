@@ -14,7 +14,7 @@ If not provided, ask for:
 - **Username** — lowercase (e.g., "raven")
 - **System** — `x86_64-linux`, `aarch64-linux`, `x86_64-darwin`, or `aarch64-darwin`
 - **Channel** — `stable` or `unstable`
-- **Time zone** — optional; default `Etc/UTC` (typically overridden in `nix-config-private`)
+- **Time zone** — optional; default `Etc/UTC` (typically overridden in `infra-nix-config-private`)
 - **UID** — numeric user ID (required for Darwin, recommended for NixOS)
 - **Desktop environment** — NixOS only: `kde-plasma`, `cosmic`, or none
 - **Starting modules** — optional list of extra modules to include beyond the base set
@@ -36,9 +36,9 @@ Use existing hosts as templates:
   hostname = "<HOSTNAME>";
   system = "<system>";
   channel = "<channel>";
-  # timeZone = "<timeZone>"; # optional — typically lives in nix-config-private; defaults to Etc/UTC
-  # language = "en-GB"; # optional — BCP 47 dash form; typically lives in nix-config-private; defaults to "en-GB"
-  # regionalFormat = "nl-NL"; # optional — BCP 47 dash form; typically lives in nix-config-private; defaults to language
+  # timeZone = "<timeZone>"; # optional — typically lives in infra-nix-config-private; defaults to Etc/UTC
+  # language = "en-GB"; # optional — BCP 47 dash form; typically lives in infra-nix-config-private; defaults to "en-GB"
+  # regionalFormat = "nl-NL"; # optional — BCP 47 dash form; typically lives in infra-nix-config-private; defaults to language
   # desktopEnvironment = "kde-plasma"; # NixOS only, omit for Darwin
   # uid = <uid>; # Required for Darwin, recommended for NixOS
 }

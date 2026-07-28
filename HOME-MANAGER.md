@@ -1,8 +1,13 @@
 # Home Manager
 
-Home Manager manages user-level configuration: dotfiles, shell settings, and user applications.
+Home Manager manages user-level configuration: dotfiles, shell settings, user
+applications, and Nix packages.
 
-In this repo, Home Manager is integrated as a **system module** on every NixOS and nix-darwin host — it is applied as part of `nixos-rebuild switch` / `darwin-rebuild switch`. Standalone `home-manager switch` is **not** wired up for these hosts; it is reserved for future hosts without a NixOS/darwin system layer (e.g. Ubuntu, Arch) which would be added to the `homeManagerHosts` set in `flake/hosts.nix`.
+This repository supports two Home Manager integration modes:
+
+- NixOS and nix-darwin hosts apply Home Manager as part of the system rebuild.
+- Other Linux distributions apply it standalone through a host registered in
+  `homeManagerHosts` in `flake/hosts.nix`.
 
 ## Current Hosts
 
@@ -12,6 +17,8 @@ In this repo, Home Manager is integrated as a **system module** on every NixOS a
 | FENNEC | x86_64-linux  | stable  | NixOS module   |
 | LULA   | x86_64-linux  | stable  | NixOS module   |
 | EDGE   | x86_64-darwin | stable  | darwin module  |
+
+No standalone Linux hosts are registered yet.
 
 ## Apply
 
@@ -24,13 +31,21 @@ sudo nixos-rebuild switch --flake .#LULA
 darwin-rebuild switch --flake .#EDGE
 ```
 
-> There is no standalone `home-manager switch --flake .#<HOST>` for these hosts — `homeManagerHosts` in `flake/hosts.nix` is currently empty. To enable standalone use for a future non-NixOS/non-darwin host, add it to `homeManagerHosts`.
+For a registered standalone Linux host:
+
+```bash
+home-manager switch --flake .#<HOST> \
+  --option access-tokens "github.com=$(gh auth token)"
+```
+
+The access token is required because the flake reads per-host private settings
+from `elvismercado/infra-nix-config-private`.
 
 ## How It Works
 
-1. `flake/hosts.nix` defines three host sets: `nixosHosts`, `darwinHosts`, and `homeManagerHosts` (the last is for standalone-HM hosts only — currently empty).
+1. `flake/hosts.nix` defines three host sets: `nixosHosts`, `darwinHosts`, and `homeManagerHosts` (the last is for standalone Home Manager hosts and is currently empty).
 2. `flake/nixos.nix` and `flake/darwin.nix` pull in `home-manager.nixosModules.home-manager` / `home-manager.darwinModules.home-manager`, applying each host's `home-manager/` directory as part of the system rebuild.
-3. `flake/home.nix` iterates over `homeManagerHosts` and builds a `homeManagerConfiguration` for each — these are exposed as `homeConfigurations.<HOST>` for `home-manager switch`.
+3. `flake/home.nix` iterates over `homeManagerHosts` and builds a `homeManagerConfiguration` for each — these are exposed as `homeConfigurations.<HOST>` for `home-manager switch`. Linux hosts automatically enable `targets.genericLinux` for non-NixOS XDG, profile, and session integration.
 4. The nixpkgs channel and system architecture are selected per-host from `user-settings.nix` via `selectNixpkgs`. The Home Manager version is selected per-host via `selectHomeManager` — a `"stable"` host uses `home-manager-stable`, an `"unstable"` host uses `home-manager`.
 
 ### What gets passed to modules
@@ -205,14 +220,55 @@ When an `app<Name>` façade exists, do NOT also set `custom.hm<Name>.enable` dir
 
 See [.github/instructions/cross-platform.instructions.md](.github/instructions/cross-platform.instructions.md) Option 3 for the full pattern.
 
-## Adding Home Manager Config for a New Host
+## Adding a Standalone Linux Host
 
-Each host already gets a Home Manager entry automatically when registered in `flake/hosts.nix`. You only need to:
+Use this path for Linux distributions that are not managed by NixOS, such as
+Ubuntu, Debian, Fedora, or Arch Linux. The distribution continues to own the
+kernel, bootloader, system services, and native packages. Nix and Home Manager
+own this user's dotfiles and Nix packages.
 
-1. Create `hosts/<HOSTNAME>/home-manager/default.nix` — imports and enables modules
-2. Create `hosts/<HOSTNAME>/home-manager/home.nix` — sets `home.username`, `home.homeDirectory`, `home.stateVersion`
+### 1. Create the host settings
 
-Example `default.nix`:
+Create `hosts/<HOSTNAME>/user-settings.nix`:
+
+```nix
+{
+  username = "myuser";
+  hostname = "MYHOST";
+  system = "x86_64-linux"; # or "aarch64-linux"
+  channel = "stable"; # or "unstable"
+  uid = 1000;
+  repoPath = "git/infra-nix-config"; # relative to $HOME
+  desktopEnvironment = null; # use "kde-plasma" when applicable
+}
+```
+
+Private fields such as `timeZone`, `language`, and `regionalFormat` normally
+live in `infra-nix-config-private/hosts/<HOSTNAME>/user-settings.nix`.
+
+### 2. Create the Home Manager files
+
+Create `hosts/<HOSTNAME>/home-manager/home.nix`:
+
+```nix
+{ userSettings, ... }:
+{
+  home.username = userSettings.username;
+  home.homeDirectory = "/home/${userSettings.username}";
+  home.stateVersion = "25.11";
+
+  # Installs the CLI after the first activation.
+  programs.home-manager.enable = true;
+}
+```
+
+Set `home.stateVersion` to the Home Manager release used for the host's first
+activation and do not change it during routine upgrades.
+
+The standalone builder enables `targets.genericLinux` automatically for Linux
+hosts. Do not repeat that option in each host configuration.
+
+Create `hosts/<HOSTNAME>/home-manager/default.nix`:
 
 ```nix
 { ... }:
@@ -228,6 +284,54 @@ Example `default.nix`:
   custom.hmAliases.enable = true;
   custom.hmBash.enable = true;
 }
+```
+
+Import Linux-specific modules only when they work without a NixOS system
+module. In particular, `modules/home-manager/linux/aliases.nix` currently
+defines NixOS rebuild commands and should not be enabled on standalone hosts.
+
+### 3. Register the host
+
+Add the host only to `homeManagerHosts` in `flake/hosts.nix`:
+
+```nix
+homeManagerHosts = {
+  # `home-manager switch --flake .#MYHOST`
+  MYHOST = mkHost "MYHOST";
+};
+```
+
+A standalone host does not need `hosts/<HOSTNAME>/configuration/` and must not
+also be added to `nixosHosts` or `darwinHosts`.
+
+### 4. Bootstrap and apply
+
+Install Nix with flakes enabled, install and authenticate GitHub CLI, then clone
+the repository:
+
+```bash
+gh auth login
+mkdir -p ~/git
+git clone https://github.com/elvismercado/infra-nix-config ~/git/infra-nix-config
+cd ~/git/infra-nix-config
+```
+
+Run Home Manager directly from its flake for the first activation:
+
+```bash
+nix run github:nix-community/home-manager -- \
+  switch --flake .#MYHOST \
+  --option access-tokens "github.com=$(gh auth token)"
+```
+
+After activation, `programs.home-manager.enable` provides the CLI. Future
+updates use:
+
+```bash
+cd ~/git/infra-nix-config
+git pull --ff-only
+home-manager switch --flake .#MYHOST \
+  --option access-tokens "github.com=$(gh auth token)"
 ```
 
 ## Backup and Restore Home Directory

@@ -185,9 +185,9 @@ Modules default to `false` — importing without enabling has no effect.
      hostname = "MYHOST"; # description / hostname (must match networking.hostName)
      system = "x86_64-linux";
      channel = "stable"; # "stable" or "unstable"
-     # timeZone = "Etc/UTC"; # optional — typically set in the nix-config-private overlay; default Etc/UTC
+    # timeZone = "Etc/UTC"; # optional — typically set in the infra-nix-config-private overlay; default Etc/UTC
      uid = 1000; # UID for the system user — must match install script chown
-     repoPath = "git/nix-config"; # relative to $HOME
+    repoPath = "git/infra-nix-config"; # relative to $HOME
      desktopEnvironment = "kde-plasma"; # "kde-plasma", "cosmic", or null
    }
    ```

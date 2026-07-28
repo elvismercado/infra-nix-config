@@ -23,13 +23,13 @@ let
     else
       "caffeinate -dis ";
 
-  # Public flake repo + sibling private overlay.
+  # Public flake repo + sibling private overlay checkout.
   # Convention (matches setup.sh / install.sh / flake.nix
-  # `github:elvismercado/nix-config-private`): the private repo lives
+  # `github:elvismercado/infra-nix-config-private`): the private repo lives
   # next to the public one on disk, so derive its path from
   # `repoPath`'s parent dir.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
-  privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/nix-config-private";
+  privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/infra-nix-config-private";
 
   # Auth token for the private GitHub flake input. Evaluated at
   # alias-execution time by the user's shell - before any `sudo` - so
@@ -66,9 +66,8 @@ in
       switchtrusted = "nix config show | grep trusted-users";
 
       # Explicit one-shot: refresh the `private` lock entry, commit,
-      # and push. Use after editing the private overlay to ship the
-      # bump to other hosts. `switchcheck` / `switch` already refresh
-      # the lock locally; this one persists the change.
+      # and push. Use after committing and pushing private overlay edits
+      # to ship the resulting lock bump to other hosts.
       switchbumpprivate = "cd ${publicRepo} && nix flake update private ${tokenOpt} && git add flake.lock && git commit -m 'flake.lock: bump private input' && git push";
 
       # Git sync: fast-forward both the public repo and the private

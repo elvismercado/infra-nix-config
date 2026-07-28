@@ -32,7 +32,7 @@
 #     or that don't have `userSettings.weatherLocation`. Requires
 #     `userSettings.weatherLocation` when `true` (asserted) — typically
 #     supplied via the private overlay in
-#     `nix-config-private/hosts/<HOST>/user-settings.nix`:
+#     `infra-nix-config-private/hosts/<HOST>/user-settings.nix`:
 #       weatherLocation = {
 #         name = "The Hague";                              # human label, reference only
 #         source = "wttr.in|weather|The Hague,NL";         # reference only (see KNOWN LIMITATION)
@@ -302,7 +302,7 @@ in
       }
       {
         assertion = !weatherEnabled || weather != null;
-        message = "custom.hmPlasmaCommon.systray.weather.enable requires userSettings.weatherLocation (typically set in nix-config-private/hosts/<HOST>/user-settings.nix)";
+        message = "custom.hmPlasmaCommon.systray.weather.enable requires userSettings.weatherLocation (typically set in infra-nix-config-private/hosts/<HOST>/user-settings.nix)";
       }
       # NOTE: no assertion on `weather.source` — the field is currently
       # inert reference data (see KNOWN LIMITATION in header). Re-enable

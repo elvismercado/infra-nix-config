@@ -4,6 +4,10 @@
 # into the shape expected by `services.syncthing.settings.devices`:
 # `{ id, addresses }`. Filters:
 #
+# Current limitation: normal flake evaluation cannot reach the loader's
+# relative private-sibling path, so only public stubs are visible and this
+# projection is empty. Wiring metadata through `inputs.private` is in TODO.md.
+#
 #   - Drops self (any peer whose attrset key matches `userSettings.hostname`).
 #     This is what makes the SAME peers file safe to consume on every host.
 #   - Drops peers without a captured `syncthing.id`. Lets us stage TODO

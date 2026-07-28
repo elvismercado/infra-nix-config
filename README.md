@@ -1,13 +1,15 @@
-# Nix Configuration
+# Infra Nix Configuration
 
-Declarative system and user configuration for NixOS and macOS using Nix flakes, nix-darwin, and Home Manager.
+Declarative system and user configuration using Nix flakes. NixOS manages the
+full Linux system, nix-darwin manages macOS, and standalone Home Manager manages
+user configuration and Nix packages on other Linux distributions.
 
 ## System Documentation
 
 - [INSTALL.md](scripts/nixos/INSTALL.md) — Fresh NixOS install guide (partitioning, formatting, flake-based install)
 - [NIXOS.md](NIXOS.md) — NixOS system configuration, rebuild commands, adding hosts
 - [DARWIN.md](DARWIN.md) — macOS (nix-darwin) configuration, rebuild commands, adding hosts
-- [HOME-MANAGER.md](HOME-MANAGER.md) — User-level configuration (dotfiles, apps, shell), works across all systems
+- [HOME-MANAGER.md](HOME-MANAGER.md) — User-level configuration and standalone Linux setup
 - [DISPLAYS.md](DISPLAYS.md) — Shared monitor / KVM / TV topology and per-host display wiring
 
 ## Hosts
@@ -19,6 +21,9 @@ Declarative system and user configuration for NixOS and macOS using Nix flakes, 
 | LULA   | NixOS              | x86_64-linux  | stable  | [Hardware](hosts/LULA/README.md)   |
 | EDGE   | macOS (nix-darwin) | x86_64-darwin | stable  | [Hardware](hosts/EDGE/README.md)   |
 
+No standalone Home Manager hosts are registered yet. Add non-NixOS Linux hosts
+to `homeManagerHosts` in `flake/hosts.nix`.
+
 ## Quick Commands
 
 ```bash
@@ -29,9 +34,14 @@ sudo nixos-rebuild switch --flake .#LULA
 
 # macOS — rebuild system
 darwin-rebuild switch --flake .#EDGE
+
+# Other Linux distributions — apply standalone Home Manager
+home-manager switch --flake .#<HOST>
 ```
 
-> Home Manager is integrated as a system module on all hosts, so it is applied as part of the system rebuild above. Standalone `home-manager switch` is reserved for future non-NixOS/non-darwin hosts (e.g. Ubuntu, Arch) registered in `homeManagerHosts`.
+> NixOS and macOS hosts apply Home Manager as part of their system rebuild.
+> Standalone `home-manager switch` is only for hosts registered in
+> `homeManagerHosts`.
 
 ## Quickstart
 
@@ -51,7 +61,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 # Clone the repo
 mkdir -p ~/git
-git clone https://github.com/elvismercado/nix-config ~/git/nix-config
+git clone https://github.com/elvismercado/infra-nix-config ~/git/infra-nix-config
 ```
 
 > All hosts default to `channel = "stable"`. To switch a host to `unstable`,
@@ -127,53 +137,47 @@ modules/
                              #   are system-level)
 ```
 
-## Private Sibling Repo
+## Private Companion Repo
 
 A handful of host-identifying fields (Syncthing device IDs, per-peer LAN
 addresses, per-host `timeZone` / `language` / `regionalFormat`) live in
 a separate private repo,
-[`elvismercado/nix-config-private`](https://github.com/elvismercado/nix-config-private),
-cloned as a sibling folder on disk:
+[`elvismercado/infra-nix-config-private`](https://github.com/elvismercado/infra-nix-config-private).
+
+The companion has two distinct integration paths:
+
+- **Private flake input:** `flake.nix` declares the repository as the
+  `flake = false` input `private` using the GitHub URL scheme. Per-host user
+  settings and secrets are fetched from GitHub, so the invoking user must run
+  `gh auth login` once. The repository's `switch*` aliases inject
+  `--option access-tokens "github.com=$(gh auth token)"` for each rebuild.
+- **Optional local sibling:** provides the normal editing and sync workflow for
+  private files. `flake/metadata.nix` still contains a legacy relative-path
+  lookup for locally cloned Syncthing metadata, but normal flake evaluation
+  runs from a Nix store copy and cannot reach that sibling. Wiring metadata
+  through `inputs.private` is a deferred follow-up in [TODO.md](TODO.md).
 
 ```
 ~/git/
-├── nix-config/              # this repo (public)
-└── nix-config-private/      # sibling (private; same shape under hosts/)
+├── infra-nix-config/          # this repo (public)
+└── infra-nix-config-private/  # optional local companion
 ```
 
-The sibling is wired in two places:
+Private changes must be committed and pushed before a rebuild can consume
+them. Use `switchbumpprivate` after pushing to refresh the public lock entry.
+A local empty stub does not satisfy the GitHub input, and the legacy metadata
+lookup does not make it part of a normal flake build. Both companion-integration
+gaps are tracked in [TODO.md](TODO.md).
 
-- **Per-host metadata** for the Syncthing peer map: the flake loader
-  ([flake/metadata.nix](flake/metadata.nix)) auto-discovers the sibling
-  and merges its per-host overrides on top of the public
-  `hosts/<HOST>/metadata.nix` stubs via `lib.recursiveUpdate`. When the
-  sibling is absent the merge is a no-op and the peer map ends up empty.
-- **Per-host `userSettings` overlay** for PII fields like `timeZone`:
-  declared as a `flake = false` input named `private` in
-  [`flake.nix`](flake.nix) (using `git+file:../nix-config-private`) and
-  merged on top of the public `hosts/<HOST>/user-settings.nix` by
-  [`flake/hosts.nix`](flake/hosts.nix). Because it's a real flake input,
-  the sibling **must be present** at `../nix-config-private` for any
-  rebuild or `nix flake check` to succeed, **and overlay edits must be
-  committed** in the sibling repo before they're visible to the build
-  (the `git+file:` scheme only copies tracked files into the Nix store).
-  Bootstrap with:
+Clone the optional companion with:
 
-  ```bash
-  cd ~/git
-  gh repo clone elvismercado/nix-config-private
-  ```
+```bash
+cd ~/git
+gh repo clone elvismercado/infra-nix-config-private
+```
 
-  If you don't have access to the private repo, you can substitute an
-  empty stub (a directory containing `hosts/<HOST>/user-settings.nix`
-  files that return `{ }`) and the public defaults (Europe/London,
-  en-GB) will activate with a build-time warning.
-
-Managed hosts clone both repos as siblings during install.
-
-A multi-root VS Code workspace [`nix-config.code-workspace`](nix-config.code-workspace)
-at the repo root opens both folders in one window when the sibling is
-present.
+The multi-root workspace [infra-nix-config.code-workspace](infra-nix-config.code-workspace)
+opens both repositories when the companion is present.
 
 ## PII & Secrets Discipline
 
@@ -184,9 +188,9 @@ backstop: no `SECURITY.md`, no `CONTRIBUTING.md`.
 ### The split
 
 Host-identifying fields (Syncthing device IDs, per-peer LAN addresses,
-`timeZone`) live in [`nix-config-private`](https://github.com/elvismercado/nix-config-private)
+`timeZone`) live in [`infra-nix-config-private`](https://github.com/elvismercado/infra-nix-config-private)
 and are merged in by the flake loader. The public repo carries structure
-and non-identifying config. See [Private Sibling Repo](#private-sibling-repo)
+and non-identifying config. See [Private Companion Repo](#private-companion-repo)
 for the mechanism.
 
 ### `.gitignore` guards
@@ -223,7 +227,7 @@ git log --all --grep -iE "password|secret|token|credential"
 
 If a probe surfaces a real value in old commits, **rotate it** (e.g.
 regenerate a Syncthing device identity by deleting `cert.pem` + `key.pem`
-and restarting, then update `nix-config-private`). `git filter-repo`
+and restarting, then update `infra-nix-config-private`). `git filter-repo`
 rewrite is declined: force-push doesn't unpublish what is already cloned
 or cached, and breaks downstream forks.
 
@@ -237,7 +241,7 @@ Each host has a `user-settings.nix` that controls system-level decisions:
   hostname = "MYHOST";
   system = "x86_64-linux";       # Architecture
   channel = "stable";            # "stable" or "unstable" nixpkgs
-  # timeZone = "Etc/UTC"; # optional — typically set in nix-config-private; default Etc/UTC
+  # timeZone = "Etc/UTC"; # optional — typically set in infra-nix-config-private; default Etc/UTC
 }
 ```
 

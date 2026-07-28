@@ -114,9 +114,9 @@ After installation, clone the repo and run `darwin-rebuild switch`.
      hostname = "MYHOST"; # description / hostname
      system = "aarch64-darwin"; # or "x86_64-darwin" for Intel Macs
      channel = "stable"; # "stable" or "unstable"
-     # timeZone = "Etc/UTC"; # optional — typically set in the nix-config-private overlay; default Etc/UTC
+    # timeZone = "Etc/UTC"; # optional — typically set in the infra-nix-config-private overlay; default Etc/UTC
      uid = 501; # required for users.knownUsers — find with `id -u <username>`
-     repoPath = "git/nix-config"; # relative to $HOME
+    repoPath = "git/infra-nix-config"; # relative to $HOME
      desktopEnvironment = null; # macOS — DE managed by the OS
    }
    ```

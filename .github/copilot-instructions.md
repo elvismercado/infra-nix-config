@@ -10,7 +10,7 @@
 
 ## Platform Scope
 
-This repository manages **NixOS** and **macOS (nix-darwin)** hosts. **Windows is out of scope** — declarative Windows configuration lives in a separate `elvismercado/windows-config` repository. WSL distributions running inside Windows are treated as Linux and may live here as standalone home-manager hosts.
+This repository manages full **NixOS** hosts, **macOS** hosts through nix-darwin, and user configuration on other Linux distributions through standalone Home Manager. **Windows is out of scope**; declarative Windows configuration lives in the separate `elvismercado/infra-windows-config` repository. WSL distributions are treated as standalone Linux Home Manager hosts.
 
 ## Custom Module Convention
 
@@ -92,7 +92,7 @@ Use this pattern only when binary and config genuinely cross layer boundaries. P
 ## Host Wiring
 
 - `default.nix` is the import entry point for both `configuration/` and `home-manager/`
-- `user-settings.nix` provides `username`, `hostname`, `system`, `channel`, `uid`, `repoPath` (relative to `$HOME`), and optionally `timeZone`, `language`, `regionalFormat`, and `desktopEnvironment`. `timeZone`, `language`, and `regionalFormat` are treated as PII (regional/cultural fingerprint) and typically live in the `nix-config-private/hosts/<HOST>/user-settings.nix` overlay merged in by `flake/hosts.nix`; the time modules fall back to `Etc/UTC` via `userSettings.timeZone or "Etc/UTC"` when no value is provided, and the i18n modules fall back to `"en-GB"` via `userSettings.language or "en-GB"` (with `regionalFormat` defaulting to `language` when unset). Both `language` and `regionalFormat` use BCP 47 dash form (e.g. `"en-GB"`, `"es-ES"`, `"nl-NL"`). `desktopEnvironment` (e.g. `"kde-plasma"`) is consumed by `brave.nix` and read elsewhere via `userSettings.desktopEnvironment or null`. NixOS hosts wire timezone/i18n with `custom.sysNixTimezone.enable = true;` and `custom.sysNixI18n.enable = true;`; darwin hosts wire them with `custom.sysDarTimezone.enable = true;` and `custom.sysDarI18n.enable = true;`.
+- `user-settings.nix` provides `username`, `hostname`, `system`, `channel`, `uid`, `repoPath` (relative to `$HOME`), and optionally `timeZone`, `language`, `regionalFormat`, and `desktopEnvironment`. `timeZone`, `language`, and `regionalFormat` are treated as PII (regional/cultural fingerprint) and typically live in the `infra-nix-config-private/hosts/<HOST>/user-settings.nix` overlay merged in by `flake/hosts.nix`; the time modules fall back to `Etc/UTC` via `userSettings.timeZone or "Etc/UTC"` when no value is provided, and the i18n modules fall back to `"en-GB"` via `userSettings.language or "en-GB"` (with `regionalFormat` defaulting to `language` when unset). Both `language` and `regionalFormat` use BCP 47 dash form (e.g. `"en-GB"`, `"es-ES"`, `"nl-NL"`). `desktopEnvironment` (e.g. `"kde-plasma"`) is consumed by `brave.nix` and read elsewhere via `userSettings.desktopEnvironment or null`. NixOS hosts wire timezone/i18n with `custom.sysNixTimezone.enable = true;` and `custom.sysNixI18n.enable = true;`; darwin hosts wire them with `custom.sysDarTimezone.enable = true;` and `custom.sysDarI18n.enable = true;`.
 - Modules receive `userSettings` via `extraSpecialArgs` (home-manager) or `specialArgs` (system)
 - Host-identifying values (hostname, computer name, SMB name, etc.) must use `userSettings.hostname` — never hardcode the hostname string
 
