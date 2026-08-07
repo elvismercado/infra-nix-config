@@ -21,10 +21,9 @@
 #                         alongside `configuration/` and `home-manager/`.
 #                         Holds non-sensitive descriptors: `hostname`,
 #                         `managed = true`, `os`.
-#       * PRIVATE overlay — `hosts/<HOST>/metadata.nix` in the sibling
-#                         `infra-nix-config-private` repo (expected at
-#                         `../infra-nix-config-private/` relative to this repo
-#                         root). Holds privacy-sensitive fields like
+#       * PRIVATE overlay — `hosts/<HOST>/metadata.nix` in the authenticated
+#                         `infra-nix-config-private` flake input. Holds
+#                         privacy-sensitive fields like
 #                         Syncthing device IDs and per-peer LAN addresses.
 #
 #   - UNMANAGED hosts (Unraid boxes, phones, the Windows side of a
@@ -33,11 +32,8 @@
 #     any host present only on the private side so these still surface
 #     in cross-host data (e.g. the syncthing peer map).
 #
-# The merge below is the intended behavior. Normal flake evaluation copies
-# this repository into the Nix store before evaluating it, so the relative
-# sibling path cannot currently reach the live private checkout. In that path,
-# `private` is empty and consumers see only public stubs. Replacing this legacy
-# lookup with `inputs.private` is tracked in TODO.md and intentionally deferred.
+# The private source is passed explicitly from the flake input so evaluation
+# works from the Nix store copy. Callers may omit it for public-only metadata.
 #
 # Returns:
 #   {
@@ -45,7 +41,7 @@
 #     managed = <subset where `managed = true`>;
 #   }
 
-{ lib }:
+{ lib, privateSource ? null }:
 
 let
   hostsDir = ../hosts;
@@ -59,11 +55,10 @@ let
 
   public = lib.genAttrs publicHostNames (name: import (hostsDir + "/${name}/metadata.nix"));
 
-  # Legacy sibling lookup. In normal flake evaluation this resolves relative
-  # to the Nix store copy, not the live checkout, and therefore returns false.
-  privateMetadata = ../../infra-nix-config-private/metadata.nix;
+  privateMetadata =
+    if privateSource == null then null else privateSource + "/metadata.nix";
   private =
-    if builtins.pathExists privateMetadata
+    if privateMetadata != null && builtins.pathExists privateMetadata
     then import privateMetadata { inherit lib; }
     else { };
 

@@ -19,7 +19,10 @@ let
   # as a flake attribute (`nix eval .#metadata.all`) for ad-hoc inspection
   # and for repo-level consumers; module consumers (e.g. syncthing peers)
   # import it directly from `flake/metadata.nix`.
-  metadata = import ./metadata.nix { inherit (nixpkgs) lib; };
+  metadata = import ./metadata.nix {
+    inherit (nixpkgs) lib;
+    privateSource = inputs.private;
+  };
 
   # Derive the list of unique systems from all host configurations
   allHosts = nixosHosts // darwinHosts // homeManagerHosts;

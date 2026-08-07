@@ -148,14 +148,12 @@ The companion has two distinct integration paths:
 
 - **Private flake input:** `flake.nix` declares the repository as the
   `flake = false` input `private` using the GitHub URL scheme. Per-host user
-  settings and secrets are fetched from GitHub, so the invoking user must run
-  `gh auth login` once. The repository's `switch*` aliases inject
+  settings, Syncthing metadata, and low-sensitivity secrets are fetched from
+  GitHub, so the invoking user must run `gh auth login` once. The repository's `switch*` aliases inject
   `--option access-tokens "github.com=$(gh auth token)"` for each rebuild.
 - **Optional local sibling:** provides the normal editing and sync workflow for
-  private files. `flake/metadata.nix` still contains a legacy relative-path
-  lookup for locally cloned Syncthing metadata, but normal flake evaluation
-  runs from a Nix store copy and cannot reach that sibling. Wiring metadata
-  through `inputs.private` is a deferred follow-up in [TODO.md](TODO.md).
+  private files. Rebuilds consume the pinned GitHub input, not uncommitted files
+  from this checkout.
 
 ```
 ~/git/
@@ -165,9 +163,8 @@ The companion has two distinct integration paths:
 
 Private changes must be committed and pushed before a rebuild can consume
 them. Use `switchbumpprivate` after pushing to refresh the public lock entry.
-A local empty stub does not satisfy the GitHub input, and the legacy metadata
-lookup does not make it part of a normal flake build. Both companion-integration
-gaps are tracked in [TODO.md](TODO.md).
+A local empty stub does not satisfy or override the GitHub input. Offline
+private-input substitution remains tracked in [TODO.md](TODO.md).
 
 Clone the optional companion with:
 

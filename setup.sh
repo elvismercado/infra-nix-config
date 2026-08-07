@@ -7,7 +7,7 @@ set -e
 # PII-bearing per-host fields and the Syncthing peer mesh). The flake fetches
 # it through an authenticated `github:` input. A local sibling checkout is
 # used for private-overlay editing/sync workflows; normal flake evaluation
-# cannot currently consume its metadata through the legacy relative path.
+# consumes committed and pushed private metadata through the GitHub input.
 #
 # This script offers to clone the companion interactively after the public
 # repo is in place. Rebuilds require `gh auth login` so their token-aware

@@ -1,8 +1,8 @@
 # Cross-host metadata for JIN.
 #
 # Public stub — privacy-sensitive fields (Syncthing device ID,
-# per-peer LAN addresses) live in `infra-nix-config-private`. Their intended
-# merge is currently deferred; see `flake/metadata.nix` and `TODO.md`.
+# per-peer LAN addresses) are merged from the pinned
+# `infra-nix-config-private` flake input.
 {
   hostname = "JIN";
   managed = true;

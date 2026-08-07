@@ -396,9 +396,9 @@ rm -rf "/tmp/${REPO_NAME}"
 
 The flake fetches `inputs.private` from the private GitHub repository
 `elvismercado/infra-nix-config-private`. A sibling checkout supports private
-overlay editing and sync workflows. It does not currently feed the legacy
-metadata loader during normal flake evaluation. The retained stub below does
-not override the GitHub input; both gaps are tracked in `TODO.md`.
+overlay editing and sync workflows. Normal evaluation consumes committed and
+pushed private metadata through the GitHub input. The retained stub below does
+not override that input; offline substitution remains tracked in `TODO.md`.
 
 **If you have access to the real private repo**, clone it next to the
 public one (HTTPS works for the owner with cached credentials; otherwise
@@ -548,9 +548,9 @@ git push
 The flake declares `infra-nix-config-private` as a private GitHub
 `flake = false` input. It holds PII-bearing per-host fields (Syncthing device
 IDs, LAN addresses, `timeZone`, `language`, `regionalFormat`). The input
-currently supplies private user settings and secrets. The local sibling
-checkout supports editing and sync; private metadata loading remains deferred
-in `TODO.md`.
+supplies private user settings, Syncthing metadata, and low-sensitivity
+secrets. The local sibling checkout supports editing and sync; rebuilds consume
+committed and pushed content through the GitHub input.
 
 `install.sh` provisions a sibling automatically using a tiered cascade
 (first success wins):
