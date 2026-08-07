@@ -162,9 +162,19 @@ The companion has two distinct integration paths:
 ```
 
 Private changes must be committed and pushed before a rebuild can consume
-them. Use `switchbumpprivate` after pushing to refresh the public lock entry.
+them. An ordinary `switch` uses the GitHub revision pinned in `flake.lock`; it
+does not read uncommitted files from the local sibling or refresh that pin.
 A local empty stub does not satisfy or override the GitHub input. Offline
 private-input substitution remains tracked in [TODO.md](TODO.md).
+
+Publish private changes in this order:
+
+1. Edit, commit, and push `infra-nix-config-private`.
+2. From `infra-nix-config`, run `switchbumpprivate`. It updates only the
+   `private` input, then commits and pushes the resulting `flake.lock` change.
+3. On other hosts, run `switchpull` to fast-forward both repositories and
+   refresh the local private lock entry, then run the appropriate build or
+   switch command.
 
 Clone the optional companion with:
 

@@ -24,6 +24,8 @@ let
   # is the explicit "I edited the private overlay" command.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
   tokenOpt = ''--option access-tokens "github.com=$(gh auth token)"'';
+  nixBuildDiagnosticOpts = "--show-trace --print-build-logs -v";
+  nixVerboseBuildDiagnosticOpts = "${nixBuildDiagnosticOpts} -v";
 in
 
 {
@@ -33,12 +35,12 @@ in
 
   config = lib.mkIf config.custom.hmDarwinAliases.enable {
     home.shellAliases = {
-      switch = "cd ${publicRepo} && sudo darwin-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt}";
-      switchverbose = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && sudo darwin-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} --show-trace --print-build-logs -L -v";
-      switchbuild = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && darwin-rebuild build --flake .#${userSettings.hostname} ${tokenOpt}";
-      switchtest = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && darwin-rebuild check --flake .#${userSettings.hostname} ${tokenOpt}";
+      switch = "cd ${publicRepo} && sudo darwin-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
+      switchverbose = "cd ${publicRepo} && sudo darwin-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} ${nixVerboseBuildDiagnosticOpts}";
+      switchbuild = "cd ${publicRepo} && darwin-rebuild build --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
+      switchtest = "cd ${publicRepo} && darwin-rebuild check --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
       switchhealth = "{ echo '=== System errors (last 1h) ==='; log show --predicate 'eventType == logEvent && messageType == error' --last 1h --style compact 2>/dev/null | tail -50; echo '=== Disk usage ==='; df -h / /System/Volumes/Data; echo '=== Nix store size ==='; du -sh /nix/store 2>/dev/null; echo '=== Homebrew status ==='; brew doctor 2>&1 | head -20; } > /tmp/health.txt 2>&1 && echo \"Saved to /tmp/health.txt ($(wc -l < /tmp/health.txt) lines)\"";
-      switchhelp = "echo -e '\n  switch        — Rebuild and activate system config\n                  sudo darwin-rebuild switch --flake .#${userSettings.hostname}\n  switchverbose — Same as switch, with full build logs + eval trace\n                  sudo darwin-rebuild switch --flake .#${userSettings.hostname} --show-trace --print-build-logs -L -v\n  switchbuild   — Build config without activating\n                  darwin-rebuild build --flake .#${userSettings.hostname}\n  switchtest    — Test build (check)\n                  darwin-rebuild check --flake .#${userSettings.hostname}\n  switchcheck   — Validate flake\n                  nix flake check\n  switchupdate  — Update flake inputs\n                  nix flake update\n  switchbumpprivate — Refresh private input lock, commit & push\n  switchhealth  — Save system health report to /tmp/health.txt\n  switchcd      — cd to infra-nix-config repo\n  switchhelp    — Show this help\n'";
+      switchhelp = "echo -e '\n  switch           - Rebuild and activate with trace, build logs, and balanced verbosity\n  switchverbose    - Same as switch with additional diagnostic verbosity\n  switchbuild      - Build without activating, with balanced diagnostics\n  switchtest       - Check the build with balanced diagnostics\n  switchcheck      - Validate the flake with balanced diagnostics\n  switchupdate     - Update all flake inputs with balanced diagnostics\n  switchpull       - Fast-forward both repos and refresh the private lock entry\n  switchbumpprivate - After pushing private edits: update, commit, and push flake.lock\n  switchhealth     - Save system health report to /tmp/health.txt\n  switchcd         - cd to infra-nix-config repo\n  switchhelp       - Show this help\n'";
     };
   };
 }

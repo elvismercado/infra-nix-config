@@ -27,6 +27,8 @@ let
   # is the explicit "I edited the private overlay" command.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
   tokenOpt = ''--option access-tokens "github.com=$(gh auth token)"'';
+  nixBuildDiagnosticOpts = "--show-trace --print-build-logs -v";
+  nixVerboseBuildDiagnosticOpts = "${nixBuildDiagnosticOpts} -v";
 in
 
 {
@@ -40,12 +42,12 @@ in
     (lib.mkIf config.custom.hmLinuxAliases.enable {
       home.shellAliases = {
         postinstall = "bash ${config.home.homeDirectory}/${userSettings.repoPath}/scripts/nixos/postinstall.sh";
-        switch = "cd ${publicRepo} && sudo nixos-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt}";
-        switchverbose = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && sudo nixos-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} --show-trace --print-build-logs -L -v";
-        switchbuild = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && nixos-rebuild build --flake .#${userSettings.hostname} ${tokenOpt}";
-        switchtest = "cd ${config.home.homeDirectory}/${userSettings.repoPath} && sudo nixos-rebuild dry-activate --flake .#${userSettings.hostname} ${tokenOpt}";
+        switch = "cd ${publicRepo} && sudo nixos-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
+        switchverbose = "cd ${publicRepo} && sudo nixos-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} ${nixVerboseBuildDiagnosticOpts}";
+        switchbuild = "cd ${publicRepo} && nixos-rebuild build --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
+        switchtest = "cd ${publicRepo} && sudo nixos-rebuild dry-activate --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
         switchhealth = "{ echo '=== Failed units ==='; systemctl --failed; echo '=== Boot errors ==='; journalctl -b -p err --no-pager; echo '=== Boot warnings ==='; journalctl -b -p warning --no-pager; echo '=== Kernel hardware issues ==='; sudo dmesg --level=err,warn; echo '=== OOM events ==='; journalctl -b --no-pager | grep -i 'out of memory\|oom-kill\|killed process' || echo 'None'; echo '=== NVIDIA GPU ==='; nvidia-smi 2>/dev/null || echo 'nvidia-smi not available'; echo '=== Disk usage ==='; df -h / /home /boot; echo '=== Nix store size ==='; du -sh /nix/store 2>/dev/null; echo '=== NixOS generation ==='; nixos-rebuild list-generations --no-build-nix 2>/dev/null | tail -5; } > /tmp/health.txt 2>&1 && echo \"Saved to /tmp/health.txt ($(wc -l < /tmp/health.txt) lines)\"";
-        switchhelp = "echo -e '\n  switch        — Rebuild and activate system config\n                  sudo nixos-rebuild switch --flake .#${userSettings.hostname}\n  switchverbose — Same as switch, with full build logs + eval trace\n                  sudo nixos-rebuild switch --flake .#${userSettings.hostname} --show-trace --print-build-logs -L -v\n  switchbuild   — Build config without activating\n                  nixos-rebuild build --flake .#${userSettings.hostname}\n  switchtest    — Test build (dry-activate)\n                  sudo nixos-rebuild dry-activate --flake .#${userSettings.hostname}\n  switchcheck   — Validate flake\n                  nix flake check\n  switchupdate  — Update flake inputs\n                  nix flake update\n  switchbumpprivate — Refresh private input lock, commit & push\n  switchhealth  — Save system health report to /tmp/health.txt\n  switchcd      — cd to infra-nix-config repo\n  switchhelp    — Show this help\n'";
+        switchhelp = "echo -e '\n  switch           - Rebuild and activate with trace, build logs, and balanced verbosity\n  switchverbose    - Same as switch with additional diagnostic verbosity\n  switchbuild      - Build without activating, with balanced diagnostics\n  switchtest       - Dry-activate with balanced diagnostics\n  switchcheck      - Validate the flake with balanced diagnostics\n  switchupdate     - Update all flake inputs with balanced diagnostics\n  switchpull       - Fast-forward both repos and refresh the private lock entry\n  switchbumpprivate - After pushing private edits: update, commit, and push flake.lock\n  switchhealth     - Save system health report to /tmp/health.txt\n  switchcd         - cd to infra-nix-config repo\n  switchhelp       - Show this help\n'";
         nixdiag = "journalctl -b -o short-monotonic > /tmp/_bootlog.txt; cat /proc/cmdline > /tmp/_bootparams.txt; journalctl -b | grep -i plymouth > /tmp/_plymouth.txt; sudo dmesg | grep -iE 'drm|amdgpu|fbcon|console' > /tmp/_drm_display_output_events.txt; journalctl -b | grep -i kscreen > /tmp/_kscreen.txt; journalctl -b -u display-manager | grep -iE 'kscreen|output|priority|primary' > /tmp/_display-manager.txt; cat /tmp/_bootlog.txt /tmp/_bootparams.txt /tmp/_plymouth.txt /tmp/_drm_display_output_events.txt /tmp/_kscreen.txt /tmp/_display-manager.txt > /tmp/_results.txt; echo 'Diagnostics saved to /tmp/_results.txt'";
       };
     })
