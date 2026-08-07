@@ -334,11 +334,11 @@
     "private": {
       "flake": false,
       "locked": {
-        "lastModified": 1780693947,
-        "narHash": "sha256-5+vi4O6btN7mKbMsjtLbKe+sLCZk2AyaopmpSB4nTSA=",
+        "lastModified": 1786110789,
+        "narHash": "sha256-HtKrLSoIOts5YA4Bqe8cP8Aeat0y51HU/fnsTdR9xpk=",
         "owner": "elvismercado",
         "repo": "infra-nix-config-private",
-        "rev": "72cd2611c2ab4ad631f9e6d265fe1d4fd615c23f",
+        "rev": "ae4bd660826613bbd317e33db599044c790a88e0",
         "type": "github"
       },
       "original": {
