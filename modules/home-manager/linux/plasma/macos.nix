@@ -88,7 +88,7 @@ in
               launchers = [
                 "applications:systemsettings.desktop"
                 "applications:org.kde.dolphin.desktop"
-                "preferred://browser"
+                "applications:brave-browser.desktop"
               ];
             };
           }
