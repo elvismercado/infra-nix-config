@@ -88,6 +88,25 @@ disk swap partition is rarely touched during normal use.
 - **Shell:** Bash (with completions)
 - **Garbage Collection:** Managed (Determinate Nix)
 
+## KDE Wallet
+
+KWallet is enabled so applications such as Nextcloud can persist credentials.
+Complete this one-time setup after deploying the configuration:
+
+1. Log out, then log in with the Linux account password rather than the
+   fingerprint reader.
+2. Open KDE Wallet Manager and create the wallet `kdewallet`, or change that
+   wallet's password if it already exists.
+3. Select classic password encryption and set the wallet password to the same
+   value as the Linux account password. Never store that password in this
+   repository.
+4. Authenticate Nextcloud once if prompted so it can populate the wallet.
+
+NixOS Plasma enables `kwallet-pam`, so later password logins automatically
+unlock a matching `kdewallet`. Fingerprint login supplies no password and
+therefore still requires a separate wallet-password prompt. When the Linux
+account password changes, update the wallet password to match it.
+
 ## Wake-on-LAN
 
 Enabled via `custom.sysNixWakeOnLan.enable = true;`. NetworkManager sets

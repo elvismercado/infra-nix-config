@@ -126,7 +126,7 @@ in
   # Apps
   custom.hmAndroid.enable = true;
   custom.hmPlasmaMacos.enable = true;
-  custom.hmPlasmaCommon.kwallet.enable = false;
+  custom.hmPlasmaCommon.kwallet.enable = true;
   # Dolphin preset: full path, status bar, archives-as-folders,
   # file-picker defaults to Details view, externally-opened folders
   # reuse an existing window. Hover tooltips enabled.

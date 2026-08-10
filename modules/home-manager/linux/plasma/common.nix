@@ -381,14 +381,13 @@ in
         # vanishes; faster readers can still dismiss manually.
         "plasmanotifyrc"."Notifications".PopupTimeout = 10000;
       }
-      # KWallet kill switch — disable the daemon and suppress the
-      # first-run wizard. Without a Secret Service agent, plasma-nm /
-      # NetworkManager fall back to the system keyfile store for Wi-Fi
-      # PSKs, which is what we want on hosts where nobody asked for a
-      # password manager UI.
-      // lib.optionalAttrs (!cfg.kwallet.enable) {
+      # Keep the KWallet daemon state declarative in both directions so
+      # re-enabling it replaces a previously managed `Enabled=false`.
+      // {
         "kwalletrc"."Wallet" = {
-          "Enabled" = false;
+          "Enabled" = cfg.kwallet.enable;
+        }
+        // lib.optionalAttrs (!cfg.kwallet.enable) {
           "First Use" = false;
         };
       }
