@@ -28,6 +28,7 @@
 
     # macOS
     ../../../modules/home-manager/darwin/rectangle.nix
+    ../../../modules/home-manager/darwin/macos-diagnostics.nix
     ../../../modules/home-manager/darwin/aliases.nix
   ];
 
@@ -51,5 +52,6 @@
 
   # macOS
   custom.hmRectangle.enable = true;
+  custom.hmMacosDiagnostics.enable = true;
   custom.hmDarwinAliases.enable = true;
 }
