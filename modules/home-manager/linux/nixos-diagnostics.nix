@@ -22,8 +22,10 @@ let
   cfg = config.custom.hmNixosDiagnostics;
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
 
-  redactor = pkgs.writeText "nixos-diagnostics-redact.py" ''
-    import ipaddress
+  redactor = pkgs.writeTextFile {
+    name = "nixos-diagnostics-redact.py";
+    text = ''
+    from ipaddress import ip_address
     import pathlib
     import re
     import sys
@@ -53,7 +55,7 @@ let
         def redact(match):
             value = match.group(0)
             try:
-                address = ipaddress.ip_address(value)
+              address = ip_address(value)
             except ValueError:
                 return value
             return placeholder("IPV4" if address.version == 4 else "IPV6", value)
@@ -64,11 +66,25 @@ let
         if home:
             text = text.replace(home, "<HOME>")
 
-      text = replace_pattern(text, r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "EMAIL")
+        text = replace_pattern(
+          text,
+          r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b",
+          "EMAIL",
+        )
         if username:
-        text = re.sub(r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(username)), "<USER>", text, flags=re.IGNORECASE)
+          text = re.sub(
+            r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(username)),
+            "<USER>",
+            text,
+            flags=re.IGNORECASE,
+          )
         if hostname:
-        text = re.sub(r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(hostname)), "<HOST>", text, flags=re.IGNORECASE)
+          text = re.sub(
+            r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(hostname)),
+            "<HOST>",
+            text,
+            flags=re.IGNORECASE,
+          )
 
         text = replace_pattern(text, r"\b[A-Fa-f0-9]{2}(?::[A-Fa-f0-9]{2}){5}\b", "MAC")
         text = replace_pattern(text, r"\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[1-5][0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}\b", "UUID")
@@ -95,8 +111,15 @@ let
     lines.extend("{}: {}".format(kind, counts[kind]) for kind in sorted(counts))
     if len(lines) == 1:
         lines.append("None detected")
-    summary.write_text("\n".join(lines) + "\n", encoding="utf-8")
-  '';
+    summary.write_text(
+      "\n".join(lines) + "\n",
+      encoding="utf-8",
+    )
+    '';
+    checkPhase = ''
+      ${pkgs.python3}/bin/python -c 'import pathlib, sys; compile(pathlib.Path(sys.argv[1]).read_text(), sys.argv[1], "exec")' "$target"
+    '';
+  };
 
   diagnostics = pkgs.writeShellApplication {
     name = "nixos-diagnostics";
