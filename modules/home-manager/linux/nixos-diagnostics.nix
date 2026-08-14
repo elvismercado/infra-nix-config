@@ -358,6 +358,25 @@ let
       collect "Previous boot warnings" journal-previous.txt journalctl -b -1 -p warning..alert --no-pager -o short-iso-precise
       collect "User service errors" journal-user.txt journalctl --user -b -p err..alert --no-pager -o short-iso-precise
       collect "Network and VPN journal" journal-network.txt journalctl -b --no-pager -o short-iso-precise -u NetworkManager -u systemd-resolved -u mullvad-daemon -u tailscaled
+      collect "Session and power lifecycle" lifecycle.txt bash -c '
+        echo "=== Sessions ==="
+        loginctl list-sessions || true
+        echo
+        echo "=== Users ==="
+        loginctl list-users || true
+        echo
+        echo "=== Active system jobs ==="
+        systemctl list-jobs --all --full --no-pager || true
+        echo
+        echo "=== Active user services ==="
+        systemctl --user --no-pager list-units --type=service --state=running --all || true
+        echo
+        echo "=== This boot lifecycle events ==="
+        journalctl -b --no-pager -o short-iso-precise -g "shutdown|reboot|restart|sleep|hibernate|suspend|resume|logind|user manager|user.slice|stop job|session|login|logout" || true
+        echo
+        echo "=== Previous boot lifecycle events ==="
+        journalctl -b -1 --no-pager -o short-iso-precise -g "shutdown|reboot|restart|sleep|hibernate|suspend|resume|logind|user manager|user.slice|stop job|session|login|logout" || true
+      '
       collect "Suspend and resume events" suspend-resume.txt bash -c 'journalctl -b --no-pager -o short-iso-precise | grep -iE "suspend|resume|sleep|hibernate|PM:" || true'
       collect "Recent crashes" crashes.txt coredumpctl list --since "7 days ago" --no-pager
       collect_privileged "Kernel warnings" kernel.txt journalctl -k -b -p warning..alert --no-pager -o short-iso-precise

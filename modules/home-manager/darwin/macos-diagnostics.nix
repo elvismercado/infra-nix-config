@@ -241,6 +241,22 @@ let
       collect "Disk layout" "storage.txt" diskutil list
       collect "Processes" "processes.txt" ps -eo pid,ppid,comm,state,%cpu,%mem,command --no-headers
       collect "System logs" "logs.txt" log show --last 1h --style compact
+      collect "Session and power lifecycle" "lifecycle.txt" bash -lc '
+        echo "=== current user ==="
+        id -un 2>/dev/null || true
+        echo
+        echo "=== login sessions ==="
+        who 2>/dev/null || true
+        echo
+        echo "=== current power settings ==="
+        pmset -g everything 2>/dev/null || true
+        echo
+        echo "=== launchd/system lifecycle summary ==="
+        launchctl print system 2>/dev/null | grep -iE "login|session|sleep|power|launchd|user|gui" || true
+        echo
+        echo "=== recent power and session events ==="
+        log show --last 48h --style compact 2>/dev/null | grep -iE "shutdown|restart|reboot|sleep|hibernate|wake|login|logout|session|launchd|power" || true
+      '
       collect "Crash reports" "crashes.txt" ls /Library/Logs/DiagnosticReports 2>/dev/null || true
       collect "Bluetooth" "bluetooth.txt" system_profiler SPBluetoothDataType 2>/dev/null || true
 
