@@ -329,7 +329,7 @@ let
         printf "\n/etc/resolv.conf target:\n"; readlink -f /etc/resolv.conf
         if command -v mullvad >/dev/null 2>&1; then
           printf "\nMullvad:\n"
-          mullvad status | sed -n '1p'
+          mullvad status | sed -n "1p"
         fi
         if command -v tailscale >/dev/null 2>&1; then
           printf "\nTailscale (identity fields excluded):\n"
