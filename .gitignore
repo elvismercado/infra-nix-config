@@ -1,5 +1,6 @@
 # Build / install artefacts
 **/INSTALL-REPORT.md
+/result
 
 # Secrets / local-only files (see TODO.md Round 15 — PII Audit)
 # Guard against accidental commits of host-specific metadata, secrets
