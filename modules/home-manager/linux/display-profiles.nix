@@ -233,7 +233,7 @@ let
 
       # Parse topology into a JSON map: connector → { id, resolution, currentResolution }
       # Uses DRM sysfs for max resolution (kscreen-doctor / KWin caches stale modes
-      # when a dual-mode monitor reconnects with the same EDID UUID).
+      # when a dual-mode monitor reconnects with the same persisted output UUID).
       get_topology() {
         local raw
         raw=$(kscreen-doctor --outputs 2>/dev/null) || { echo "{}"; return; }

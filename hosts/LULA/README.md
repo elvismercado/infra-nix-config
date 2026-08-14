@@ -92,9 +92,9 @@ sudo nixos-rebuild switch --flake .#LULA
 
 ## Display scaling
 
-LULA's 14" 1080p panel is small for default Plasma UI (10pt fonts, 1×
-scale). Rather than bumping fonts (which fights with KDE's pixel-perfect
-layouts), set a **global UI scale** once via System Settings:
+LULA's 14" 1080p panel already uses a declarative +2pt font baseline. For
+stronger magnification, optionally set a **global UI scale** once via System
+Settings:
 
 1. Open **System Settings → Display & Monitor**.
 2. Pick the laptop screen and set **Global Scale** to **125%** (or 110% / 150%
@@ -102,13 +102,14 @@ layouts), set a **global UI scale** once via System Settings:
 3. Click **Apply**, then log out and back in for all apps to pick up the
    new scale.
 
-Why this is not declarative: on Plasma 6 Wayland, the per-output scale
-lives in `~/.local/state/kwinoutputconfig.json`, keyed by the monitor's
-EDID, and is written by KWin itself when you touch the slider. plasma-manager
-has no `programs.plasma.workspace.scale` option ([plasma-manager #243](https://github.com/nix-community/plasma-manager/issues/243)),
+Why this is not declarative: on Plasma 6.6 Wayland, the per-output scale lives
+in `~/.config/kwinoutputconfig.json`. KWin generates and persists output UUIDs,
+then associates them with connected outputs using EDID identity, MST path, and
+connector information. plasma-manager has no
+`programs.plasma.workspace.scale` option ([plasma-manager #243](https://github.com/nix-community/plasma-manager/issues/243)),
 and the X11-era `kdeglobals [KScreen] ScreenScaleFactors` key is ignored by
-KWin Wayland for window placement. Once set, KWin persists the choice
-across reboots — only a manual factory reset or `rm ~/.local/state/kwinoutputconfig.json`
+KWin Wayland for window placement. Once set, KWin persists the choice across
+reboots; only a manual factory reset or `rm ~/.config/kwinoutputconfig.json`
 would undo it.
 
 ## Useful commands

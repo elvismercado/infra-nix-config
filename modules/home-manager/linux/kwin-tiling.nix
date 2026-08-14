@@ -27,8 +27,10 @@
 # Bootstrap caveat: kwinoutputconfig.json and kwinrc[Desktops] are
 # created by KWin on first session start. On a brand-new user account
 # the very first `home-manager switch` will skip all layouts. Log into
-# KDE once, then re-run the switch — UUIDs are stable thereafter
-# (output UUIDs are EDID-derived; desktop UUIDs survive logouts).
+# KDE once, then re-run the switch — UUIDs are stable thereafter. KWin
+# generates and persists output UUIDs, associating them with outputs via
+# EDID identity, MST path, and connector information; desktop UUIDs
+# survive logouts.
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/kwin-tiling.nix ];
@@ -205,7 +207,8 @@ in
             return 0
           fi
 
-          # KWin keys outputs by EDID-derived uuid in kwinoutputconfig.json.
+          # KWin stores its generated, persistent output UUIDs in
+          # kwinoutputconfig.json.
           output_uuid=$(jq -r --arg c "$connector" \
             '.[] | select(.name == "outputs") | .data[]? | select(.connectorName == $c) | .uuid // empty' \
             "$OUTPUT_CONFIG" 2>/dev/null)

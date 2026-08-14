@@ -8,7 +8,8 @@
 # Used by `modules/home-manager/linux/sddm-monitor-layout.nix`.
 #
 # Schema reference: captured live `~/.config/kwinoutputconfig.json`
-# from a Plasma 6 session on FENNEC.
+# from FENNEC and validated against KWin 6.6.5. Optional fields omitted
+# here, including mode flags, are accepted by KWin.
 #
 # Position resolution mirrors the bash daemon in display-profiles.nix:
 # `right-of-X` → anchor.x + anchor.logicalWidth
