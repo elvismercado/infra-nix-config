@@ -121,6 +121,11 @@ let
             text,
         )
         text = re.sub(
+          r"(?im)(\bsuggested exit node:)(?!\s*no preferred DERP\b)(\s*)([^\r\n(,]+?)(?=\s*(?:\(|,|$))",
+          lambda match: match.group(1) + match.group(2) + placeholder("TAILSCALE_NODE", match.group(3)),
+          text,
+        )
+        text = re.sub(
           r"(?i)(\b(?:disco key|ts2021|legacy)\s*(?:=|:)\s*)(?:d:)?(?:\[[^\]]+\]|[A-Za-z0-9+/=_-]+)",
           lambda match: match.group(1) + placeholder("TAILSCALE_KEY", match.group(0)),
           text,
@@ -169,15 +174,19 @@ let
       SearchDomains:[tail4cd86c.ts.net. lajuve.eu.]
       profile=profile-26fa disco key = d:a5110283fa8eec24 n=[Sx0EG] stable=npst1AW27R11CNTRL
       RegisterReq: onode= node=[Ab12C]
+      suggested exit node: opnsense (npst1AW27R11CNTRL)
+      suggested exit node: no preferred DERP, try again later
       disk=dev-disk-by\x2did-nvme\x2dCT1000P2SSD8_2116E59827C8\x2dpart1.device
       partition=dev-disk-by\x2duuid-EB42\x2d9540.device
       EOF
       ${pkgs.python3}/bin/python "$target" "$test_dir" jin JIN /home/jin
 
-      if ${pkgs.gnugrep}/bin/grep -Eiq 'JIN|84\.86\.154\.95|fd7a:115c|elvismercado@github|tail4cd86c|lajuve\.eu|profile-26fa|a5110283|Sx0EG|Ab12C|npst1AW27R11CNTRL|9e0030d8|CT1000P2SSD8|2116E59827C8|EB42|9540' "$test_dir/sample.txt"; then
+      if ${pkgs.gnugrep}/bin/grep -Eiq 'JIN|84\.86\.154\.95|fd7a:115c|elvismercado@github|tail4cd86c|lajuve\.eu|profile-26fa|a5110283|Sx0EG|Ab12C|npst1AW27R11CNTRL|9e0030d8|opnsense|CT1000P2SSD8|2116E59827C8|EB42|9540' "$test_dir/sample.txt"; then
         echo "redactor behavior check failed: sensitive fixture value remains" >&2
         exit 1
       fi
+      ${pkgs.gnugrep}/bin/grep -Fq 'suggested exit node: <TAILSCALE_NODE-1>' "$test_dir/sample.txt"
+      ${pkgs.gnugrep}/bin/grep -Fq 'suggested exit node: no preferred DERP, try again later' "$test_dir/sample.txt"
       ${pkgs.gnugrep}/bin/grep -Fq 'mullvad_daemon::version talpid_core::firewall' "$test_dir/sample.txt"
     '';
   };
