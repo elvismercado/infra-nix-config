@@ -202,7 +202,7 @@
   custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
-  custom.appMullvadVpn.enable = true;
+  custom.appMullvadVpn.enable = false;
   custom.appProtonmailBridge.enable = true;
   custom.appInsync.enable = true;
   custom.appBeeper.enable = true;

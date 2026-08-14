@@ -160,7 +160,7 @@
   custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
   custom.appSteam.enable = true;
-  custom.appMullvadVpn.enable = true;
+  custom.appMullvadVpn.enable = false;
   custom.appBeeper.enable = true;
   custom.appFerdium.enable = true;
   # Interim: uses pkgs.rustdesk-flutter (1.4.5) while pkgs.rustdesk (1.4.6)
