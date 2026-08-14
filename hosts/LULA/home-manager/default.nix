@@ -22,6 +22,7 @@
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
+    ../../../modules/home-manager/linux/nixos-diagnostics.nix
     ../../../modules/home-manager/linux/plasma/lula.nix
     ../../../modules/home-manager/linux/autostart.nix
     ../../../modules/home-manager/linux/trayscale.nix
@@ -41,6 +42,7 @@
 
   # Linux
   custom.hmLinuxAliases.enable = true;
+  custom.hmNixosDiagnostics.enable = true;
 
   # Tailscale tray icon (Trayscale) — starts minimised to the system tray
   # on login so remote support over the tailnet is one click away.

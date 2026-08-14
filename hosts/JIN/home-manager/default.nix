@@ -90,6 +90,7 @@ in
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
+    ../../../modules/home-manager/linux/nixos-diagnostics.nix
     ../../../modules/home-manager/linux/autostart.nix
 
     # Linux / Apps
@@ -122,6 +123,7 @@ in
 
   # Linux / Utilities
   custom.hmLinutil.enable = true;
+  custom.hmNixosDiagnostics.enable = true;
 
   # Apps
   custom.hmAndroid.enable = true;

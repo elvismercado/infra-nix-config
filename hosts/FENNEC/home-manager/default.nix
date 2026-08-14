@@ -118,6 +118,7 @@ in
 
     # Linux / Utilities
     ../../../modules/home-manager/linux/linutil.nix
+    ../../../modules/home-manager/linux/nixos-diagnostics.nix
     ../../../modules/home-manager/linux/autostart.nix
     ../../../modules/home-manager/linux/webcamoid.nix
     ../../../modules/home-manager/linux/trayscale.nix
@@ -275,6 +276,7 @@ in
 
   # Linux / Utilities
   custom.hmLinutil.enable = true;
+  custom.hmNixosDiagnostics.enable = true;
 
   # Autostart — launch tray-friendly apps at login. Window state (start
   # minimized) is enforced by KWin rules in custom.hmPlasmaCommon because
@@ -314,6 +316,7 @@ in
       name = "Mullvad VPN";
       exec = "mullvad-vpn";
       icon = "mullvad-vpn";
+      enabled = false;
     };
     solaar = {
       name = "Solaar";

@@ -116,7 +116,7 @@ modules/
                              #   (Brave, Discord, HandBrake, LibreWolf, Nextcloud, Syncthing,
                              #   Thunderbird, VS Code)
     linux/                   #   Aliases, Clone Hero, Display profiles, Gaming, KWin tiling,
-                             #   LinUtil, Packages, Plasma config, Shutdown disable outputs,
+                 #   LinUtil, NixOS diagnostics, Packages, Plasma config, Shutdown disable outputs,
                              #   Strawberry, Trayscale, Window shortcuts, plus wrappers (Brave, Discord,
                              #   HandBrake, LibreWolf, Nextcloud, Syncthing, Thunderbird, VS Code)
     darwin/                  #   Rectangle, plus wrappers (Brave, Discord, HandBrake, LibreWolf,
