@@ -50,17 +50,27 @@ let
         return regex.sub(lambda match: placeholder(kind, match.group(0)), text)
 
     def replace_ips(text):
-        candidates = re.compile(r"(?<![0-9A-Fa-f:.])(?:[0-9A-Fa-f]*:[0-9A-Fa-f:.]+|(?:\d{1,3}\.){3}\d{1,3})(?![0-9A-Fa-f:.])")
+      ipv4_candidates = re.compile(
+        r"(?<![A-Za-z0-9_.])(?P<address>(?:\d{1,3}\.){3}\d{1,3})(?P<port>:\d{1,5})?(?![A-Za-z0-9_.])"
+      )
+      bracketed_ipv6_candidates = re.compile(
+        r"\[(?P<address>[0-9A-Fa-f:]+)\](?P<port>:\d{1,5})?"
+      )
+      bare_ipv6_candidates = re.compile(
+        r"(?<![A-Za-z0-9_:])(?=[0-9A-Fa-f:]*:[0-9A-Fa-f:]*)(?P<address>[0-9A-Fa-f:]{2,})(?![A-Za-z0-9_:])"
+      )
 
-        def redact(match):
-            value = match.group(0)
-            try:
-              address = ip_address(value)
-            except ValueError:
-                return value
-            return placeholder("IPV4" if address.version == 4 else "IPV6", value)
+      def redact_candidate(match, kind):
+        try:
+          parsed_address = ip_address(match.group("address"))
+        except ValueError:
+          return match.group(0)
+        suffix = "_ENDPOINT" if match.groupdict().get("port") else ""
+        return placeholder(kind + suffix, match.group(0))
 
-        return candidates.sub(redact, text)
+      text = ipv4_candidates.sub(lambda match: redact_candidate(match, "IPV4"), text)
+      text = bracketed_ipv6_candidates.sub(lambda match: redact_candidate(match, "IPV6"), text)
+      return bare_ipv6_candidates.sub(lambda match: redact_candidate(match, "IPV6"), text)
 
     def sanitize(text):
         if home:
@@ -73,14 +83,14 @@ let
         )
         if username:
           text = re.sub(
-            r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(username)),
+            r"(?<![A-Za-z0-9_]){}(?![A-Za-z0-9_])".format(re.escape(username)),
             "<USER>",
             text,
             flags=re.IGNORECASE,
           )
         if hostname:
           text = re.sub(
-            r"(?<![A-Za-z0-9_-]){}(?![A-Za-z0-9_-])".format(re.escape(hostname)),
+            r"(?<![A-Za-z0-9_]){}(?![A-Za-z0-9_])".format(re.escape(hostname)),
             "<HOST>",
             text,
             flags=re.IGNORECASE,
@@ -91,6 +101,25 @@ let
         text = replace_pattern(text, r"\b(?:github_pat_[A-Za-z0-9_]+|gh[pousr]_[A-Za-z0-9]+|tskey-[A-Za-z0-9_-]+)\b", "TOKEN")
         text = replace_pattern(text, r"(?i)(?<=authorization: bearer )[A-Za-z0-9._~+/=-]+", "TOKEN")
         text = replace_pattern(text, r"\b\d{16}\b", "ACCOUNT")
+        text = replace_pattern(text, r"\b[A-Za-z0-9._%+-]+@github\b", "TAILSCALE_ACCOUNT", re.IGNORECASE)
+        text = replace_pattern(text, r"\b(?:[A-Za-z0-9-]+\.)+ts\.net\.?", "TAILNET", re.IGNORECASE)
+        text = replace_pattern(text, r"\bprofile-[A-Za-z0-9_-]+\b", "TAILSCALE_PROFILE", re.IGNORECASE)
+        text = replace_pattern(text, r"\bnp[A-Za-z0-9]{8,}\b", "TAILSCALE_ID", re.IGNORECASE)
+        text = re.sub(
+            r"(?i)(\b(?:SearchDomains|LocalDomains):)\[[^\]]*\]",
+            lambda match: match.group(1) + "[<DNS-DOMAINS>]",
+            text,
+        )
+        text = re.sub(
+            r"(?i)(\b(?:LogID|be):\s*)[0-9a-f]{32,64}",
+            lambda match: match.group(1) + placeholder("TAILSCALE_ID", match.group(0)),
+            text,
+        )
+        text = re.sub(
+            r"(?i)(\b(?:disco key|node|onode|ts2021|legacy)\s*(?:=|:)\s*)(?:d:)?(?:\[[^\]]+\]|[A-Za-z0-9+/=_-]+)",
+            lambda match: match.group(1) + placeholder("TAILSCALE_KEY", match.group(0)),
+            text,
+        )
         text = re.sub(
             r"(?i)(\bssid(?:=|:|\s+))(\"[^\"]*\"|'[^']*'|[^\s,;]+)",
             lambda match: match.group(1) + placeholder("SSID", match.group(2)),
@@ -118,6 +147,25 @@ let
     '';
     checkPhase = ''
       ${pkgs.python3}/bin/python -c 'import pathlib, sys; compile(pathlib.Path(sys.argv[1]).read_text(), sys.argv[1], "exec")' "$target"
+
+      test_dir=$(${pkgs.coreutils}/bin/mktemp -d)
+      trap '${pkgs.coreutils}/bin/rm -rf "$test_dir"' EXIT
+      ${pkgs.coreutils}/bin/cat > "$test_dir/sample.txt" <<'EOF'
+      system=/nix/store/example-nixos-system-JIN
+      endpoints=84.86.154.95:19468 http://[fd7a:115c:a1e0::1]:46143
+      rust=mullvad_daemon::version talpid_core::firewall
+      LogID: 9e0030d89ac03cc5955a56dbb589b93842bf9003ecaca8f2c4694480b2c3a199
+      active login: elvismercado@github
+      SearchDomains:[tail4cd86c.ts.net. lajuve.eu.]
+      profile=profile-26fa disco key = d:a5110283fa8eec24 node=[Sx0EG] stable=npst1AW27R11CNTRL
+      EOF
+      ${pkgs.python3}/bin/python "$target" "$test_dir" jin JIN /home/jin
+
+      if ${pkgs.gnugrep}/bin/grep -Eiq 'JIN|84\.86\.154\.95|fd7a:115c|elvismercado@github|tail4cd86c|lajuve\.eu|profile-26fa|a5110283|Sx0EG|npst1AW27R11CNTRL|9e0030d8' "$test_dir/sample.txt"; then
+        echo "redactor behavior check failed: sensitive fixture value remains" >&2
+        exit 1
+      fi
+      ${pkgs.gnugrep}/bin/grep -Fq 'mullvad_daemon::version talpid_core::firewall' "$test_dir/sample.txt"
     '';
   };
 
@@ -266,7 +314,7 @@ let
         printf "\nRules:\n"; ip rule
         printf "\nResolver:\n"; resolvectl status
         printf "\n/etc/resolv.conf target:\n"; readlink -f /etc/resolv.conf
-        if command -v mullvad >/dev/null 2>&1; then printf "\nMullvad:\n"; mullvad status -v; fi
+        if command -v mullvad >/dev/null 2>&1; then printf "\nMullvad:\n"; mullvad status; fi
         if command -v tailscale >/dev/null 2>&1; then
           printf "\nTailscale (identity fields excluded):\n"
           tailscale status --json | jq "{BackendState, Health, Self: {Online: .Self.Online, Active: .Self.Active, ExitNode: .Self.ExitNode, ExitNodeOption: .Self.ExitNodeOption, TailscaleIPs: .Self.TailscaleIPs}, Peers: [.Peer[]? | {Online, Active, ExitNode, ExitNodeOption, TailscaleIPs}]}"
