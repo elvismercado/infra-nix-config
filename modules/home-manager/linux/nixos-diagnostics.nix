@@ -116,9 +116,19 @@ let
             text,
         )
         text = re.sub(
-            r"(?i)(\b(?:disco key|node|onode|ts2021|legacy)\s*(?:=|:)\s*)(?:d:)?(?:\[[^\]]+\]|[A-Za-z0-9+/=_-]+)",
+            r"(?i)(\b(?:n|node|onode)=\s*)\[[A-Za-z0-9+/=_-]+\]",
             lambda match: match.group(1) + placeholder("TAILSCALE_KEY", match.group(0)),
             text,
+        )
+        text = re.sub(
+          r"(?i)(\b(?:disco key|ts2021|legacy)\s*(?:=|:)\s*)(?:d:)?(?:\[[^\]]+\]|[A-Za-z0-9+/=_-]+)",
+          lambda match: match.group(1) + placeholder("TAILSCALE_KEY", match.group(0)),
+          text,
+        )
+        text = replace_pattern(
+          text,
+          r"(?i)\bdev-disk-by(?:\\x2d|-)[^\s]+",
+          "DISK_ID",
         )
         text = re.sub(
             r"(?i)(\bssid(?:=|:|\s+))(\"[^\"]*\"|'[^']*'|[^\s,;]+)",
@@ -157,11 +167,14 @@ let
       LogID: 9e0030d89ac03cc5955a56dbb589b93842bf9003ecaca8f2c4694480b2c3a199
       active login: elvismercado@github
       SearchDomains:[tail4cd86c.ts.net. lajuve.eu.]
-      profile=profile-26fa disco key = d:a5110283fa8eec24 node=[Sx0EG] stable=npst1AW27R11CNTRL
+      profile=profile-26fa disco key = d:a5110283fa8eec24 n=[Sx0EG] stable=npst1AW27R11CNTRL
+      RegisterReq: onode= node=[Ab12C]
+      disk=dev-disk-by\x2did-nvme\x2dCT1000P2SSD8_2116E59827C8\x2dpart1.device
+      partition=dev-disk-by\x2duuid-EB42\x2d9540.device
       EOF
       ${pkgs.python3}/bin/python "$target" "$test_dir" jin JIN /home/jin
 
-      if ${pkgs.gnugrep}/bin/grep -Eiq 'JIN|84\.86\.154\.95|fd7a:115c|elvismercado@github|tail4cd86c|lajuve\.eu|profile-26fa|a5110283|Sx0EG|npst1AW27R11CNTRL|9e0030d8' "$test_dir/sample.txt"; then
+      if ${pkgs.gnugrep}/bin/grep -Eiq 'JIN|84\.86\.154\.95|fd7a:115c|elvismercado@github|tail4cd86c|lajuve\.eu|profile-26fa|a5110283|Sx0EG|Ab12C|npst1AW27R11CNTRL|9e0030d8|CT1000P2SSD8|2116E59827C8|EB42|9540' "$test_dir/sample.txt"; then
         echo "redactor behavior check failed: sensitive fixture value remains" >&2
         exit 1
       fi
@@ -314,7 +327,10 @@ let
         printf "\nRules:\n"; ip rule
         printf "\nResolver:\n"; resolvectl status
         printf "\n/etc/resolv.conf target:\n"; readlink -f /etc/resolv.conf
-        if command -v mullvad >/dev/null 2>&1; then printf "\nMullvad:\n"; mullvad status; fi
+        if command -v mullvad >/dev/null 2>&1; then
+          printf "\nMullvad:\n"
+          mullvad status | sed -n '1p'
+        fi
         if command -v tailscale >/dev/null 2>&1; then
           printf "\nTailscale (identity fields excluded):\n"
           tailscale status --json | jq "{BackendState, Health, Self: {Online: .Self.Online, Active: .Self.Active, ExitNode: .Self.ExitNode, ExitNodeOption: .Self.ExitNodeOption, TailscaleIPs: .Self.TailscaleIPs}, Peers: [.Peer[]? | {Online, Active, ExitNode, ExitNodeOption, TailscaleIPs}]}"
@@ -356,7 +372,7 @@ let
       {
         echo "NixOS Diagnostics Report"
         echo "Generated: $(date --iso-8601=seconds)"
-        echo "All retained values have passed automated redaction; review before sharing."
+        echo "Automated redaction was applied; manually review all contents before sharing."
         for file in "$WORK_DIR"/*.txt; do
           [ "$file" = "$REPORT" ] && continue
           printf '\n\n######################################################################\n'
