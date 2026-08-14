@@ -232,6 +232,7 @@ in
       name = "Mullvad VPN";
       exec = "mullvad-vpn";
       icon = "mullvad-vpn";
+      enabled = false;
     };
     solaar = {
       name = "Solaar";

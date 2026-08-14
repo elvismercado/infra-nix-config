@@ -2,8 +2,8 @@
 #
 # Generates freedesktop autostart entries that the desktop environment
 # launches on user login. KDE Plasma, GNOME, and other XDG-compliant
-# sessions all honour these. Tray-friendly defaults are baked in
-# (Hidden=false, Terminal=false, X-KDE-autostart-after=panel).
+# sessions all honour these. Entries can be disabled declaratively with
+# `enabled = false`; tray-friendly defaults remain enabled otherwise.
 #
 # This module only writes desktop files — it does not install the apps.
 # Each Exec= must resolve on PATH (install via the relevant module or
@@ -76,6 +76,11 @@ let
         default = false;
         description = "Whether the program runs in a terminal.";
       };
+      enabled = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether the desktop environment launches the program at login.";
+      };
     };
   };
 
@@ -88,8 +93,8 @@ let
         "Name=${entry.name}"
         "Exec=${entry.exec}"
         "Terminal=${if entry.terminal then "true" else "false"}"
-        "Hidden=false"
-        "X-GNOME-Autostart-enabled=true"
+        "Hidden=${if entry.enabled then "false" else "true"}"
+        "X-GNOME-Autostart-enabled=${if entry.enabled then "true" else "false"}"
         # Wait for the Plasma panel/system tray to exist so apps that "minimize
         # to tray" don't pop a window when no tray is ready yet. Harmless on
         # other DEs.
