@@ -194,6 +194,8 @@ let
         echo "Continuing without privileged diagnostics."
       fi
 
+      # Expanded by the child shell, not this script.
+      # shellcheck disable=SC2016
       collect "System identity" system.txt bash -c '
         printf "Date: "; date --iso-8601=seconds
         printf "NixOS: "; nixos-version
@@ -204,6 +206,8 @@ let
         loginctl show-session "''${XDG_SESSION_ID:-self}" -p Type -p Class -p State -p Remote -p Desktop 2>/dev/null || true
       '
 
+      # Expanded by the child shell, not this script.
+      # shellcheck disable=SC2016
       collect "Nix and repository" nix.txt bash -c '
         nix --version
         printf "Current system: "; readlink -f /run/current-system
@@ -262,6 +266,8 @@ let
       collect "Recent crashes" crashes.txt coredumpctl list --since "7 days ago" --no-pager
       collect_privileged "Kernel warnings" kernel.txt journalctl -k -b -p warning..alert --no-pager -o short-iso-precise
 
+      # Expanded by the child shell, not this script.
+      # shellcheck disable=SC2016
       collect "Plasma and display" desktop.txt bash -c '
         plasmashell --version 2>/dev/null || true
         kwin_wayland --version 2>/dev/null || true
@@ -275,6 +281,7 @@ let
       python3 ${redactor} "$WORK_DIR" "$(id -un)" "$(cat /proc/sys/kernel/hostname)" "$HOME"
 
       REPORT="$WORK_DIR/report.txt"
+      REPORT_TMP="$WORK_DIR/.report.txt.tmp"
       {
         echo "NixOS Diagnostics Report"
         echo "Generated: $(date --iso-8601=seconds)"
@@ -286,7 +293,8 @@ let
           printf '######################################################################\n\n'
           cat "$file"
         done
-      } > "$REPORT"
+      } > "$REPORT_TMP"
+      mv "$REPORT_TMP" "$REPORT"
 
       mkdir "$RUN_DIR"
       cp -a "$WORK_DIR"/. "$RUN_DIR"/
@@ -300,7 +308,7 @@ let
 
       mapfile -t OLD_RUNS < <(find "$RUNS_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort -r | tail -n "+$((RETENTION + 1))")
       for old_run in "''${OLD_RUNS[@]}"; do
-        rm -rf "$RUNS_DIR/$old_run"
+        rm -rf "$RUNS_DIR/''${old_run:?}"
       done
 
       echo
