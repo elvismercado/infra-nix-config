@@ -54,6 +54,11 @@
       inputs.home-manager.follows = "home-manager-stable";
     };
 
+    openlogi = {
+      url = "github:AprilNEA/OpenLogi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # determinate.url = "github:DeterminateSystems/determinate";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 

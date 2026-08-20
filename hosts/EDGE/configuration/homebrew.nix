@@ -83,8 +83,11 @@
 
       # System & Hardware
       "appcleaner"
+      # Retained alongside OpenLogi until G502 X button remapping and onboard
+      # profiles are fully supported upstream.
       "logitech-g-hub" # Logitech G HUB — StreamCam tuning + G502 X profiles
-      "logi-options+" # Logitech Options+ — MX Anywhere 2S/3 (BT + Logi receiver)
+      # `openlogi` cask is owned by the Option 3 app façade at
+      # modules/apps/darwin/openlogi.nix (toggle custom.appOpenLogi.enable).
       # `insync` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/insync.nix (toggle custom.appInsync.enable).
       # `rustdesk` cask is owned by the Option 3 app façade at

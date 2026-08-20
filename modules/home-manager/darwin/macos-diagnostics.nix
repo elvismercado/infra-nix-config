@@ -1,6 +1,6 @@
-# macOS diagnostics bundle — privacy-conscious support reports on the Desktop.
+# macOS diagnostics bundle — privacy-conscious support reports and Desktop launcher.
 #
-# Installs `macos-diagnostics` and a trusted Desktop launcher. Each run gathers
+# Installs `macos-diagnostics` and a Finder-launchable `.command` file. Each run gathers
 # system, network, disk, process, and crash diagnostics in a private temporary
 # directory, redacts identifying values, then publishes a timestamped report and
 # archive under ~/Desktop/macOS Diagnostics.
@@ -296,5 +296,28 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = [ diagnostics ];
+
+    home.file."Desktop/macOS Diagnostics/Run Diagnostics.command" = {
+      text = ''
+        #!/bin/bash
+
+        status=0
+        ${diagnostics}/bin/macos-diagnostics || status=$?
+
+        /usr/bin/open "$HOME/Desktop/macOS Diagnostics"
+
+        printf '\n'
+        if [ "$status" -eq 0 ]; then
+          printf 'Diagnostics completed successfully.\n'
+        else
+          printf 'Diagnostics failed with exit status %s.\n' "$status"
+        fi
+        printf 'Press Enter to close this window...'
+        read -r _
+
+        exit "$status"
+      '';
+      executable = true;
+    };
   };
 }

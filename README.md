@@ -125,12 +125,12 @@ modules/
                              #   the binary delivery and the matching home-manager
                              #   config). Imported from configuration/, NOT home-manager/.
     darwin/                  #   Beeper, Brave, Discord, Ferdium, HandBrake, Insync, LibreOffice,
-                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud,
+                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud, OpenLogi,
                              #   ProtonMail Bridge, Raspberry Pi Imager, Shotcut, Signal,
                              #   Spotify, Steam, Sweet Home 3D, Syncthing, Thunderbird, VS Code,
                              #   Yubico Authenticator (cask + HM config)
     linux/                   #   Beeper, Brave, Discord, Ferdium, HandBrake, Insync, LibreOffice,
-                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud,
+                             #   LibreWolf, LocalSend, Moonlight, Mullvad VPN, Nextcloud, OpenLogi,
                              #   ProtonMail Bridge, Raspberry Pi Imager, Shotcut, Signal,
                              #   Spotify, Steam, Sweet Home 3D, Syncthing, Thunderbird, VS Code,
                              #   Yubico Authenticator (HM injection; Steam and Mullvad VPN

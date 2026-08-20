@@ -52,7 +52,6 @@
     ../../../modules/systems/nixos/desktop_environment/kde_plasma.nix
 
     # Input
-    ../../../modules/systems/nixos/mouse/logitech.nix
     ../../../modules/systems/nixos/input/wacom.nix
 
     # Peripherals
@@ -81,6 +80,7 @@
     ../../../modules/apps/linux/onlyoffice.nix
     ../../../modules/apps/linux/rpi-imager.nix
     ../../../modules/apps/linux/localsend.nix
+    ../../../modules/apps/linux/openlogi.nix
     ../../../modules/apps/linux/yubico-authenticator.nix
     ../../../modules/apps/linux/brave.nix
     ../../../modules/apps/linux/librewolf.nix
@@ -162,7 +162,6 @@
   custom.sysNixKdePlasma.enable = true;
 
   # Input
-  custom.sysNixLogitechMouse.enable = true;
   custom.sysNixWacom.enable = true;
 
   # Peripherals
@@ -191,6 +190,7 @@
   custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
+  custom.appOpenLogi.enable = true;
   custom.appYubicoAuthenticator.enable = true;
   custom.appBrave.enable = true;
   custom.appLibrewolf.enable = true;
