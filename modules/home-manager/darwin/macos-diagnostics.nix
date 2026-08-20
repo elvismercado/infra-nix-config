@@ -282,7 +282,7 @@ in
   options.custom.hmMacosDiagnostics = {
     enable = lib.mkEnableOption "macOS diagnostics bundle";
     retention = lib.mkOption {
-      type = lib.types.positiveInt;
+      type = lib.types.ints.positive;
       default = 5;
       description = "How many macOS diagnostics runs to keep on disk.";
     };
