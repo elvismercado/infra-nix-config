@@ -83,6 +83,7 @@
 
       # System & Hardware
       "appcleaner"
+      "garmin-express"
       # Retained alongside OpenLogi until G502 X button remapping and onboard
       # profiles are fully supported upstream.
       "logitech-g-hub" # Logitech G HUB — StreamCam tuning + G502 X profiles
@@ -111,7 +112,7 @@
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      # cleanup = "uninstall"; # remove packages not in config
+      cleanup = "zap";
     };
   };
 }

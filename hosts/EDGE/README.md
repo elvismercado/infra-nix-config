@@ -31,10 +31,12 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 
 ## Installed applications
 
-Homebrew formulae, casks, and Mac App Store apps are declared in
-[configuration/homebrew.nix](configuration/homebrew.nix) — that file
-is the source of truth, with the same category grouping this README
-used to mirror. Check there for the live list.
+The effective Homebrew inventory combines direct declarations in
+[configuration/homebrew.nix](configuration/homebrew.nix) with packages contributed
+by the enabled app façades in [configuration/default.nix](configuration/default.nix).
+During activation, packages outside that generated Brewfile are uninstalled; undeclared
+casks are also zapped. Add manual Homebrew installs to the configuration before the next
+rebuild if they should be retained.
 
 ## Useful commands
 
