@@ -149,15 +149,15 @@ These files hold shared logic for split (Option 2) modules. Hosts import the mat
 
 **macOS** (`home-manager/darwin/`):
 
-| Module                                      | Option                                                                                                                                                                      |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `home-manager/darwin/aliases.nix`           | `custom.hmDarwinAliases.enable`                                                                                                                                             |
-| `home-manager/darwin/macos-diagnostics.nix` | `custom.hmMacosDiagnostics.enable`; installs the `macos-diagnostics` CLI and publishes redacted support reports under `~/Desktop/macOS Diagnostics` (review before sharing) |
-|                                             | `custom.hmMacosDiagnostics.retention` (positive integer, default: `5`)                                                                                                      |
-| `home-manager/darwin/mpv.nix`               | `custom.hmMpv.enable` (wrapper for `core/mpv.nix`; auto-imported by `modules/apps/darwin/mpv.nix` — prefer enabling `custom.appMpv.enable`)                                 |
-| `home-manager/darwin/rectangle.nix`         | `custom.hmRectangle.enable`                                                                                                                                                 |
-| `home-manager/darwin/vscode.nix`            | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/darwin/vscode.nix` — prefer enabling `custom.appVscode.enable`)                     |
-| `home-manager/darwin/web-shortcuts.nix`     | `custom.hmWebShortcuts.enable` (wrapper for `core/web-shortcuts.nix`; renders `~/Desktop/<key>.webloc` launchers — typically flipped by app wrappers)                       |
+| Module                                      | Option                                                                                                                                                                                                                          |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `home-manager/darwin/aliases.nix`           | `custom.hmDarwinAliases.enable`                                                                                                                                                                                                 |
+| `home-manager/darwin/macos-diagnostics.nix` | `custom.hmMacosDiagnostics.enable`; installs the `macos-diagnostics` CLI and a Finder-launchable `Run Diagnostics.command`, then publishes redacted support reports under `~/Desktop/macOS Diagnostics` (review before sharing) |
+|                                             | `custom.hmMacosDiagnostics.retention` (positive integer, default: `5`)                                                                                                                                                          |
+| `home-manager/darwin/mpv.nix`               | `custom.hmMpv.enable` (wrapper for `core/mpv.nix`; auto-imported by `modules/apps/darwin/mpv.nix` — prefer enabling `custom.appMpv.enable`)                                                                                     |
+| `home-manager/darwin/rectangle.nix`         | `custom.hmRectangle.enable`                                                                                                                                                                                                     |
+| `home-manager/darwin/vscode.nix`            | `custom.hmVscode.enable` (wrapper for `core/vscode.nix`; auto-imported by `modules/apps/darwin/vscode.nix` — prefer enabling `custom.appVscode.enable`)                                                                         |
+| `home-manager/darwin/web-shortcuts.nix`     | `custom.hmWebShortcuts.enable` (wrapper for `core/web-shortcuts.nix`; renders `~/Desktop/<key>.webloc` launchers — typically flipped by app wrappers)                                                                           |
 
 > `systems/shared/ssh-server.nix` (`custom.sysSshServer.enable`) is a **system** module — use it in `configuration/default.nix`, not in `home-manager/default.nix`.
 
