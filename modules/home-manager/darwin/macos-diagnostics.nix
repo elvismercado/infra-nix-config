@@ -270,10 +270,14 @@ let
 
       tar -czf "$BUNDLE_PATH" -C "$RUN_DIR" .
 
-      old_run=$(ls -1dt "$RUNS_DIR"/* 2>/dev/null | head -n "$((RETENTION + 1))" | tail -n +$((RETENTION + 1)) || true)
-      if [ -n "$old_run" ]; then
-        rm -rf "$old_run"
-      fi
+      mapfile -d "" -t OLD_RUNS < <(
+        find "$RUNS_DIR" -mindepth 1 -maxdepth 1 -type d -print0 \
+          | sort -z -r \
+          | tail -z -n "+$((RETENTION + 1))"
+      )
+      for old_run in "''${OLD_RUNS[@]}"; do
+        rm -rf -- "$old_run"
+      done
 
       printf 'Diagnostics saved to: %s\n' "$RUN_DIR"
       printf 'Share after review: %s\n' "$BUNDLE_PATH"
