@@ -178,10 +178,12 @@ let
       EOF
       ${pkgs.python3}/bin/python "$target" "$test_dir" jin JIN /Users/jin
 
-      if ${pkgs.gnugrep}/bin/grep -Eiq 'MacBookPro|203\.0\.113\.42|2001:db8|elvismercado@github|tail4cd86c|example\.com|profile-26fa|a5110283|Sx0EG|Ab12C|npst1AW27R11CNTRL|9e0030d8|opnsense|disk1s1' "$test_dir/sample.txt"; then
+      if ${pkgs.gnugrep}/bin/grep -Eiq '203\.0\.113\.42|2001:db8|elvismercado@github|tail4cd86c|example\.com|profile-26fa|a5110283|Sx0EG|Ab12C|npst1AW27R11CNTRL|9e0030d8|opnsense' "$test_dir/sample.txt"; then
         echo "redactor behavior check failed: sensitive fixture value remains" >&2
         exit 1
       fi
+      ${pkgs.gnugrep}/bin/grep -Fq 'system=MacBookPro18,3' "$test_dir/sample.txt"
+      ${pkgs.gnugrep}/bin/grep -Fq 'disk=/dev/disk1s1' "$test_dir/sample.txt"
       ${pkgs.gnugrep}/bin/grep -Fq 'suggested exit node: <TAILSCALE_NODE-1>' "$test_dir/sample.txt"
       ${pkgs.gnugrep}/bin/grep -Fq 'suggested exit node: no preferred DERP, try again later' "$test_dir/sample.txt"
       ${pkgs.gnugrep}/bin/grep -Fq 'foo_daemon::version bar_core::firewall' "$test_dir/sample.txt"
