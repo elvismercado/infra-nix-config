@@ -279,15 +279,7 @@ let
         fi
       }
 
-      collect "System information" "system.txt" sw_vers
-      collect "Hardware" "hardware.txt" system_profiler SPHardwareDataType
-      collect "Network" "network.txt" ifconfig -a
-      collect "Routes" "routes.txt" netstat -rn
-      collect "DNS" "dns.txt" scutil --dns
-      collect "Disk layout" "storage.txt" diskutil list
-      collect "Processes" "processes.txt" ps -Aww -o "pid=,ppid=,comm=,state=,%cpu=,%mem="
-      collect "Recent system errors and faults" "logs.txt" /usr/bin/log show --last 1h --style compact --predicate 'messageType == error OR messageType == fault'
-      collect "Session and power lifecycle" "lifecycle.txt" bash -lc '
+      collect_lifecycle() {
         echo "=== current user ==="
         id -un 2>/dev/null || true
         echo
@@ -298,8 +290,18 @@ let
         pmset -g everything 2>/dev/null || true
         echo
         echo "=== recent power and session events ==="
-        /usr/bin/log show --last 48h --style compact --predicate '\''eventMessage CONTAINS[c] "shutdown" OR eventMessage CONTAINS[c] "restart" OR eventMessage CONTAINS[c] "reboot" OR eventMessage CONTAINS[c] "sleep" OR eventMessage CONTAINS[c] "hibernate" OR eventMessage CONTAINS[c] "wake" OR eventMessage CONTAINS[c] "login" OR eventMessage CONTAINS[c] "logout"'\'' 2>/dev/null || true
-      '
+        /usr/bin/log show --last 48h --style compact --predicate 'eventMessage CONTAINS[c] "shutdown" OR eventMessage CONTAINS[c] "restart" OR eventMessage CONTAINS[c] "reboot" OR eventMessage CONTAINS[c] "sleep" OR eventMessage CONTAINS[c] "hibernate" OR eventMessage CONTAINS[c] "wake" OR eventMessage CONTAINS[c] "login" OR eventMessage CONTAINS[c] "logout"' 2>/dev/null || true
+      }
+
+      collect "System information" "system.txt" sw_vers
+      collect "Hardware" "hardware.txt" system_profiler SPHardwareDataType
+      collect "Network" "network.txt" ifconfig -a
+      collect "Routes" "routes.txt" netstat -rn
+      collect "DNS" "dns.txt" scutil --dns
+      collect "Disk layout" "storage.txt" diskutil list
+      collect "Processes" "processes.txt" ps -Aww -o "pid=,ppid=,comm=,state=,%cpu=,%mem="
+      collect "Recent system errors and faults" "logs.txt" /usr/bin/log show --last 1h --style compact --predicate 'messageType == error OR messageType == fault'
+      collect "Session and power lifecycle" "lifecycle.txt" collect_lifecycle
       collect "Crash reports" "crashes.txt" ls /Library/Logs/DiagnosticReports 2>/dev/null || true
       collect "Bluetooth" "bluetooth.txt" system_profiler SPBluetoothDataType 2>/dev/null || true
 
