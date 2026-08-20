@@ -210,7 +210,7 @@ let
       RUNS_DIR="$OUTPUT_DIR/runs"
       RETENTION=${toString cfg.retention}
       TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
-      WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/macos-diagnostics.XXXXXX")
+      WORK_DIR=$(mktemp -d "''${TMPDIR:-/tmp}/macos-diagnostics.XXXXXX")
       RUN_DIR="$RUNS_DIR/$TIMESTAMP"
       STATUS_FILE="$WORK_DIR/collection-status.txt"
 
