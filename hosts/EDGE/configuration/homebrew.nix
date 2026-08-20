@@ -36,10 +36,9 @@
       # `vesktop` cask is owned by the Option 3 app façade at
       # modules/apps/darwin/discord.nix (toggle custom.appDiscord.enable) —
       # vesktop is preferred over the upstream `discord` cask.
-      # `librewolf` cask is owned by the Option 3 app façade at
-      # modules/apps/darwin/librewolf.nix (toggle custom.appLibrewolf.enable).
-      # Note: `librewolf` cask is deprecated in Homebrew Sep 2026 —
-      # revisit before then.
+      # LibreWolf is intentionally not installed on EDGE: Homebrew disables
+      # the macOS cask on 2026-09-01 because it fails the Gatekeeper check.
+      # The Linux app façade remains available to Linux hosts.
       # `signal` cask is owned by the Option 3 app façade
       # at modules/apps/darwin/signal-desktop.nix (toggle custom.appSignal.enable).
 

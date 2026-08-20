@@ -43,7 +43,6 @@
     ../../../modules/apps/darwin/localsend.nix
     ../../../modules/apps/darwin/yubico-authenticator.nix
     ../../../modules/apps/darwin/brave.nix
-    ../../../modules/apps/darwin/librewolf.nix
     ../../../modules/apps/darwin/thunderbird.nix
     ../../../modules/apps/darwin/spotify.nix
     ../../../modules/apps/darwin/nextcloud.nix
@@ -93,7 +92,6 @@
   custom.appLocalsend.enable = true;
   custom.appYubicoAuthenticator.enable = true;
   custom.appBrave.enable = true;
-  custom.appLibrewolf.enable = true;
   custom.appThunderbird.enable = true;
   custom.appSpotify.enable = true;
   custom.appNextcloud.enable = true;
