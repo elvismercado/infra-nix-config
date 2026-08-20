@@ -41,6 +41,7 @@
     ../../../modules/apps/darwin/onlyoffice.nix
     ../../../modules/apps/darwin/rpi-imager.nix
     ../../../modules/apps/darwin/localsend.nix
+    ../../../modules/apps/darwin/openlogi.nix
     ../../../modules/apps/darwin/yubico-authenticator.nix
     ../../../modules/apps/darwin/brave.nix
     ../../../modules/apps/darwin/thunderbird.nix
@@ -90,6 +91,7 @@
   custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
+  custom.appOpenLogi.enable = true;
   custom.appYubicoAuthenticator.enable = true;
   custom.appBrave.enable = true;
   custom.appThunderbird.enable = true;

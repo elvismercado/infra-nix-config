@@ -51,7 +51,6 @@
     # Peripherals
     ../../../modules/systems/nixos/bluetooth.nix
     ../../../modules/systems/nixos/pipewire.nix
-    ../../../modules/systems/nixos/mouse/logitech.nix
 
     # Security
     ../../../modules/systems/nixos/security/yubikey.nix
@@ -69,6 +68,7 @@
     ../../../modules/apps/linux/brave.nix
     ../../../modules/apps/linux/librewolf.nix
     ../../../modules/apps/linux/localsend.nix
+    ../../../modules/apps/linux/openlogi.nix
     ../../../modules/apps/linux/vscode.nix
     ../../../modules/apps/linux/syncthing.nix
     ../../../modules/apps/linux/handbrake.nix
@@ -135,7 +135,6 @@
   # Peripherals
   custom.sysNixBluetooth.enable = true;
   custom.sysNixPipewire.enable = true;
-  custom.sysNixLogitechMouse.enable = true;
 
   # Security
   # Yubikey accessed via dock USB; fprintd uses FENNEC's onboard fingerprint reader.
@@ -154,6 +153,7 @@
   custom.appBrave.enable = true;
   custom.appLibrewolf.enable = true;
   custom.appLocalsend.enable = true;
+  custom.appOpenLogi.enable = true;
   custom.appVscode.enable = true;
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
