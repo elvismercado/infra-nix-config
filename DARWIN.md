@@ -8,6 +8,15 @@ macOS system configuration is managed through `flake/darwin.nix` using [nix-darw
 | ---- | ------------- | ------- | ----- | ------------------------------ |
 | EDGE | x86_64-darwin | stable  | elvis | 2018 MacBook Pro 15", Intel i9 |
 
+### Intel Darwin compatibility
+
+Nixpkgs 26.05 is the final release that supports `x86_64-darwin`, with package
+support maintained through the end of 2026. EDGE therefore uses dedicated
+26.05 Nixpkgs, nix-darwin, and Home Manager inputs even though its host channel
+remains `"stable"`. Linux stable hosts continue following the current stable
+release, and Apple Silicon Darwin hosts may continue using current stable or
+unstable inputs.
+
 ## Rebuild
 
 Rebuild the system configuration from the flake:
@@ -21,9 +30,9 @@ darwin-rebuild switch --flake .#EDGE
 
 1. Hosts are registered in `flake/hosts.nix` under `darwinHosts`
 2. `flake/darwin.nix` iterates over all Darwin hosts and builds a `darwinSystem` for each
-3. The nixpkgs channel (stable/unstable) is selected per-host based on `channel` in `user-settings.nix` via `selectNixpkgs`
+3. The nixpkgs channel (stable/unstable) is selected per-host based on `channel` in `user-settings.nix` via `selectNixpkgs`; `x86_64-darwin` hosts instead use the dedicated 26.05 compatibility stack
 4. `nixpkgs.source` is set to the selected channel's `outPath`, ensuring all packages come from the right branch
-5. The Home Manager version (stable/unstable) is also selected per-host via `selectHomeManager` — a `"stable"` host uses `home-manager-stable`, an `"unstable"` host uses `home-manager`
+5. The Home Manager and nix-darwin versions follow the same per-host selection, including the Intel Darwin 26.05 compatibility stack
 6. Home Manager is integrated as a nix-darwin module for system rebuilds
 
 ### What gets passed to modules

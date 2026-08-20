@@ -15,7 +15,8 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 
 ## Configuration overview
 
-- **OS:** macOS (nix-darwin), x86_64-darwin, stable channel
+- **OS:** macOS (nix-darwin), x86_64-darwin, dedicated 26.05 compatibility stack
+- **Nixpkgs lifecycle:** 26.05 is the final Intel Darwin release and is supported through the end of 2026
 - **Nix Daemon:** Managed by Determinate installer (`nix.enable = false`)
 - **Shell:** Bash (with completions), Starship prompt (pastel-powerline)
 - **Networking:** WakeOnLAN, hostname/computerName/localHostName/SMB

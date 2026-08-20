@@ -21,7 +21,10 @@ nixpkgs.lib.genAttrs (builtins.attrNames darwinHosts) (
     system = userSettings.system;
     modules = [
       {
-        nixpkgs.config.allowUnfree = true;
+        nixpkgs.config = {
+          allowUnfree = true;
+          allowDeprecatedx86_64Darwin = userSettings.system == "x86_64-darwin";
+        };
         # Use the selected nixpkgs channel for this host
         nixpkgs.source = selectedNixpkgs.outPath;
       }

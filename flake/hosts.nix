@@ -28,15 +28,37 @@ let
         inherit userSettings;
       };
 
-  # Select inputs based on the host's channel setting ("stable" or "unstable")
+  # Nixpkgs 26.05 is the final release that supports x86_64-darwin.
+  # Intel Darwin hosts always use the dedicated compatibility stack;
+  # other hosts continue to follow their selected stable/unstable channel.
+  isIntelDarwin = settings: settings.system == "x86_64-darwin";
+
   selectNixpkgs =
-    settings: if settings.channel == "stable" then inputs.nixpkgs-stable else inputs.nixpkgs;
+    settings:
+    if isIntelDarwin settings then
+      inputs.nixpkgs-intel-darwin
+    else if settings.channel == "stable" then
+      inputs.nixpkgs-stable
+    else
+      inputs.nixpkgs;
 
   selectHomeManager =
-    settings: if settings.channel == "stable" then inputs.home-manager-stable else inputs.home-manager;
+    settings:
+    if isIntelDarwin settings then
+      inputs.home-manager-intel
+    else if settings.channel == "stable" then
+      inputs.home-manager-stable
+    else
+      inputs.home-manager;
 
   selectDarwin =
-    settings: if settings.channel == "stable" then inputs.nix-darwin-stable else inputs.nix-darwin;
+    settings:
+    if isIntelDarwin settings then
+      inputs.nix-darwin-intel
+    else if settings.channel == "stable" then
+      inputs.nix-darwin-stable
+    else
+      inputs.nix-darwin;
 
   nixosHosts = {
     # `sudo nixos-rebuild switch --flake .#JIN`

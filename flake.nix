@@ -8,6 +8,11 @@
     # nixpkgs-stable.url = "github:nixos/nixpkgs?ref=nixos-25.11";
     nixpkgs-stable.url = "https://flakehub.com/f/NixOS/nixpkgs/*"; # latest stable
 
+    # Nixpkgs 26.05 is the final release with x86_64-darwin support.
+    # Keep this compatibility stack separate so Linux hosts can continue
+    # following current stable releases after Intel Darwin support ends.
+    nixpkgs-intel-darwin.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2605";
+
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master"; # unstable
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,6 +24,11 @@
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
+    nix-darwin-intel = {
+      url = "https://flakehub.com/f/nix-darwin/nix-darwin/0.2605";
+      inputs.nixpkgs.follows = "nixpkgs-intel-darwin";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager"; # unstable (master)
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,6 +38,11 @@
       # url = "github:nix-community/home-manager/release-25.11";
       url = "https://flakehub.com/f/nix-community/home-manager/*"; # latest stable
       inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
+    home-manager-intel = {
+      url = "https://flakehub.com/f/nix-community/home-manager/0.2605";
+      inputs.nixpkgs.follows = "nixpkgs-intel-darwin";
     };
 
     # plasma-manager follows stable inputs only. If a NixOS host ever uses
@@ -111,7 +126,14 @@
     in
     {
       # Official Nix formatter, available through 'nix fmt'
-      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
+      formatter = forAllSystems (
+        system:
+        let
+          formatterNixpkgs =
+            if system == "x86_64-darwin" then inputs.nixpkgs-intel-darwin else nixpkgs;
+        in
+        formatterNixpkgs.legacyPackages.${system}.nixfmt-tree
+      );
 
       inherit (configurations) nixosConfigurations darwinConfigurations homeConfigurations metadata;
     };
