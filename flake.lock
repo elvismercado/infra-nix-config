@@ -356,6 +356,26 @@
         "url": "https://flakehub.com/f/NixOS/nixpkgs/0.1"
       }
     },
+    "openlogi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787253525,
+        "narHash": "sha256-koklrSBxBthhv9Du7ESzozQk6N7W0TVTet66v4UfWEI=",
+        "owner": "AprilNEA",
+        "repo": "OpenLogi",
+        "rev": "f7437a6ea2360d20ea74fc88ea39d2e6474959a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AprilNEA",
+        "repo": "OpenLogi",
+        "type": "github"
+      }
+    },
     "plasma-manager": {
       "inputs": {
         "home-manager": [
@@ -407,6 +427,7 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-intel-darwin": "nixpkgs-intel-darwin",
         "nixpkgs-stable": "nixpkgs-stable",
+        "openlogi": "openlogi",
         "plasma-manager": "plasma-manager",
         "private": "private"
       }
