@@ -51,7 +51,7 @@
   config = lib.mkIf config.custom.sysNixNvidiaGtx1060.enable {
     custom.sysNixNvtopNvidia.enable = true;
 
-    boot.kernelPackages = pkgs.linuxPackages_zen; # zen — low-latency desktop/gaming, consistent with other GPU profiles
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_modeset"

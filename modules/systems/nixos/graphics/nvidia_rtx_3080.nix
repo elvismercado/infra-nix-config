@@ -42,7 +42,7 @@
   config = lib.mkIf config.custom.sysNixNvidiaRtx3080.enable {
     custom.sysNixNvtopNvidia.enable = true;
 
-    boot.kernelPackages = pkgs.linuxPackages_zen; # zen
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_modeset"

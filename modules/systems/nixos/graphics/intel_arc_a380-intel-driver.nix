@@ -50,7 +50,7 @@
   config = lib.mkIf config.custom.sysNixIntelArcIntelDriver.enable {
     custom.sysNixNvtopIntel.enable = true;
 
-    boot.kernelPackages = pkgs.linuxPackages_zen;
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     boot.initrd.kernelModules = [ "i915" ]; # Early KMS start
     boot.kernelParams = [
       "i915.force_probe=56a5" # force probe Arc A380 (PCI ID 56a5)
