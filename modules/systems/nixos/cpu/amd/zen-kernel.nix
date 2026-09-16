@@ -27,6 +27,6 @@
   };
 
   config = lib.mkIf config.custom.sysNixZenKernel.enable {
-    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_zen;
   };
 }
