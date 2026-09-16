@@ -27,12 +27,18 @@ to `homeManagerHosts` in `flake/hosts.nix`.
 ## Quick Commands
 
 ```bash
-# NixOS — rebuild system
+# Rebuild and switch to current configuration
+switch
+
+# Full system upgrade (pull, update inputs, check, build, switch, commit & push flake.lock)
+switchupgrade
+
+# NixOS — rebuild system manually
 sudo nixos-rebuild switch --flake .#JIN
 sudo nixos-rebuild switch --flake .#FENNEC
 sudo nixos-rebuild switch --flake .#LULA
 
-# macOS — rebuild system
+# macOS — rebuild system manually
 darwin-rebuild switch --flake .#EDGE
 
 # Other Linux distributions — apply standalone Home Manager
