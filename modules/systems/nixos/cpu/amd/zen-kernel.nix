@@ -27,14 +27,6 @@
   };
 
   config = lib.mkIf config.custom.sysNixZenKernel.enable {
-    boot.kernelPackages = lib.mkDefault (
-      pkgs.linuxPackages_zen.extend (
-        _kernelFinal: kernelPrev: {
-          ryzen-smu = kernelPrev.ryzen-smu.overrideAttrs (oldAttrs: {
-            patches = (oldAttrs.patches or []) ++ [ ./ryzen-smu-cpuid-api.patch ];
-          });
-        }
-      )
-    );
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_zen;
   };
 }

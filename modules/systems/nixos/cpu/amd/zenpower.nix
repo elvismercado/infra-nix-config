@@ -48,9 +48,7 @@
     # Must match the running kernel version (handled automatically by
     # config.boot.kernelPackages).
     boot.extraModulePackages = [
-      (config.boot.kernelPackages.zenpower.overrideAttrs (oldAttrs: {
-        patches = (oldAttrs.patches or []) ++ [ ./zenpower-cpuid-api.patch ];
-      }))
+      config.boot.kernelPackages.zenpower
     ];
 
     # Load the zenpower module at boot so sensor data is available immediately.
