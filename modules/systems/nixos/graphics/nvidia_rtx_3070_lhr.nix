@@ -55,7 +55,6 @@
   config = lib.mkIf config.custom.sysNixNvidiaRtx3070Lhr.enable {
     custom.sysNixNvtopNvidia.enable = true;
 
-    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_modeset"
@@ -63,7 +62,7 @@
       "nvidia_drm"
     ]; # Early KMS start
     boot.kernelParams = [
-      # Required for Wayland on Linux 6.11+ (zen kernel is >=6.11).
+      # Required for Wayland on Linux 6.11+.
       # NixOS has no hardware.nvidia.fbdev option — must be set manually.
       # Without this, KDE Plasma / Wayland may fail to present frames or black-screen.
       "nvidia_drm.fbdev=1"

@@ -15,7 +15,7 @@
 #   - 10-bit color, 4K@120Hz, 8K@60Hz (DP 1.4 DSC)
 #
 # Limitations:
-#   - nvidia_drm.fbdev=1 required for Wayland on Linux 6.11+ (zen kernel)
+#   - nvidia_drm.fbdev=1 required for Wayland on Linux 6.11+
 #   - Open kernel modules require GSP firmware (NVreg_EnableGpuFirmware=0 is incompatible)
 #   - Early KMS (nvidia in initrd) + hibernation: initramfs cannot access
 #     NVreg_TemporaryFilePath, so hibernate (S4) may fail; suspend (S3) works fine
@@ -36,13 +36,12 @@
   ];
 
   options = {
-    custom.sysNixNvidiaRtx3080.enable = lib.mkEnableOption "NVIDIA RTX 3080 graphics with proprietary driver, Zen kernel, and nvtop";
+    custom.sysNixNvidiaRtx3080.enable = lib.mkEnableOption "NVIDIA RTX 3080 graphics with proprietary driver and nvtop";
   };
 
   config = lib.mkIf config.custom.sysNixNvidiaRtx3080.enable {
     custom.sysNixNvtopNvidia.enable = true;
 
-    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages;
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_modeset"
@@ -50,7 +49,7 @@
       "nvidia_drm"
     ]; # Early KMS start
     boot.kernelParams = [
-      # Required for Wayland on Linux 6.11+ (zen kernel is >=6.11).
+      # Required for Wayland on Linux 6.11+.
       # NixOS has no hardware.nvidia.fbdev option — must be set manually.
       # Without this, KDE Plasma / Wayland may fail to present frames or black-screen.
       "nvidia_drm.fbdev=1"

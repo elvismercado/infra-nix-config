@@ -11,6 +11,7 @@
 #   - ryzen.nix           — kvm-amd, SEV, SMU, lm_sensors, ryzen-monitor-ng
 #   - pstate.nix          — AMD P-State EPP frequency scaling (active mode)
 #   - zenpower.nix        — Zenpower sensor driver (replaces k10temp)
+#   - zen-kernel.nix       — Linux Zen kernel (desktop-optimised scheduler and tunings)
 #   - mitigations-off.nix — disable CPU vulnerability mitigations (single-user desktop)
 #
 # Usage:
@@ -33,12 +34,13 @@
   ];
 
   options = {
-    custom.sysNixAmdRyzen93900x.enable = lib.mkEnableOption "AMD Ryzen 9 3900X profile bundle (ryzen + pstate + zenpower + mitigations-off)";
+    custom.sysNixAmdRyzen93900x.enable = lib.mkEnableOption "AMD Ryzen 9 3900X profile bundle (ryzen + pstate + zenpower + Zen kernel + mitigations-off)";
   };
 
   config = lib.mkIf config.custom.sysNixAmdRyzen93900x.enable {
     custom.sysNixAmdRyzenCpu.enable = true;
     custom.sysNixAmdPstate.enable = true;
+    custom.sysNixZenKernel.enable = true;
     custom.sysNixAmdZenpower.enable = true;
     custom.sysNixCpuMitigationsOff.enable = true;
   };
