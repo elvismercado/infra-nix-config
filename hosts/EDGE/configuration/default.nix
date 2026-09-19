@@ -91,7 +91,7 @@
   custom.appOnlyoffice.enable = true;
   custom.appRpiImager.enable = true;
   custom.appLocalsend.enable = true;
-  custom.appOpenLogi.enable = true;
+  custom.appOpenLogi.enable = false;
   custom.appYubicoAuthenticator.enable = true;
   custom.appBrave.enable = true;
   custom.appThunderbird.enable = true;

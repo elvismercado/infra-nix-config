@@ -153,7 +153,7 @@
   custom.appBrave.enable = true;
   custom.appLibrewolf.enable = true;
   custom.appLocalsend.enable = true;
-  custom.appOpenLogi.enable = true;
+  custom.appOpenLogi.enable = false;
   custom.appVscode.enable = true;
   custom.appSyncthing.enable = true;
   custom.appHandbrake.enable = true;
