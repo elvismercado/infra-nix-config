@@ -84,6 +84,9 @@
       # Laptop Ampere may have GSP-related crashes; desktop is unaffected.
       # To revert: set open = false and remove nvidia_drm.fbdev=1 from kernelParams.
       open = true;
+      package = config.boot.kernelPackages.nvidiaPackages.stable.override {
+        patchesOpen = [ ./nvidia-open-strncpy.patch ];
+      };
       modesetting.enable = true; # DRM KMS — required for Wayland
       # forceFullCompositionPipeline: X11-only, irrelevant on Wayland.
       # Enabling it breaks VRR (G-Sync / Adaptive Sync). Intentionally disabled.
