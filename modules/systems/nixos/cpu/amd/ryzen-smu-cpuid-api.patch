@@ -2,10 +2,10 @@ diff --git a/smu.c b/smu.c
 --- a/smu.c
 +++ b/smu.c
 @@ -7,6 +7,17 @@
+ #include <linux/module.h>
  #include <linux/pci.h>
  #include <linux/time.h>
--
-+#ifdef __has_include
++#if defined(__has_include)
 +#if __has_include(<asm/cpuid/api.h>)
 +#include <asm/cpuid/api.h>
 +#elif __has_include(<asm/cpuid.h>)
@@ -16,5 +16,6 @@ diff --git a/smu.c b/smu.c
 +#else
 +#include <asm/processor.h>
 +#endif
-+
+ 
  #include "smu.h"
+ 
