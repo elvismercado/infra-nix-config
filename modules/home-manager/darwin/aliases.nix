@@ -23,6 +23,11 @@ let
   # pure build/activate, and `switchbumpprivate` (in `all/aliases.nix`)
   # is the explicit "I edited the private overlay" command.
   publicRepo = "${config.home.homeDirectory}/${userSettings.repoPath}";
+  privateRepo = "${config.home.homeDirectory}/${builtins.dirOf userSettings.repoPath}/infra-nix-config-private";
+  workflowScript = "${publicRepo}/scripts/nix/switch-workflow.sh";
+  publicRepoArg = lib.escapeShellArg publicRepo;
+  privateRepoArg = lib.escapeShellArg privateRepo;
+  workflowScriptArg = lib.escapeShellArg workflowScript;
   tokenOpt = ''--option access-tokens "github.com=$(gh auth token)"'';
   nixBuildDiagnosticOpts = "--show-trace --print-build-logs -v";
   nixVerboseBuildDiagnosticOpts = "${nixBuildDiagnosticOpts} -v";
@@ -39,9 +44,10 @@ in
       switchverbose = "cd ${publicRepo} && sudo darwin-rebuild switch --flake .#${userSettings.hostname} ${tokenOpt} ${nixVerboseBuildDiagnosticOpts}";
       switchbuild = "cd ${publicRepo} && darwin-rebuild build --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
       switchtest = "cd ${publicRepo} && darwin-rebuild check --flake .#${userSettings.hostname} ${tokenOpt} ${nixBuildDiagnosticOpts}";
-      switchupgrade = "switchpull && switchupdate && switchcheck && switchbuild && switch && git -C ${publicRepo} add --verbose flake.lock && git -C ${publicRepo} commit -m 'flake.lock: upgrade inputs' && git -C ${publicRepo} push --verbose";
+      switchupgrade = "bash ${workflowScriptArg} upgrade ${publicRepoArg} ${privateRepoArg} ${lib.escapeShellArg userSettings.hostname} darwin";
+      switchbuildalldarwin = "bash ${workflowScriptArg} build-all ${publicRepoArg} darwin";
       switchhealth = "{ echo '=== System errors (last 1h) ==='; log show --predicate 'eventType == logEvent && messageType == error' --last 1h --style compact 2>/dev/null | tail -50; echo '=== Disk usage ==='; df -h / /System/Volumes/Data; echo '=== Nix store size ==='; du -sh /nix/store 2>/dev/null; echo '=== Homebrew status ==='; brew doctor 2>&1 | head -20; } > /tmp/health.txt 2>&1 && echo \"Saved to /tmp/health.txt ($(wc -l < /tmp/health.txt) lines)\"";
-      switchhelp = "echo -e '\n  switch           - Rebuild and activate with trace, build logs, and balanced verbosity\n  switchverbose    - Same as switch with additional diagnostic verbosity\n  switchbuild      - Build without activating, with balanced diagnostics\n  switchtest       - Check the build with balanced diagnostics\n  switchcheck      - Validate the flake with balanced diagnostics\n  switchupdate     - Update all flake inputs with balanced diagnostics\n  switchupgrade    - Pull, update flake inputs, check, build, switch, and push flake.lock\n  switchpull       - Fast-forward both repos and refresh the private lock entry\n  switchbumpprivate - After pushing private edits: update, commit, and push flake.lock\n  switchhealth     - Save system health report to /tmp/health.txt\n  switchcd         - cd to infra-nix-config repo\n  switchhelp       - Show this help\n'";
+      switchhelp = "echo -e '\n  switch               - Rebuild and activate with trace, build logs, and balanced verbosity\n  switchverbose        - Same as switch with additional diagnostic verbosity\n  switchbuild          - Build the current host without activating\n  switchbuildalldarwin - Build all Darwin hosts without activating\n  switchtest           - Check the build with balanced diagnostics\n  switchcheck          - Validate the flake with balanced diagnostics\n  switchupdate         - Update all flake inputs with balanced diagnostics\n  switchupgrade        - Publish private changes, validate all Darwin hosts, switch, and publish public changes\n  switchpull           - Fast-forward both repositories only\n  switchpublish        - Commit and push public repository changes\n  switchprivatepublish - Commit and push private repository changes\n  switchbumpprivate    - Update, commit, and push only the public private-input lock entry\n  switchlogs           - List recent upgrade workflow logs\n  switchhealth         - Save system health report to /tmp/health.txt\n  switchcd             - cd to infra-nix-config repo\n  switchhelp           - Show this help\n'";
     };
   };
 }

@@ -1,5 +1,6 @@
 { inputs }:
 let
+  inherit (inputs.nixpkgs) lib;
   validChannels = [
     "stable"
     "unstable"
@@ -17,7 +18,7 @@ let
       privateOverlayPath = inputs.private + "/hosts/${hostName}/user-settings.nix";
       privateUserSettings =
         if builtins.pathExists privateOverlayPath then import privateOverlayPath else { };
-      userSettings = publicUserSettings // privateUserSettings;
+      userSettings = lib.recursiveUpdate publicUserSettings privateUserSettings;
     in
     if !(builtins.elem userSettings.channel validChannels) then
       throw "Host '${hostName}': channel must be one of ${builtins.toJSON validChannels}, got '${toString userSettings.channel}'"

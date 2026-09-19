@@ -30,8 +30,18 @@ to `homeManagerHosts` in `flake/hosts.nix`.
 # Rebuild and switch to current configuration
 switch
 
-# Full system upgrade (pull, update inputs, check, build, switch, commit & push flake.lock)
+# Full upgrade (publish private changes, validate all hosts for this platform,
+# switch the current host, publish public changes, and save a log)
 switchupgrade
+
+# Explicit platform-wide validation without activation
+switchbuildalllinux       # JIN, FENNEC, and LULA; run on Linux
+switchbuildalldarwin      # EDGE; run on macOS
+
+# Retry or run repository publication separately
+switchprivatepublish      # Commit and push local private-repo changes
+switchpublish             # Commit and push local public-repo changes
+switchlogs                # List recent upgrade logs
 
 # NixOS — rebuild system manually
 sudo nixos-rebuild switch --flake .#JIN
@@ -173,14 +183,23 @@ does not read uncommitted files from the local sibling or refresh that pin.
 A local empty stub does not satisfy or override the GitHub input. Offline
 private-input substitution remains tracked in [TODO.md](TODO.md).
 
-Publish private changes in this order:
+`switchupgrade` automates the publication order:
 
-1. Edit, commit, and push `infra-nix-config-private`.
-2. From `infra-nix-config`, run `switchbumpprivate`. It updates only the
-   `private` input, then commits and pushes the resulting `flake.lock` change.
-3. On other hosts, run `switchpull` to fast-forward both repositories and
-   refresh the local private lock entry, then run the appropriate build or
-   switch command.
+1. Commit and push local changes in `infra-nix-config-private`.
+2. Pull the public repository and update all flake inputs, including the
+  `private` lock entry.
+3. Check the flake and build every host for the current platform.
+4. Switch the current host only.
+5. Commit and push the public repository.
+
+The workflow writes a timestamped log outside both repositories under
+`~/.local/state/infra-nix-config/upgrade/`. If the final public push fails,
+`switchpublish` retries it. `switchprivatepublish` is available when private
+changes should be published without a full system upgrade. `switchpull` only
+fast-forwards repositories; it does not update `flake.lock`.
+
+Linux validation builds JIN, FENNEC, and LULA. Darwin validation builds EDGE.
+The two platform sets are intentionally validated separately.
 
 Clone the optional companion with:
 
