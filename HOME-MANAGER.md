@@ -114,6 +114,12 @@ These files hold shared logic for split (Option 2) modules. Hosts import the mat
 
 **Linux — KDE Plasma** (`home-manager/linux/`):
 
+`home-manager/linux/autostart.nix` renders and reconciles XDG autostart
+entries; application modules own the entries for the applications they
+install. Trayscale exposes `custom.hmTrayscale.autostart`, and the Linux
+Beeper, Discord/Vesktop, Ferdium, and Steam façades expose matching
+`custom.app<Name>.autostart` options.
+
 | Module                                            | Option                                                                                                                                                                                                                                                                                                                          |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `home-manager/linux/aliases.nix`                  | `custom.hmLinuxAliases.enable`                                                                                                                                                                                                                                                                                                  |
@@ -164,6 +170,10 @@ These files hold shared logic for split (Option 2) modules. Hosts import the mat
 ### Cross-Layer App Façades
 
 Apps whose binary lives in a different layer than their config (typically a Homebrew cask on darwin + declarative HM settings) are wired through façade modules under `modules/apps/{darwin,linux}/`. The façade is a **system module** — import it from `hosts/<HOST>/configuration/default.nix`, NOT from `home-manager/default.nix`. The same toggle name is used on every OS, and the façade auto-pulls the matching home-manager wrapper into HM scope.
+
+On Linux, the Beeper, Discord/Vesktop, Ferdium, and Steam façades also own
+their optional XDG autostart entry, so startup is declared only when the
+corresponding application is enabled and its `.autostart` option is true.
 
 | Façade                                         | Option                                 | Owns                                                                                                                                                |
 | ---------------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |

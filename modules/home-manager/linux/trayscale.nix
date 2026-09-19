@@ -1,4 +1,4 @@
-# Trayscale — GTK system-tray front-end for Tailscale (Linux).
+# Trayscale — GTK system-tray front-end for Tailscale (Linux), with optional autostart.
 #
 # Tailscale ships no official GUI for Linux (the client is CLI-only:
 # `tailscaled` + `tailscale`). Trayscale is a community GTK4/libadwaita app
@@ -7,11 +7,11 @@
 # layers cleanly on top of the system module `custom.sysNixTailscale`.
 #
 # Needs a system tray (StatusNotifierItem). All hosts wiring this run KDE
-# Plasma, which provides one. Start it minimised to tray on login via
-# `custom.hmAutostart.entries` with exec `trayscale --hide-window`.
+# Plasma, which provides one. Its `autostart` option starts it minimised to
+# tray on login with exec `trayscale --hide-window`.
 #
-# Install-only — this module just adds the package; the daemon comes from
-# the NixOS `custom.sysNixTailscale` module.
+# This module adds the package and owns its optional login autostart entry; the
+# daemon comes from the NixOS `custom.sysNixTailscale` module.
 #
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/trayscale.nix ];
@@ -24,11 +24,31 @@
   ...
 }:
 
+let
+  cfg = config.custom.hmTrayscale;
+in
 {
-  options.custom.hmTrayscale.enable =
-    lib.mkEnableOption "Trayscale (GTK system-tray front-end for the Tailscale CLI client)";
+  imports = [ ./autostart.nix ];
 
-  config = lib.mkIf config.custom.hmTrayscale.enable {
+  options.custom.hmTrayscale = {
+    enable = lib.mkEnableOption "Trayscale (GTK system-tray front-end for the Tailscale CLI client)";
+    autostart = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Start Trayscale in the system tray with the graphical session.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     home.packages = [ pkgs.trayscale ];
+
+    custom.hmAutostart = lib.mkIf cfg.autostart {
+      enable = true;
+      entries.trayscale = {
+        name = "Trayscale";
+        exec = "trayscale --hide-window";
+        icon = "dev.deltadev.trayscale";
+      };
+    };
   };
 }

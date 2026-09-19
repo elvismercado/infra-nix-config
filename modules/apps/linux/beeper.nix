@@ -1,4 +1,4 @@
-# Beeper — Linux app façade (install-only)
+# Beeper — Linux app façade with optional login autostart
 #
 # Cross-layer module that installs the Beeper unified-messaging client under
 # one host-facing toggle (`custom.appBeeper.enable`) shared with the darwin
@@ -21,9 +21,32 @@ let
   cfg = config.custom.appBeeper;
 in
 {
-  options.custom.appBeeper.enable = lib.mkEnableOption "Beeper unified-messaging client (nixpkgs unfree, install-only)";
-
-  config = lib.mkIf cfg.enable {
-    home-manager.users.${userSettings.username}.home.packages = [ pkgs.beeper ];
+  options.custom.appBeeper = {
+    enable = lib.mkEnableOption "Beeper unified-messaging client (nixpkgs unfree)";
+    autostart = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Start Beeper hidden with the graphical session.";
+    };
   };
+
+  config = lib.mkMerge [
+    {
+      home-manager.users.${userSettings.username}.imports = [ ../../home-manager/linux/autostart.nix ];
+    }
+    (lib.mkIf cfg.enable {
+      home-manager.users.${userSettings.username} = {
+        home.packages = [ pkgs.beeper ];
+
+        custom.hmAutostart = lib.mkIf cfg.autostart {
+          enable = true;
+          entries.beeper = {
+            name = "Beeper";
+            exec = "beeper --hidden";
+            icon = "beeper";
+          };
+        };
+      };
+    })
+  ];
 }

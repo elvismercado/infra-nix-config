@@ -25,12 +25,33 @@ let
   cfg = config.custom.appDiscord;
 in
 {
-  options.custom.appDiscord.enable = lib.mkEnableOption "Discord client (vesktop binary from nixpkgs)";
-
-  config = lib.mkIf cfg.enable {
-    home-manager.users.${userSettings.username} = {
-      imports = [ ../../home-manager/linux/discord.nix ];
-      custom.hmDiscord.enable = true;
+  options.custom.appDiscord = {
+    enable = lib.mkEnableOption "Discord client (vesktop binary from nixpkgs)";
+    autostart = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Start Vesktop minimized with the graphical session.";
     };
   };
+
+  config = lib.mkMerge [
+    {
+      home-manager.users.${userSettings.username}.imports = [ ../../home-manager/linux/autostart.nix ];
+    }
+    (lib.mkIf cfg.enable {
+      home-manager.users.${userSettings.username} = {
+        imports = [ ../../home-manager/linux/discord.nix ];
+        custom.hmDiscord.enable = true;
+
+        custom.hmAutostart = lib.mkIf cfg.autostart {
+          enable = true;
+          entries.vesktop = {
+            name = "Vesktop";
+            exec = "vesktop --start-minimized";
+            icon = "vesktop";
+          };
+        };
+      };
+    })
+  ];
 }

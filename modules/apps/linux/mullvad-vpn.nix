@@ -11,10 +11,9 @@
 # the kernel's strict rp_filter check. See:
 #   https://nixos.wiki/wiki/Mullvad_VPN
 #
-# Autostart: this façade does not register an autostart entry. If you want
-# the GUI to launch at login, add it to your host's `custom.hmAutostart.entries`
-# (Mullvad has no `--minimized` flag — it minimises to tray on close, which
-# Mullvad remembers across sessions).
+# Autostart: this façade intentionally does not register an autostart entry.
+# Mullvad has no `--minimized` flag — it minimises to tray on close, which
+# Mullvad remembers across sessions.
 #
 # Usage:
 #   imports = [ ../../../modules/apps/linux/mullvad-vpn.nix ];

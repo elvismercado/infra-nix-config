@@ -20,6 +20,10 @@
 #                              install our symlink (logged warning)
 #   - stale managed symlink  → replace
 #
+# A state manifest records previously managed slugs so removing an entry from
+# configuration also removes its old symlink. Known pre-manifest entries are
+# cleaned up once when they still point into the Nix store.
+#
 # Usage:
 #   imports = [ ../../../modules/home-manager/linux/autostart.nix ];
 #   custom.hmAutostart = {
@@ -47,6 +51,15 @@
 
 let
   cfg = config.custom.hmAutostart;
+  activeEntries = if cfg.enable then cfg.entries else { };
+  managedSlugs = builtins.attrNames activeEntries;
+  managedSlugsSource = pkgs.writeText "hm-autostart-managed-slugs" (
+    lib.concatStringsSep "\n" managedSlugs + lib.optionalString (managedSlugs != [ ]) "\n"
+  );
+  legacyManagedSlugs = [
+    "solaar"
+    "mullvad-vpn"
+  ];
 
   entryType = lib.types.submodule {
     options = {
@@ -109,7 +122,7 @@ let
   # stable path to symlink to AND to byte-compare against what's on disk.
   entrySources = lib.mapAttrs (
     slug: entry: pkgs.writeText "${slug}.desktop" (renderEntry entry)
-  ) cfg.entries;
+  ) activeEntries;
 in
 
 {
@@ -127,9 +140,45 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = {
     home.activation.hmAutostart = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
       autostartDir="$HOME/.config/autostart"
+      managedStateDir="$HOME/.local/state/hm-autostart"
+      managedSlugsFile="$managedStateDir/managed-slugs"
+      managedSlugsSource="${managedSlugsSource}"
+
+      removeManagedLauncher() {
+        slug="$1"
+        case "$slug" in
+          ""|*[!A-Za-z0-9._-]*) return ;;
+        esac
+
+        if grep -Fqx "$slug" "$managedSlugsSource"; then
+          return
+        fi
+
+        target="$autostartDir/$slug.desktop"
+        if [ -L "$target" ]; then
+          current="$(readlink "$target")"
+          case "$current" in
+            /nix/store/*)
+              $VERBOSE_ECHO "hmAutostart: removing stale managed entry $target"
+              $DRY_RUN_CMD rm -f "$target"
+              ;;
+          esac
+        fi
+      }
+
+      if [ -f "$managedSlugsFile" ]; then
+        while IFS= read -r slug; do
+          removeManagedLauncher "$slug"
+        done < "$managedSlugsFile"
+      else
+        ${lib.concatMapStrings (slug: ''
+          removeManagedLauncher "${slug}"
+        '') legacyManagedSlugs}
+      fi
+
       $DRY_RUN_CMD mkdir -p "$autostartDir"
 
       ${lib.concatStringsSep "\n" (
@@ -167,6 +216,12 @@ in
           fi
         '') entrySources
       )}
+
+      $DRY_RUN_CMD mkdir -p "$managedStateDir"
+      if [ -z "$DRY_RUN_CMD" ]; then
+        cp "$managedSlugsSource" "$managedSlugsFile.tmp"
+        mv "$managedSlugsFile.tmp" "$managedSlugsFile"
+      fi
     '';
   };
 }

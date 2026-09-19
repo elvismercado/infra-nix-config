@@ -201,7 +201,9 @@
   custom.appHandbrake.enable = true;
   custom.appMpv.enable = true;
   custom.appDiscord.enable = true;
+  custom.appDiscord.autostart = false;
   custom.appSteam.enable = true;
+  custom.appSteam.autostart = false;
   custom.appMullvadVpn.enable = false;
   custom.appProtonmailBridge.enable = true;
   custom.appInsync.enable = true;

@@ -54,6 +54,7 @@
   config,
   lib,
   pkgs,
+  userSettings,
   ...
 }:
 
@@ -61,37 +62,60 @@ let
   cfg = config.custom.appSteam;
 in
 {
-  options.custom.appSteam.enable = lib.mkEnableOption "Steam with gaming tools (Proton, GameMode, Gamescope, Lutris, controller support)";
-
-  config = lib.mkIf cfg.enable {
-    programs.steam = {
-      enable = true;
-      remotePlay.openFirewall = true;
-
-      # GE-Proton — community Proton builds with extra game fixes and patches.
-      extraCompatPackages = with pkgs; [
-        proton-ge-bin
-      ];
+  options.custom.appSteam = {
+    enable = lib.mkEnableOption "Steam with gaming tools (Proton, GameMode, Gamescope, Lutris, controller support)";
+    autostart = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Start Steam in the background with the graphical session.";
     };
-
-    programs.gamemode.enable = true;
-    programs.gamescope.enable = true;
-
-    # 32-bit graphics libraries — required for Steam's FHS environment.
-    # Safe mkDefault: GPU-specific modules (e.g. nvidia_rtx_3080.nix) may
-    # already set this; mkDefault avoids conflicts.
-    hardware.graphics.enable32Bit = lib.mkDefault true;
-
-    # SteamOS uses this value for maximum game compatibility.
-    boot.kernel.sysctl."vm.max_map_count" = 2147483642;
-
-    environment.systemPackages = with pkgs; [
-      lutris
-      dualsensectl
-    ];
-
-    # Broader udev rules for controllers outside Steam (emulators, Lutris).
-    services.udev.packages = [ pkgs.game-devices-udev-rules ];
-    hardware.uinput.enable = true;
   };
+
+  config = lib.mkMerge [
+    {
+      home-manager.users.${userSettings.username}.imports = [ ../../home-manager/linux/autostart.nix ];
+    }
+    (lib.mkIf cfg.enable {
+      programs.steam = {
+        enable = true;
+        remotePlay.openFirewall = true;
+
+        # GE-Proton — community Proton builds with extra game fixes and patches.
+        extraCompatPackages = with pkgs; [
+          proton-ge-bin
+        ];
+      };
+
+      programs.gamemode.enable = true;
+      programs.gamescope.enable = true;
+
+      # 32-bit graphics libraries — required for Steam's FHS environment.
+      # Safe mkDefault: GPU-specific modules (e.g. nvidia_rtx_3080.nix) may
+      # already set this; mkDefault avoids conflicts.
+      hardware.graphics.enable32Bit = lib.mkDefault true;
+
+      # SteamOS uses this value for maximum game compatibility.
+      boot.kernel.sysctl."vm.max_map_count" = 2147483642;
+
+      environment.systemPackages = with pkgs; [
+        lutris
+        dualsensectl
+      ];
+
+      # Broader udev rules for controllers outside Steam (emulators, Lutris).
+      services.udev.packages = [ pkgs.game-devices-udev-rules ];
+      hardware.uinput.enable = true;
+
+      home-manager.users.${userSettings.username} = {
+        custom.hmAutostart = lib.mkIf cfg.autostart {
+          enable = true;
+          entries.steam = {
+            name = "Steam";
+            exec = "steam -silent %U";
+            icon = "steam";
+          };
+        };
+      };
+    })
+  ];
 }
