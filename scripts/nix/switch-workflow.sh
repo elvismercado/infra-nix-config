@@ -202,7 +202,7 @@ update_flake_impl() {
 
 check_flake_impl() {
   local public_repo="$1"
-  nix flake check --flake "$public_repo" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+  nix flake check "$public_repo" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
 }
 
 build_host() {
