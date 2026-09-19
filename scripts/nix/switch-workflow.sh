@@ -152,7 +152,7 @@ publish_private_impl() {
     private_status="already clean"
   fi
 
-  if ! git -C "$private_repo" pull --verbose --ff-only; then
+  if ! git -C "$private_repo" pull --verbose --rebase; then
     private_status="${private_status}; pull failed"
     return 1
   fi
@@ -180,7 +180,7 @@ prepare_public_impl() {
     public_status="already clean"
   fi
 
-  if ! git -C "$public_repo" pull --verbose --ff-only; then
+  if ! git -C "$public_repo" pull --verbose --rebase; then
     public_status="${public_status}; pull failed"
     return 1
   fi
