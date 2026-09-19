@@ -47,7 +47,11 @@
     # Build and install the zenpower out-of-tree kernel module.
     # Must match the running kernel version (handled automatically by
     # config.boot.kernelPackages).
-    boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
+    boot.extraModulePackages = [
+      (config.boot.kernelPackages.zenpower.overrideAttrs (oldAttrs: {
+        patches = (oldAttrs.patches or []) ++ [ ./zenpower-cpuid-api.patch ];
+      }))
+    ];
 
     # Load the zenpower module at boot so sensor data is available immediately.
     # After reboot, `sensors` will show zenpower entries instead of k10temp.
