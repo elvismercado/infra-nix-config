@@ -18,6 +18,9 @@
     # ../../../modules/systems/nixos/bootloader/plymouth.nix
     # ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
 
+    # Kernel
+    ../../../modules/systems/nixos/kernel/zen.nix
+
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_3900x.nix
     # ../../../modules/systems/nixos/graphics/utilities/nomodeset.nix
@@ -126,6 +129,9 @@
   # custom.sysNixPlymouth.debug = true; # writes /var/log/plymouth-debug.log
   # custom.sysNixPlymouthThemeAdi1090x.enable = true;
   # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
+
+  # Kernel
+  custom.sysNixZenKernel.enable = true;
 
   # Hardware
   custom.sysNixAmdRyzen93900x.enable = true; # Ryzen 9 3900X profile (ryzen + pstate + zenpower)

@@ -1,17 +1,17 @@
-# Linux Zen kernel — desktop-optimised kernel for AMD CPUs
+# Linux Zen kernel — desktop-optimised kernel
 # https://github.com/zen-kernel/zen-kernel
 #
 # The Zen kernel is tuned for interactive desktop workloads:
 #   - 1000 Hz tick rate (vs. 300 Hz default) — lower input/scheduling latency
 #   - Desktop-tuned CFS scheduler presets
 #   - Voluntary kernel preemption for responsiveness
-#   - Latest AMD P-State and amdgpu driver back-ports
+#   - Tunings for interactive desktop responsiveness and gaming
 #
-# Recommended for AMD desktop/workstation systems where interactivity
-# matters more than raw throughput.
+# Recommended for desktop, workstation, and laptop systems where interactivity
+# matters more than raw batch throughput.
 #
 # Usage:
-#   imports = [ ../../../modules/systems/nixos/cpu/amd/zen-kernel.nix ];
+#   imports = [ ../../../modules/systems/nixos/kernel/zen.nix ];
 #   custom.sysNixZenKernel.enable = true;
 
 {

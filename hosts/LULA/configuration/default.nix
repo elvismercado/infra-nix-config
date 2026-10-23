@@ -14,6 +14,9 @@
     ../../../modules/systems/nixos/bootloader/grub.nix
     ../../../modules/systems/nixos/bootloader/grub-theme-sleek.nix
 
+    # Kernel
+    ../../../modules/systems/nixos/kernel/zen.nix
+
     # Hardware
     ../../../modules/systems/nixos/cpu/intel/tiger_lake_i5_1135g7.nix
     ../../../modules/systems/nixos/graphics/intel_iris_xe.nix
@@ -76,6 +79,9 @@
   custom.sysNixGrub.useOSProber = false; # single-OS NixOS laptop
   custom.sysNixGrubThemeSleek.enable = true;
   custom.sysNixGrubThemeSleek.style = "dark";
+
+  # Kernel
+  custom.sysNixZenKernel.enable = true;
 
   # Hardware
   custom.sysNixIntelTigerLakeI51135g7.enable = true;

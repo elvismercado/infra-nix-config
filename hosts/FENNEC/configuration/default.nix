@@ -18,6 +18,9 @@
     # ../../../modules/systems/nixos/bootloader/plymouth.nix
     # ../../../modules/systems/nixos/bootloader/plymouth-theme-adi1090x.nix
 
+    # Kernel
+    ../../../modules/systems/nixos/kernel/zen.nix
+
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_5900x.nix
     ../../../modules/systems/nixos/graphics/nvidia_rtx_3080.nix
@@ -100,6 +103,9 @@
   # custom.sysNixPlymouth.minShutdownDuration = 3;
   # custom.sysNixPlymouthThemeAdi1090x.enable = true;
   # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
+
+  # Kernel
+  custom.sysNixZenKernel.enable = true;
 
   # Hardware
   custom.sysNixAmdRyzen95900x.enable = true;

@@ -103,12 +103,13 @@ modules/
     nixos/                   # NixOS system modules (toggleable, custom.* namespace)
       apps/                  #   Coolercontrol, embedded, libvirtd, sunshine
       bootloader/            #   GRUB, systemd-boot, Plymouth, GRUB/Plymouth themes
-      cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, zen-kernel, mitigations-off + CPU profiles (3900X, 5900X)
+      cpu/amd/               #   AMD base, Ryzen, P-State, Zenpower, mitigations-off + CPU profiles (3900X, 5900X)
       cpu/intel/             #   Intel base + CPU profiles (Tiger Lake i5-1135G7)
       desktop_environment/   #   KDE Plasma, COSMIC
       display_manager/       #   SDDM, SDDM monitor layout, SDDM input config
       graphics/              #   AMD, Intel Arc, Intel Iris Xe, NVIDIA, nomodeset, nvtop
       input/                 #   Wacom
+      kernel/                #   Linux Zen kernel (desktop-optimised scheduler and tunings)
       laptop/                #   Lenovo ThinkPad T14 Gen 2 (Intel) chassis quirks
       memory/                #   zram, earlyoom, hibernation
       mouse/                 #   Logitech
@@ -187,7 +188,7 @@ private-input substitution remains tracked in [TODO.md](TODO.md).
 
 1. Commit and push local changes in `infra-nix-config-private`.
 2. Pull the public repository and update all flake inputs, including the
-  `private` lock entry.
+   `private` lock entry.
 3. Check the flake and build every host for the current platform.
 4. Switch the current host only.
 5. Commit and push the public repository.

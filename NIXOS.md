@@ -90,12 +90,13 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/bootloader/plymouth-theme-breeze.nix`     | `custom.sysNixPlymouthThemeBreeze.enable`                               |
 | `systems/nixos/bootloader/plymouth-theme-adi1090x.nix`   | `custom.sysNixPlymouthThemeAdi1090x.enable`                             |
 |                                                          | `custom.sysNixPlymouthThemeAdi1090x.theme`                              |
+| **Kernel**                                               |                                                                         |
+| `systems/nixos/kernel/zen.nix`                           | `custom.sysNixZenKernel.enable`                                         |
 | **CPU**                                                  |                                                                         |
 | `systems/nixos/cpu/amd/base.nix`                         | `custom.sysNixAmdCpu.enable`                                            |
 | `systems/nixos/cpu/amd/ryzen.nix`                        | `custom.sysNixAmdRyzenCpu.enable`                                       |
 | `systems/nixos/cpu/amd/pstate.nix`                       | `custom.sysNixAmdPstate.enable`                                         |
 | `systems/nixos/cpu/amd/zenpower.nix`                     | `custom.sysNixAmdZenpower.enable`                                       |
-| `systems/nixos/cpu/amd/zen-kernel.nix`                   | `custom.sysNixZenKernel.enable`                                         |
 | `systems/nixos/cpu/amd/mitigations-off.nix`              | `custom.sysNixCpuMitigationsOff.enable`                                 |
 | `systems/nixos/cpu/intel/base.nix`                       | `custom.sysNixIntelCpu.enable`                                          |
 | **CPU Profiles** (import one per host)                   |                                                                         |
