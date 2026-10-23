@@ -28,5 +28,12 @@
 
   config = lib.mkIf config.custom.sysNixZenKernel.enable {
     boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_zen;
+
+    assertions = [
+      {
+        assertion = !(config.custom.sysNixZenKernel.enable && config.custom.sysNixLatestKernel.enable or false);
+        message = "Cannot enable both custom.sysNixZenKernel and custom.sysNixLatestKernel simultaneously.";
+      }
+    ];
   };
 }

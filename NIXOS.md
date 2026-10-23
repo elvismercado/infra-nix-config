@@ -92,6 +92,7 @@ Modules default to `false` — importing without enabling has no effect.
 |                                                          | `custom.sysNixPlymouthThemeAdi1090x.theme`                              |
 | **Kernel**                                               |                                                                         |
 | `systems/nixos/kernel/zen.nix`                           | `custom.sysNixZenKernel.enable`                                         |
+| `systems/nixos/kernel/latest.nix`                        | `custom.sysNixLatestKernel.enable`                                      |
 | **CPU**                                                  |                                                                         |
 | `systems/nixos/cpu/amd/base.nix`                         | `custom.sysNixAmdCpu.enable`                                            |
 | `systems/nixos/cpu/amd/ryzen.nix`                        | `custom.sysNixAmdRyzenCpu.enable`                                       |

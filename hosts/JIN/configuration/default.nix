@@ -20,6 +20,7 @@
 
     # Kernel
     ../../../modules/systems/nixos/kernel/zen.nix
+    ../../../modules/systems/nixos/kernel/latest.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_3900x.nix
@@ -131,7 +132,8 @@
   # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
 
   # Kernel
-  custom.sysNixZenKernel.enable = true;
+  # custom.sysNixZenKernel.enable = true;
+  custom.sysNixLatestKernel.enable = true;
 
   # Hardware
   custom.sysNixAmdRyzen93900x.enable = true; # Ryzen 9 3900X profile (ryzen + pstate + zenpower)

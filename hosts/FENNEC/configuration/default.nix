@@ -20,6 +20,7 @@
 
     # Kernel
     ../../../modules/systems/nixos/kernel/zen.nix
+    ../../../modules/systems/nixos/kernel/latest.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_5900x.nix
@@ -105,7 +106,8 @@
   # custom.sysNixPlymouthThemeAdi1090x.theme = "circuit";
 
   # Kernel
-  custom.sysNixZenKernel.enable = true;
+  # custom.sysNixZenKernel.enable = true;
+  # custom.sysNixLatestKernel.enable = true;
 
   # Hardware
   custom.sysNixAmdRyzen95900x.enable = true;
