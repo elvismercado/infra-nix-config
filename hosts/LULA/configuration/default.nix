@@ -84,7 +84,7 @@
   custom.sysNixGrubThemeSleek.style = "dark";
 
   # Kernel
-  # custom.sysNixZenKernel.enable = true;
+  custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
   # custom.sysNixXanmodKernel.enable = true;
   # custom.sysNixLinux7Kernel.enable = true;

@@ -2,12 +2,13 @@
 # https://kernel.org
 #
 # Allows selecting a specific Linux 7.x kernel release branch packaged by Nixpkgs
-# (7.0, 7.1, or 7.2).
+# (7.0 or 7.2). Note: non-LTS intermediate branches like 7.1 are removed upstream
+# once EOL.
 #
 # Usage:
 #   imports = [ ../../../modules/systems/nixos/kernel/linux-7.nix ];
 #   custom.sysNixLinux7Kernel.enable = true;
-#   custom.sysNixLinux7Kernel.version = "7.1"; # "7.0", "7.1", or "7.2" (default)
+#   custom.sysNixLinux7Kernel.version = "7.2"; # "7.0" or "7.2" (default)
 
 {
   config,
@@ -21,14 +22,13 @@ let
 in
 {
   options = {
-    custom.sysNixLinux7Kernel.enable = lib.mkEnableOption "Linux 7.x series kernel branch (7.0, 7.1, or 7.2)";
+    custom.sysNixLinux7Kernel.enable = lib.mkEnableOption "Linux 7.x series kernel branch (7.0 or 7.2)";
     custom.sysNixLinux7Kernel.version = lib.mkOption {
       type = lib.types.enum [
         "7.0"
-        "7.1"
         "7.2"
       ];
-      default = "7.1";
+      default = "7.2";
       description = "Linux 7.x release branch version";
     };
   };
@@ -37,8 +37,6 @@ in
     boot.kernelPackages = lib.mkDefault (
       if cfg.version == "7.0" then
         pkgs.linuxPackages_7_0
-      else if cfg.version == "7.1" then
-        pkgs.linuxPackages_7_1
       else
         pkgs.linuxPackages_7_2
     );

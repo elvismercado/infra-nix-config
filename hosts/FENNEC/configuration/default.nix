@@ -110,9 +110,10 @@
   # Kernel
   # custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
-  # custom.sysNixXanmodKernel.enable = true;
-  custom.sysNixLinux7Kernel.enable = true;
-  custom.sysNixLinux7Kernel.version = "7.1";
+  custom.sysNixXanmodKernel.enable = true;
+  custom.sysNixXanmodKernel.variant = "mainline"; # 6.18.54
+  # custom.sysNixLinux7Kernel.enable = true;
+  # custom.sysNixLinux7Kernel.version = "7.2";
 
   # Hardware
   custom.sysNixAmdRyzen95900x.enable = true;
