@@ -11,7 +11,7 @@
 # Usage:
 #   imports = [ ../../../modules/systems/nixos/kernel/xanmod.nix ];
 #   custom.sysNixXanmodKernel.enable = true;
-#   custom.sysNixXanmodKernel.variant = "lts"; # "lts" (default) or "latest"
+#   custom.sysNixXanmodKernel.variant = "stable"; # "stable" (default), "latest", or "mainline"
 
 {
   config,
@@ -28,18 +28,21 @@ in
     custom.sysNixXanmodKernel.enable = lib.mkEnableOption "Linux XanMod kernel with desktop/gaming latency tunings and BBRv3";
     custom.sysNixXanmodKernel.variant = lib.mkOption {
       type = lib.types.enum [
-        "lts"
+        "stable"
         "latest"
+        "mainline"
       ];
-      default = "lts";
-      description = "XanMod kernel variant: 'lts' for LTS-backed branch or 'latest' for bleeding-edge upstream";
+      default = "stable";
+      description = "XanMod kernel variant: 'stable' (pkgs.linuxPackages_xanmod_stable), 'latest' (pkgs.linuxPackages_xanmod_latest), or 'mainline' (pkgs.linuxPackages_xanmod)";
     };
   };
 
   config = lib.mkIf cfg.enable {
     boot.kernelPackages = lib.mkDefault (
-      if cfg.variant == "lts" then
-        pkgs.linuxPackages_xanmod_lts
+      if cfg.variant == "stable" then
+        pkgs.linuxPackages_xanmod_stable
+      else if cfg.variant == "latest" then
+        pkgs.linuxPackages_xanmod_latest
       else
         pkgs.linuxPackages_xanmod
     );

@@ -137,7 +137,7 @@
   # custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
   custom.sysNixXanmodKernel.enable = true;
-  custom.sysNixXanmodKernel.variant = "lts";
+  custom.sysNixXanmodKernel.variant = "stable";
   # custom.sysNixLiquorixKernel.enable = true;
 
   # Hardware

@@ -26,7 +26,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_liquorix;
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_lqx;
 
     assertions = [
       {
