@@ -36,7 +36,7 @@
           && (
             (config.custom.sysNixLatestKernel.enable or false)
             || (config.custom.sysNixXanmodKernel.enable or false)
-            || (config.custom.sysNixLiquorixKernel.enable or false)
+            || (config.custom.sysNixLinux7Kernel.enable or false)
           )
         );
         message = "Cannot enable multiple custom kernel modules simultaneously.";

@@ -22,7 +22,7 @@
     ../../../modules/systems/nixos/kernel/zen.nix
     ../../../modules/systems/nixos/kernel/latest.nix
     ../../../modules/systems/nixos/kernel/xanmod.nix
-    ../../../modules/systems/nixos/kernel/liquorix.nix
+    ../../../modules/systems/nixos/kernel/linux-7.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_5900x.nix
@@ -111,7 +111,8 @@
   # custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
   # custom.sysNixXanmodKernel.enable = true;
-  custom.sysNixLiquorixKernel.enable = true;
+  custom.sysNixLinux7Kernel.enable = true;
+  custom.sysNixLinux7Kernel.version = "7.1";
 
   # Hardware
   custom.sysNixAmdRyzen95900x.enable = true;

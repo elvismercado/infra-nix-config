@@ -22,7 +22,7 @@
     ../../../modules/systems/nixos/kernel/zen.nix
     ../../../modules/systems/nixos/kernel/latest.nix
     ../../../modules/systems/nixos/kernel/xanmod.nix
-    ../../../modules/systems/nixos/kernel/liquorix.nix
+    ../../../modules/systems/nixos/kernel/linux-7.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/amd/ryzen_9_3900x.nix
@@ -137,8 +137,8 @@
   # custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
   custom.sysNixXanmodKernel.enable = true;
-  custom.sysNixXanmodKernel.variant = "stable";
-  # custom.sysNixLiquorixKernel.enable = true;
+  custom.sysNixXanmodKernel.variant = "mainline"; # 6.18.54
+  # custom.sysNixLinux7Kernel.enable = true;
 
   # Hardware
   custom.sysNixAmdRyzen93900x.enable = true; # Ryzen 9 3900X profile (ryzen + pstate + zenpower)
