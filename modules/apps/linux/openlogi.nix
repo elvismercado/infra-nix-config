@@ -1,8 +1,19 @@
 # OpenLogi — Linux app façade
+# https://github.com/AprilNEA/OpenLogi
 #
-# Installs OpenLogi through its upstream NixOS module, including the package,
-# udev permissions, and graphical-session user service. OpenLogi manages its
-# own device profiles through the app and its TOML configuration.
+# Installs OpenLogi through its upstream NixOS module (from the `packaging/` directory),
+# which includes:
+#   - `openlogi` CLI — device inventory, diagnostics, firmware info
+#   - `openlogi-agent` user service — background HID++ handling (starts with graphical-session.target)
+#   - `openlogi-desktop` GUI — launched on demand (no system tray indicator on Linux)
+#   - udev rules (`70-openlogi.rules`) — grants active-seat user write access to /dev/uinput
+#     and read/write to /dev/hidraw* without sudo
+#
+# Prerequisites & operational notes:
+#   - Solaar (or Logi Options+) must NOT be running concurrently; both fight for exclusive
+#     HID++ communication with the Bolt/Unifying receiver.
+#   - If devices are not detected immediately after initial activation, reconnect the receiver
+#     or power-cycle wireless mice so udev re-evaluates the device ACLs.
 #
 # Usage:
 #   imports = [ ../../../modules/apps/linux/openlogi.nix ];
