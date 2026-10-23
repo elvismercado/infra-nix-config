@@ -17,6 +17,8 @@
     # Kernel
     ../../../modules/systems/nixos/kernel/zen.nix
     ../../../modules/systems/nixos/kernel/latest.nix
+    ../../../modules/systems/nixos/kernel/xanmod.nix
+    ../../../modules/systems/nixos/kernel/liquorix.nix
 
     # Hardware
     ../../../modules/systems/nixos/cpu/intel/tiger_lake_i5_1135g7.nix
@@ -84,6 +86,8 @@
   # Kernel
   # custom.sysNixZenKernel.enable = true;
   # custom.sysNixLatestKernel.enable = true;
+  # custom.sysNixXanmodKernel.enable = true;
+  # custom.sysNixLiquorixKernel.enable = true;
 
   # Hardware
   custom.sysNixIntelTigerLakeI51135g7.enable = true;

@@ -93,6 +93,9 @@ Modules default to `false` — importing without enabling has no effect.
 | **Kernel**                                               |                                                                         |
 | `systems/nixos/kernel/zen.nix`                           | `custom.sysNixZenKernel.enable`                                         |
 | `systems/nixos/kernel/latest.nix`                        | `custom.sysNixLatestKernel.enable`                                      |
+| `systems/nixos/kernel/xanmod.nix`                        | `custom.sysNixXanmodKernel.enable`                                      |
+|                                                          | `custom.sysNixXanmodKernel.variant`                                     |
+| `systems/nixos/kernel/liquorix.nix`                      | `custom.sysNixLiquorixKernel.enable`                                    |
 | **CPU**                                                  |                                                                         |
 | `systems/nixos/cpu/amd/base.nix`                         | `custom.sysNixAmdCpu.enable`                                            |
 | `systems/nixos/cpu/amd/ryzen.nix`                        | `custom.sysNixAmdRyzenCpu.enable`                                       |
