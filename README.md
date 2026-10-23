@@ -184,20 +184,22 @@ does not read uncommitted files from the local sibling or refresh that pin.
 A local empty stub does not satisfy or override the GitHub input. Offline
 private-input substitution remains tracked in [TODO.md](TODO.md).
 
-`switchupgrade` automates the publication order:
+`switchupgrade` automates the publication order with safety guards:
 
-1. Commit and push local changes in `infra-nix-config-private`.
-2. Pull the public repository and update all flake inputs, including the
-   `private` lock entry.
-3. Check the flake and build every host for the current platform.
-4. Switch the current host only.
-5. Commit and push the public repository.
+1. Validate the public repository worktree is clean (uncommitted edits block upgrade).
+2. Commit and push local changes in `infra-nix-config-private` (aborts rebase cleanly on conflicts).
+3. Fast-forward the public repository and create a pre-upgrade `flake.lock` backup.
+4. Update all flake inputs, including the `private` lock entry.
+5. Check the flake and build every host for the current platform (local host built first; aborts early on failure).
+6. Switch and activate the current host only (with background `sudo` keepalive).
+7. Commit and push the public repository lockfile.
 
-The workflow writes a timestamped log outside both repositories under
-`~/.local/state/infra-nix-config/upgrade/`. If the final public push fails,
-`switchpublish` retries it. `switchprivatepublish` is available when private
-changes should be published without a full system upgrade. `switchpull` only
-fast-forwards repositories; it does not update `flake.lock`.
+If evaluation, flake check, or any host build fails, `flake.lock` is
+automatically rolled back to its pre-upgrade state, and the failing lockfile is
+preserved alongside the execution log in `~/.local/state/infra-nix-config/upgrade/`.
+If the final public push fails, `switchpublish` retries it. `switchprivatepublish`
+is available when private changes should be published without a full system upgrade.
+`switchpull` only fast-forwards repositories; it does not update `flake.lock`.
 
 Linux validation builds JIN, FENNEC, and LULA. Darwin validation builds EDGE.
 The two platform sets are intentionally validated separately.
