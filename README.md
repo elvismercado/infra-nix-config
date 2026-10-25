@@ -31,8 +31,11 @@ to `homeManagerHosts` in `flake/hosts.nix`.
 switch
 
 # Full upgrade (publish private changes, validate all hosts for this platform,
-# switch the current host, publish public changes, and save a log)
+# switch the current host immediately, publish public changes, and save a log)
 switchupgrade
+
+# Full upgrade staged for next boot only (validates all hosts, stages for next boot, publishes)
+switchupgradeboot
 
 # Stage remote origin/main updates for next boot only (bootloader registration)
 switchautoboot
@@ -209,8 +212,13 @@ The two platform sets are intentionally validated separately.
 
 ### Two-Tier Upgrade Architecture
 
-1. **Release Tier (`switchupgrade`)**: Run interactively on a designated machine (e.g. JIN). Bumps flake inputs, checks the flake, validates all platform hosts, switches the local system, and publishes verified lockfile commits to GitHub.
-2. **Fleet Consumer Tier (`custom.sysNixAutoUpgrade`)**: Scheduled background timer (`infra-nix-auto-upgrade.timer`) for secondary Linux machines. Periodically checks `origin/main`, fast-forwards verified commits, and stages new generations in GRUB via `nixos-rebuild boot` without modifying active desktop sessions.
+1. **Manual Operations**:
+   - `switchupgrade`: Interactive full upgrade with immediate live activation (`nixos-rebuild switch`).
+   - `switchupgradeboot`: Full upgrade verifying all platform hosts, staging the local system in GRUB for next reboot (`nixos-rebuild boot`), and publishing verified `flake.lock`.
+   - `switchautoboot`: Fast local sync consuming pre-verified commits from GitHub, staging for next boot with zero input bumps.
+2. **Automated Dual-Cadence Services (`custom.sysNixAutoUpgrade`)**:
+   - **Daily Fleet Sync** (`custom.sysNixAutoUpgrade.enable`, default 04:00): Scheduled background timer (`infra-nix-auto-upgrade.timer`) for secondary Linux machines. Periodically checks `origin/main`, fast-forwards verified commits, and stages new generations in GRUB via `nixos-rebuild boot` without modifying active desktop sessions.
+   - **Weekly Fleet Upgrade** (`custom.sysNixAutoUpgrade.enableWeeklyUpgrade`, default Sunday 03:00): Scheduled background timer (`infra-nix-auto-upgrade-weekly.timer`) for the designated leader host (e.g. JIN). Bumps inputs, validates all platform hosts, stages local system for next boot, and pushes verified `flake.lock` to GitHub.
    - **Notifications**: Successful background staging sends a timed desktop notification (20s). Any failure (diverged worktree, build issue) triggers a sticky, non-expiring critical alert (`--urgency=critical --expire-time=0`) that remains on screen until explicitly dismissed.
 
 Clone the optional companion with:

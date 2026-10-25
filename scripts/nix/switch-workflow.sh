@@ -4,6 +4,7 @@ set -Eeuo pipefail
 public_repo=""
 current_operation="not started"
 current_hostname=""
+current_mode="switch"
 target_platform="linux"
 staged_status="not run"
 remote_has_changes="unknown"
@@ -20,7 +21,7 @@ host_results=()
 usage() {
   cat <<'USAGE'
 Usage:
-  switch-workflow.sh upgrade <public-repo> <private-repo> <hostname> <linux|darwin>
+  switch-workflow.sh upgrade <public-repo> <private-repo> <hostname> <linux|darwin> [switch|boot]
   switch-workflow.sh auto-boot <public-repo> <hostname>
   switch-workflow.sh publish-public <public-repo>
   switch-workflow.sh publish-private <private-repo>
@@ -156,11 +157,19 @@ finish() {
           20000
       fi
     elif [[ "$current_operation" == "upgrade" ]]; then
-      send_notification \
-        "Infra Nix Upgrade: Complete" \
-        "Successfully validated all hosts and activated ${current_hostname:-system}." \
-        "normal" \
-        20000
+      if [[ "${current_mode:-switch}" == "boot" ]]; then
+        send_notification \
+          "System Upgrade Staged (Next Boot)" \
+          "Full fleet upgrade verified and published. Changes staged for ${current_hostname:-system} on next reboot." \
+          "normal" \
+          20000
+      else
+        send_notification \
+          "Infra Nix Upgrade: Complete" \
+          "Successfully validated all hosts and activated ${current_hostname:-system}." \
+          "normal" \
+          20000
+      fi
     elif [[ "$current_operation" == "build-all" ]]; then
       send_notification \
         "Infra Nix Build: Complete" \
@@ -414,14 +423,37 @@ switch_current_impl() {
   local repo="$1"
   local hostname="$2"
   local platform="$3"
+  local mode="${4:-switch}"
 
-  switch_status="activating ${hostname}"
-  if [[ "$platform" == "linux" ]]; then
-    sudo nixos-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+  if [[ "$mode" == "boot" ]]; then
+    if [[ "$platform" != "linux" ]]; then
+      fail "Staging for boot is only supported on Linux (${platform} does not support boot staging)"
+    fi
+    switch_status="staging ${hostname} for next boot"
+    if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+      sudo nixos-rebuild boot --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+    else
+      nixos-rebuild boot --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+    fi
+    switch_status="staged ${hostname} for next boot"
+    staged_status="staged"
   else
-    sudo darwin-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+    switch_status="activating ${hostname}"
+    if [[ "$platform" == "linux" ]]; then
+      if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+        sudo nixos-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+      else
+        nixos-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+      fi
+    else
+      if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+        sudo darwin-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+      else
+        darwin-rebuild switch --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v
+      fi
+    fi
+    switch_status="activated ${hostname}"
   fi
-  switch_status="activated ${hostname}"
 }
 
 publish_public_impl() {
@@ -445,14 +477,20 @@ upgrade() {
   local private_repo="$2"
   local hostname="$3"
   local platform="$4"
+  local activation_mode="${5:-switch}"
 
   public_repo="$public_repo_arg"
+  current_hostname="$hostname"
+  target_platform="$platform"
+  current_mode="$activation_mode"
   validate_platform "$platform"
   is_git_repo "$public_repo" || fail "Public repository is not a Git checkout: $public_repo"
   start_log "upgrade" "$hostname"
   check_common_commands
   check_nix_commands
-  require_command sudo
+  if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+    require_command sudo
+  fi
   if [[ "$platform" == "linux" ]]; then
     require_command nixos-rebuild
   else
@@ -461,17 +499,23 @@ upgrade() {
   load_github_token
 
   # Pre-elevate sudo and maintain keepalive loop during long builds
-  printf 'Authenticating sudo for upgrade workflow...\n'
-  sudo -v
-  ( while true; do sudo -n -v 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
-  sudo_keepalive_pid=$!
+  if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+    printf 'Authenticating sudo for upgrade workflow...\n'
+    sudo -v
+    ( while true; do sudo -n -v 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+    sudo_keepalive_pid=$!
+  fi
 
   run_phase "Publish private repository changes" publish_private_impl "$private_repo"
   run_phase "Prepare public repository" prepare_public_impl "$public_repo"
   run_phase "Update flake inputs" update_flake_impl "$public_repo"
   run_phase "Check flake" check_flake_impl "$public_repo"
   run_phase "Build all ${platform} hosts" build_all_impl "$public_repo" "$platform" "$hostname"
-  run_phase "Activate ${hostname}" switch_current_impl "$public_repo" "$hostname" "$platform"
+  local phase_label="Activate ${hostname}"
+  if [[ "$activation_mode" == "boot" ]]; then
+    phase_label="Stage ${hostname} for next boot"
+  fi
+  run_phase "$phase_label" switch_current_impl "$public_repo" "$hostname" "$platform" "$activation_mode"
   run_phase "Publish public repository" publish_public_impl "$public_repo"
 }
 
@@ -607,8 +651,8 @@ main() {
   local command="${1:-}"
   case "$command" in
     upgrade)
-      [[ "$#" -eq 5 ]] || { usage; return 2; }
-      upgrade "$2" "$3" "$4" "$5"
+      [[ "$#" -ge 5 && "$#" -le 6 ]] || { usage; return 2; }
+      upgrade "$2" "$3" "$4" "$5" "${6:-switch}"
       ;;
     auto-boot)
       [[ "$#" -eq 3 ]] || { usage; return 2; }

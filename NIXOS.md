@@ -155,6 +155,8 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/system/auto-upgrade.nix`                  | `custom.sysNixAutoUpgrade.enable`                                       |
 |                                                          | `custom.sysNixAutoUpgrade.dates`                                        |
 |                                                          | `custom.sysNixAutoUpgrade.randomizedDelaySec`                           |
+|                                                          | `custom.sysNixAutoUpgrade.enableWeeklyUpgrade`                          |
+|                                                          | `custom.sysNixAutoUpgrade.weeklyDates`                                  |
 | **Apps**                                                 |                                                                         |
 | `systems/nixos/apps/coolercontrol.nix`                   | `custom.sysNixCoolercontrol.enable`                                     |
 | `systems/nixos/apps/embedded.nix`                        | `custom.sysNixEmbedded.enable`                                          |
