@@ -41,6 +41,7 @@
     ../../../modules/systems/nixos/system/time.nix
     ../../../modules/systems/nixos/system/i18n.nix
     ../../../modules/systems/nixos/system/fonts.nix
+    ../../../modules/systems/nixos/system/auto-upgrade.nix
 
     # Network
     ../../../modules/systems/nixos/network/tailscale.nix
@@ -110,6 +111,7 @@
   custom.sysNixTimezone.enable = true;
   custom.sysNixI18n.enable = true;
   custom.sysFonts.enable = true;
+  # custom.sysNixAutoUpgrade.enable = true;
 
   # Network
   custom.sysNixTailscale.enable = true;

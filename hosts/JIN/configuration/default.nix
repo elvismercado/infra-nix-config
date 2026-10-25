@@ -46,6 +46,7 @@
     ../../../modules/systems/nixos/system/i18n.nix
     ../../../modules/systems/nixos/system/fonts.nix
     ../../../modules/systems/nixos/system/network-tuning.nix
+    ../../../modules/systems/nixos/system/auto-upgrade.nix
 
     # Network
     ../../../modules/systems/nixos/network/wake-on-lan.nix
@@ -163,6 +164,7 @@
   custom.sysNixI18n.enable = true;
   custom.sysFonts.enable = true;
   custom.sysNixNetworkTuning.enable = true;
+  # custom.sysNixAutoUpgrade.enable = true;
 
   # Network
   custom.sysNixWakeOnLan.enable = true;

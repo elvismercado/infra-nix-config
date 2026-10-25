@@ -152,6 +152,9 @@ Modules default to `false` — importing without enabling has no effect.
 | `systems/nixos/system/i18n.nix`                          | `custom.sysNixI18n.enable`                                              |
 | `systems/nixos/system/time.nix`                          | `custom.sysNixTimezone.enable`                                          |
 | `systems/nixos/system/network-tuning.nix`                | `custom.sysNixNetworkTuning.enable`                                     |
+| `systems/nixos/system/auto-upgrade.nix`                  | `custom.sysNixAutoUpgrade.enable`                                       |
+|                                                          | `custom.sysNixAutoUpgrade.dates`                                        |
+|                                                          | `custom.sysNixAutoUpgrade.randomizedDelaySec`                           |
 | **Apps**                                                 |                                                                         |
 | `systems/nixos/apps/coolercontrol.nix`                   | `custom.sysNixCoolercontrol.enable`                                     |
 | `systems/nixos/apps/embedded.nix`                        | `custom.sysNixEmbedded.enable`                                          |

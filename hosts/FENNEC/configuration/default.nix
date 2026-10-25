@@ -43,6 +43,7 @@
     ../../../modules/systems/nixos/system/i18n.nix
     ../../../modules/systems/nixos/system/fonts.nix
     ../../../modules/systems/nixos/system/network-tuning.nix
+    ../../../modules/systems/nixos/system/auto-upgrade.nix
 
     # Network
     ../../../modules/systems/nixos/network/wake-on-lan.nix
@@ -135,6 +136,7 @@
   custom.sysFonts.enable = true;
   custom.sysNixNetworkTuning.enable = true;
   custom.sysNixNetworkTuning.congestionControl = "cubic"; # gaming host — BBR collapses Steam/Akamai downloads to ~150 Mbps
+  # custom.sysNixAutoUpgrade.enable = true;
 
   # Network
   custom.sysNixWakeOnLan.enable = true;

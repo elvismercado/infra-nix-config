@@ -2,6 +2,11 @@
 set -Eeuo pipefail
 
 public_repo=""
+current_operation="not started"
+current_hostname=""
+target_platform="linux"
+staged_status="not run"
+remote_has_changes="unknown"
 sudo_keepalive_pid=""
 log_file=""
 phase="not started"
@@ -16,6 +21,7 @@ usage() {
   cat <<'USAGE'
 Usage:
   switch-workflow.sh upgrade <public-repo> <private-repo> <hostname> <linux|darwin>
+  switch-workflow.sh auto-boot <public-repo> <hostname>
   switch-workflow.sh publish-public <public-repo>
   switch-workflow.sh publish-private <private-repo>
   switch-workflow.sh build-all <public-repo> <linux|darwin> [hostname]
@@ -26,6 +32,55 @@ USAGE
 fail() {
   printf 'ERROR: %s\n' "$*" >&2
   return 1
+}
+
+send_notification() {
+  local title="$1"
+  local message="$2"
+  local urgency="${3:-normal}"
+  local expire_time_ms="${4:-20000}"
+
+  if [[ "${target_platform:-linux}" == "darwin" ]]; then
+    if command -v osascript >/dev/null 2>&1; then
+      osascript -e "display notification \"${message//\"/\\\"}\" with title \"${title//\"/\\\"}\"" 2>/dev/null || true
+    fi
+    return 0
+  fi
+
+  if ! command -v notify-send >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if [[ ${EUID:-$(id -u)} -eq 0 ]]; then
+    if command -v loginctl >/dev/null 2>&1; then
+      local sessions
+      sessions=$(loginctl list-sessions --no-legend 2>/dev/null | awk '{print $1}')
+      for session in $sessions; do
+        local user uid type
+        user=$(loginctl show-session "$session" -p Name --value 2>/dev/null || true)
+        uid=$(loginctl show-session "$session" -p User --value 2>/dev/null || true)
+        type=$(loginctl show-session "$session" -p Type --value 2>/dev/null || true)
+        if [[ -n "$user" && -n "$uid" && ( "$type" == "wayland" || "$type" == "x11" ) ]]; then
+          sudo -u "$user" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/${uid}/bus" \
+            notify-send \
+              --urgency="$urgency" \
+              --expire-time="$expire_time_ms" \
+              --app-name="Nix Auto-Upgrade" \
+              --icon="system-software-update" \
+              "$title" \
+              "$message" 2>/dev/null || true
+        fi
+      done
+    fi
+  else
+    notify-send \
+      --urgency="$urgency" \
+      --expire-time="$expire_time_ms" \
+      --app-name="Nix Workflow" \
+      --icon="system-software-update" \
+      "$title" \
+      "$message" 2>/dev/null || true
+  fi
 }
 
 finish() {
@@ -81,21 +136,55 @@ finish() {
       printf 'failed lockfile preserved: %s\n' "${log_file%.log}.flake.lock.failed"
     fi
   fi
+
+  # Send desktop notifications: sticky (0) on failure, timed (20000ms) on successful staging/upgrade
+  if [[ "$exit_code" -ne 0 ]]; then
+    if [[ "$current_operation" != "not started" && -n "$current_operation" ]]; then
+      send_notification \
+        "System Update Failed" \
+        "Workflow '${current_operation}' failed during phase '${phase}'. Run switchhealth or check logs." \
+        "critical" \
+        0
+    fi
+  else
+    if [[ "$current_operation" == "auto-boot" ]]; then
+      if [[ "$staged_status" == "staged" ]]; then
+        send_notification \
+          "System Update Staged (Next Boot)" \
+          "New system generation built in background for ${current_hostname:-system}. Changes take effect on next reboot." \
+          "normal" \
+          20000
+      fi
+    elif [[ "$current_operation" == "upgrade" ]]; then
+      send_notification \
+        "Infra Nix Upgrade: Complete" \
+        "Successfully validated all hosts and activated ${current_hostname:-system}." \
+        "normal" \
+        20000
+    elif [[ "$current_operation" == "build-all" ]]; then
+      send_notification \
+        "Infra Nix Build: Complete" \
+        "All ${target_platform:-platform} hosts built successfully." \
+        "normal" \
+        10000
+    fi
+  fi
 }
 
 trap 'exit_code=$?; finish "$exit_code"' EXIT
 
 start_log() {
-  local operation="$1"
+  current_operation="$1"
   local host="${2:-all}"
+  current_hostname="$host"
   local state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/infra-nix-config/upgrade"
   local timestamp
   timestamp="$(date '+%Y-%m-%dT%H-%M-%S')"
   mkdir -p "$state_dir"
-  log_file="${state_dir}/${timestamp}-${host}-${operation}.log"
+  log_file="${state_dir}/${timestamp}-${host}-${current_operation}.log"
   exec > >(tee -a "$log_file") 2>&1
   printf '=== Infra Nix workflow ===\n'
-  printf 'operation: %s\n' "$operation"
+  printf 'operation: %s\n' "$current_operation"
   printf 'host: %s\n' "$host"
   printf 'started: %s\n' "$(date --iso-8601=seconds 2>/dev/null || date)"
   printf 'log file: %s\n' "$log_file"
@@ -155,10 +244,26 @@ check_nix_commands() {
 }
 
 load_github_token() {
-  local github_token
-  github_token="$(gh auth token)"
-  [[ -n "$github_token" ]] || fail "gh returned an empty GitHub token"
-  nix_auth_args=(--option access-tokens "github.com=${github_token}")
+  local github_token=""
+  if command -v gh >/dev/null 2>&1; then
+    github_token="$(gh auth token 2>/dev/null || true)"
+    if [[ -z "$github_token" && ${EUID:-$(id -u)} -eq 0 && -n "${public_repo:-}" ]]; then
+      local repo_owner
+      repo_owner="$(stat -c '%U' "$public_repo" 2>/dev/null || true)"
+      if [[ -n "$repo_owner" ]]; then
+        github_token="$(sudo -u "$repo_owner" gh auth token 2>/dev/null || true)"
+      fi
+    fi
+  fi
+  if [[ -z "$github_token" && -n "${GITHUB_TOKEN:-}" ]]; then
+    github_token="$GITHUB_TOKEN"
+  fi
+
+  if [[ -n "$github_token" ]]; then
+    nix_auth_args=(--option access-tokens "github.com=${github_token}")
+  else
+    nix_auth_args=()
+  fi
 }
 
 publish_private_impl() {
@@ -386,6 +491,83 @@ publish_private() {
   run_phase "Publish private repository" publish_private_impl "$private_repo"
 }
 
+check_remote_updates_impl() {
+  local repo="$1"
+  remote_has_changes="no"
+  printf 'Fetching origin main...\n'
+  if ! git -C "$repo" fetch origin main --verbose; then
+    fail "Failed to fetch origin/main. Network or remote error."
+  fi
+  local local_rev remote_rev
+  local_rev="$(git -C "$repo" rev-parse HEAD)"
+  remote_rev="$(git -C "$repo" rev-parse origin/main)"
+  if [[ "$local_rev" != "$remote_rev" ]]; then
+    remote_has_changes="yes"
+    printf 'Remote origin/main has new revisions (%s -> %s).\n' "$local_rev" "$remote_rev"
+  else
+    printf 'Local repository is already at origin/main (%s).\n' "$local_rev"
+  fi
+}
+
+ff_public_repo_impl() {
+  local repo="$1"
+  if git_is_dirty "$repo"; then
+    fail "Public repository has uncommitted changes. Auto-upgrade staging skipped."
+  fi
+  if ! git -C "$repo" pull --verbose --ff-only origin main; then
+    fail "Could not fast-forward repository to origin/main. Manual sync required."
+  fi
+  public_status="fast-forwarded"
+}
+
+stage_boot_impl() {
+  local repo="$1"
+  local hostname="$2"
+  switch_status="staging ${hostname} for next boot"
+  local cmd=()
+  if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+    cmd=(sudo nixos-rebuild boot --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v)
+  else
+    cmd=(nixos-rebuild boot --flake "${repo}#${hostname}" "${nix_auth_args[@]}" --show-trace --print-build-logs -v)
+  fi
+  "${cmd[@]}"
+  switch_status="staged ${hostname} for next boot"
+  staged_status="staged"
+}
+
+auto_boot() {
+  local public_repo_arg="$1"
+  local hostname="$2"
+
+  public_repo="$public_repo_arg"
+  current_hostname="$hostname"
+  target_platform="linux"
+  validate_platform "linux"
+  is_git_repo "$public_repo" || fail "Public repository is not a Git checkout: $public_repo"
+
+  start_log "auto-boot" "$hostname"
+  check_common_commands
+  check_nix_commands
+  if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+    require_command sudo
+    sudo -v
+    ( while true; do sudo -n -v 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+    sudo_keepalive_pid=$!
+  fi
+  require_command nixos-rebuild
+  load_github_token
+
+  run_phase "Check remote updates" check_remote_updates_impl "$public_repo"
+  if [[ "$remote_has_changes" == "no" ]]; then
+    printf 'Repository is already up to date with origin/main. No auto-boot update required.\n'
+    return 0
+  fi
+
+  run_phase "Fast-forward public repository" ff_public_repo_impl "$public_repo"
+  run_phase "Check flake" check_flake_impl "$public_repo"
+  run_phase "Stage system for next boot" stage_boot_impl "$public_repo" "$hostname"
+}
+
 build_all() {
   local public_repo_arg="$1"
   local platform="$2"
@@ -427,6 +609,10 @@ main() {
     upgrade)
       [[ "$#" -eq 5 ]] || { usage; return 2; }
       upgrade "$2" "$3" "$4" "$5"
+      ;;
+    auto-boot)
+      [[ "$#" -eq 3 ]] || { usage; return 2; }
+      auto_boot "$2" "$3"
       ;;
     publish-public)
       [[ "$#" -eq 2 ]] || { usage; return 2; }

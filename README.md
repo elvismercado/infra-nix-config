@@ -34,6 +34,9 @@ switch
 # switch the current host, publish public changes, and save a log)
 switchupgrade
 
+# Stage remote origin/main updates for next boot only (bootloader registration)
+switchautoboot
+
 # Explicit platform-wide validation without activation
 switchbuildalllinux       # JIN, FENNEC, and LULA; run on Linux
 switchbuildalldarwin      # EDGE; run on macOS
@@ -118,7 +121,7 @@ modules/
       power/                 #   power-profiles-daemon
       security/              #   YubiKey, fprintd
       ssd/                   #   SSD optimisations (fstrim)
-      system/                #   Console, fonts, i18n, network tuning, time, user
+      system/                #   Auto-upgrade, console, fonts, i18n, network tuning, time, user
       bluetooth.nix          #   Bluetooth + A2DP audio
       brave-policies.nix     #   Brave managed policies (debrand + privacy + extensions)
       pipewire.nix           #   PipeWire audio server
@@ -203,6 +206,12 @@ is available when private changes should be published without a full system upgr
 
 Linux validation builds JIN, FENNEC, and LULA. Darwin validation builds EDGE.
 The two platform sets are intentionally validated separately.
+
+### Two-Tier Upgrade Architecture
+
+1. **Release Tier (`switchupgrade`)**: Run interactively on a designated machine (e.g. JIN). Bumps flake inputs, checks the flake, validates all platform hosts, switches the local system, and publishes verified lockfile commits to GitHub.
+2. **Fleet Consumer Tier (`custom.sysNixAutoUpgrade`)**: Scheduled background timer (`infra-nix-auto-upgrade.timer`) for secondary Linux machines. Periodically checks `origin/main`, fast-forwards verified commits, and stages new generations in GRUB via `nixos-rebuild boot` without modifying active desktop sessions.
+   - **Notifications**: Successful background staging sends a timed desktop notification (20s). Any failure (diverged worktree, build issue) triggers a sticky, non-expiring critical alert (`--urgency=critical --expire-time=0`) that remains on screen until explicitly dismissed.
 
 Clone the optional companion with:
 
