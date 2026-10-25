@@ -40,6 +40,7 @@ send_notification() {
   local message="$2"
   local urgency="${3:-normal}"
   local expire_time_ms="${4:-20000}"
+  local icon="${5:-system-software-update}"
 
   if [[ "${target_platform:-linux}" == "darwin" ]]; then
     if command -v osascript >/dev/null 2>&1; then
@@ -67,7 +68,7 @@ send_notification() {
               --urgency="$urgency" \
               --expire-time="$expire_time_ms" \
               --app-name="Nix Auto-Upgrade" \
-              --icon="system-software-update" \
+              --icon="$icon" \
               "$title" \
               "$message" 2>/dev/null || true
         fi
@@ -78,7 +79,7 @@ send_notification() {
       --urgency="$urgency" \
       --expire-time="$expire_time_ms" \
       --app-name="Nix Workflow" \
-      --icon="system-software-update" \
+      --icon="$icon" \
       "$title" \
       "$message" 2>/dev/null || true
   fi
@@ -145,7 +146,8 @@ finish() {
         "System Update Failed" \
         "Workflow '${current_operation}' failed during phase '${phase}'. Run switchhealth or check logs." \
         "critical" \
-        0
+        0 \
+        "dialog-error"
     fi
   else
     if [[ "$current_operation" == "auto-boot" ]]; then
@@ -154,7 +156,8 @@ finish() {
           "System Update Staged (Next Boot)" \
           "New system generation built in background for ${current_hostname:-system}. Changes take effect on next reboot." \
           "normal" \
-          20000
+          20000 \
+          "system-software-update"
       fi
     elif [[ "$current_operation" == "upgrade" ]]; then
       if [[ "${current_mode:-switch}" == "boot" ]]; then
@@ -162,20 +165,23 @@ finish() {
           "System Upgrade Staged (Next Boot)" \
           "Full fleet upgrade verified and published. Changes staged for ${current_hostname:-system} on next reboot." \
           "normal" \
-          20000
+          20000 \
+          "system-software-update"
       else
         send_notification \
           "Infra Nix Upgrade: Complete" \
           "Successfully validated all hosts and activated ${current_hostname:-system}." \
           "normal" \
-          20000
+          20000 \
+          "system-software-update"
       fi
     elif [[ "$current_operation" == "build-all" ]]; then
       send_notification \
         "Infra Nix Build: Complete" \
         "All ${target_platform:-platform} hosts built successfully." \
         "normal" \
-        10000
+        10000 \
+        "system-software-update"
     fi
   fi
 }
@@ -510,6 +516,14 @@ upgrade() {
   run_phase "Prepare public repository" prepare_public_impl "$public_repo"
   run_phase "Update flake inputs" update_flake_impl "$public_repo"
   run_phase "Check flake" check_flake_impl "$public_repo"
+
+  local start_title="Infra Nix Upgrade: Building"
+  local start_msg="Building all ${platform} hosts in background..."
+  if [[ "$activation_mode" == "boot" ]]; then
+    start_msg="Building all ${platform} hosts and staging ${hostname} for next boot..."
+  fi
+  send_notification "$start_title" "$start_msg" "low" 10000 "system-software-update"
+
   run_phase "Build all ${platform} hosts" build_all_impl "$public_repo" "$platform" "$hostname"
   local phase_label="Activate ${hostname}"
   if [[ "$activation_mode" == "boot" ]]; then
@@ -606,6 +620,13 @@ auto_boot() {
     printf 'Repository is already up to date with origin/main. No auto-boot update required.\n'
     return 0
   fi
+
+  send_notification \
+    "System Update: Starting" \
+    "New updates detected on origin/main. Building and staging for next boot on ${hostname}..." \
+    "low" \
+    10000 \
+    "system-software-update"
 
   run_phase "Fast-forward public repository" ff_public_repo_impl "$public_repo"
   run_phase "Check flake" check_flake_impl "$public_repo"
