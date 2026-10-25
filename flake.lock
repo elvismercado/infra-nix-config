@@ -140,11 +140,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792769188,
-        "narHash": "sha256-g4vKmp/alqd48uhqWbJpCm1eL1UHDDH3/K6G7m/O1Fc=",
+        "lastModified": 1792896866,
+        "narHash": "sha256-/0tELNnhdSnP+bHSdWiEe6KpfSwi6WrTnT9cm/jNkjA=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "0cf43f39990c5ec16dd27ce211324cdfd2e8d27f",
+        "rev": "c216bf5a1f173b0481bd5c8c489ebe5595ecc68c",
         "type": "github"
       },
       "original": {
@@ -160,12 +160,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1792438572,
-        "narHash": "sha256-5mQQOcggBRBXB7NlzUxO0dbvQN4euJOISjNybrtfxPk=",
-        "rev": "24f8f8e786f87d6a818e1746cb2389bf922afdab",
-        "revCount": 6841,
+        "lastModified": 1792818383,
+        "narHash": "sha256-199i7ubVSXTMl+0AAlL7cVCXSjcI+jWByMcimYjeMX0=",
+        "rev": "24f2190587513b9c2f73db112a17844ae912d965",
+        "revCount": 6842,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2605.6841%2Brev-24f8f8e786f87d6a818e1746cb2389bf922afdab/01a157d5-91e6-7ed0-aaa3-005de397eafe/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2605.6842%2Brev-24f2190587513b9c2f73db112a17844ae912d965/01a16c6f-2780-7db2-bc80-8e342f396925/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -179,12 +179,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1792438572,
-        "narHash": "sha256-5mQQOcggBRBXB7NlzUxO0dbvQN4euJOISjNybrtfxPk=",
-        "rev": "24f8f8e786f87d6a818e1746cb2389bf922afdab",
-        "revCount": 6841,
+        "lastModified": 1792818383,
+        "narHash": "sha256-199i7ubVSXTMl+0AAlL7cVCXSjcI+jWByMcimYjeMX0=",
+        "rev": "24f2190587513b9c2f73db112a17844ae912d965",
+        "revCount": 6842,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2605.6841%2Brev-24f8f8e786f87d6a818e1746cb2389bf922afdab/01a157d5-91e6-7ed0-aaa3-005de397eafe/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/nix-community/home-manager/0.2605.6842%2Brev-24f2190587513b9c2f73db112a17844ae912d965/01a16c6f-2780-7db2-bc80-8e342f396925/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -241,12 +241,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1792714840,
-        "narHash": "sha256-/6UyfGum0O+hOkZlX19WC/TTHxP8r1xY8XVkSPhSp+s=",
-        "rev": "16187f4182d148a3b8406c1c230de2ed0ea0084c",
-        "revCount": 2379,
+        "lastModified": 1792800221,
+        "narHash": "sha256-53jIZEWNh96irEXhsMZFoNhLJgGSU3nYl1i4wFQHAsU=",
+        "rev": "d31953cf55f9027a56e9be938daf5db8c5655663",
+        "revCount": 2381,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/nix-darwin/nix-darwin/0.2605.2379%2Brev-16187f4182d148a3b8406c1c230de2ed0ea0084c/01a1674d-984f-7581-b369-b4b578d1d200/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/nix-darwin/nix-darwin/0.2605.2381%2Brev-d31953cf55f9027a56e9be938daf5db8c5655663/01a16c73-05ac-73d0-8b97-493442e637b7/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -260,12 +260,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1792714840,
-        "narHash": "sha256-/6UyfGum0O+hOkZlX19WC/TTHxP8r1xY8XVkSPhSp+s=",
-        "rev": "16187f4182d148a3b8406c1c230de2ed0ea0084c",
-        "revCount": 2379,
+        "lastModified": 1792800221,
+        "narHash": "sha256-53jIZEWNh96irEXhsMZFoNhLJgGSU3nYl1i4wFQHAsU=",
+        "rev": "d31953cf55f9027a56e9be938daf5db8c5655663",
+        "revCount": 2381,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/nix-darwin/nix-darwin/0.2605.2379%2Brev-16187f4182d148a3b8406c1c230de2ed0ea0084c/01a1674d-984f-7581-b369-b4b578d1d200/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/nix-darwin/nix-darwin/0.2605.2381%2Brev-d31953cf55f9027a56e9be938daf5db8c5655663/01a16c73-05ac-73d0-8b97-493442e637b7/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -362,12 +362,12 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1792502884,
-        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
-        "revCount": 1097682,
+        "lastModified": 1792773339,
+        "narHash": "sha256-rZLrzrC6i+jnTAlvPZHogKDulY7WWDEv9hJeHieO7Zw=",
+        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
+        "revCount": 1100280,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/NixOS/nixpkgs/0.1.1097682%2Brev-02c087f3fe673c9e317f206a627cb6b910336dbe/01a15cfc-ef9d-76f0-b6de-552170f0449d/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/NixOS/nixpkgs/0.1.1100280%2Brev-3ec636362e1816bc2f0888fa0fa2c69f1bc9e504/01a17194-8758-7043-ac6b-726b42e30e85/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -379,41 +379,23 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "openlogi": "openlogi_2"
+        "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1792762165,
-        "narHash": "sha256-mYA+FJQzf8LZxJj7pil4LIvnuylnBfTRGtw51DXaxOE=",
+        "dir": "packaging",
+        "lastModified": 1792925529,
+        "narHash": "sha256-GHGoLOVYVQ/brGBveO8Bkjm2w8l9KIbY4YN9GbUokPg=",
         "owner": "AprilNEA",
         "repo": "OpenLogi",
-        "rev": "b2a4dbba3594f8dbcd9fe20cb5c56a40baa33511",
+        "rev": "7a088710504da316af7c9d5fbde4b0415206360a",
         "type": "github"
       },
       "original": {
+        "dir": "packaging",
         "owner": "AprilNEA",
         "repo": "OpenLogi",
         "type": "github"
       }
-    },
-    "openlogi_2": {
-      "inputs": {
-        "nixpkgs": [
-          "openlogi",
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "path": "./packaging",
-        "type": "path"
-      },
-      "original": {
-        "path": "./packaging",
-        "type": "path"
-      },
-      "parent": [
-        "openlogi"
-      ]
     },
     "plasma-manager": {
       "inputs": {
@@ -474,7 +456,6 @@
     "rust-overlay": {
       "inputs": {
         "nixpkgs": [
-          "openlogi",
           "openlogi",
           "nixpkgs"
         ]
