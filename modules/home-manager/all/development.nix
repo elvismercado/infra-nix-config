@@ -10,17 +10,20 @@
 {
   config,
   lib,
-  pkgs,
+  userSettings,
   ...
 }:
 
 let
   cfg = config.custom.hmDevelopment;
+  # Use externally supplied host metadata in imports. Reading pkgs here would
+  # require config during import resolution and trigger infinite recursion.
+  isLinux = lib.hasSuffix "linux" userSettings.system;
   vscodeModule =
-    if pkgs.stdenv.isDarwin then
-      ../darwin/vscode.nix
+    if isLinux then
+      ../linux/vscode.nix
     else
-      ../linux/vscode.nix;
+      ../darwin/vscode.nix;
 in
 {
   imports = [
