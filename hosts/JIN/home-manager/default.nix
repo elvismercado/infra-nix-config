@@ -66,16 +66,12 @@ in
     ../../../modules/home-manager/all/aliases.nix
     ../../../modules/home-manager/all/ansible.nix
     ../../../modules/home-manager/all/bash.nix
+    ../../../modules/home-manager/all/development.nix
     ../../../modules/home-manager/all/fastfetch.nix
-    ../../../modules/home-manager/all/fnm.nix
-    ../../../modules/home-manager/all/git.nix
-    ../../../modules/home-manager/all/pyenv.nix
-    ../../../modules/home-manager/all/ssh.nix
     ../../../modules/home-manager/all/starship.nix
 
     # Apps
     ../../../modules/home-manager/all/android.nix
-    ../../../modules/home-manager/linux/vscode.nix
 
     # Linux
     ../../../modules/home-manager/linux/aliases.nix
@@ -109,10 +105,7 @@ in
   custom.hmAnsible.enable = true;
   custom.hmBash.enable = true;
   custom.hmFastfetch.enable = true;
-  custom.hmFnm.enable = true;
-  custom.hmGit.enable = true;
-  custom.hmPyenv.enable = true;
-  custom.hmSsh.enable = true;
+  custom.hmDevelopment.enable = true;
   custom.hmStarship.enable = true;
   custom.hmStarship.style = "pastel-powerline";
 
@@ -133,7 +126,6 @@ in
   custom.hmPlasmaCommon.dolphin.enable = true;
   custom.hmPlasmaCommon.dolphin.showToolTips = true;
   custom.hmWindowShortcuts.enable = true;
-  custom.hmVscode.enable = true;
 
   # Services
   custom.hmDisplayProfiles.enable = true;

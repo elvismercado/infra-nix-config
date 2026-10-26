@@ -132,8 +132,8 @@ modules/
                              #   Finder, fonts, gc, packages, Power, Security, System Preferences, Tailscale, time, Trackpad)
     shared/                  # Cross-platform modules (bash, Brave policies data, fonts, garbage, packages, ssh)
   home-manager/              # Home Manager modules (toggleable, custom.* namespace)
-    all/                     #   Aliases, Android, Ansible, Base, Bash, Fastfetch, fnm, Git,
-                             #   mpv, pyenv, SSH, Starship
+    all/                     #   Aliases, Android, Ansible, Base, Bash, Development profile,
+                             #   Fastfetch, fnm, Git, GitHub CLI, mpv, pyenv, SSH, Starship, uv
     core/                    #   Shared cross-platform logic for split (Option 2) modules.
                              #   Internal — never imported by hosts; only by linux/ and darwin/ wrappers.
                              #   (Brave, Discord, HandBrake, LibreWolf, Nextcloud, Syncthing,

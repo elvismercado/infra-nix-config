@@ -26,10 +26,21 @@
   config = lib.mkIf config.custom.hmFnm.enable {
     home.packages = [ pkgs.fnm ];
 
-    # Initialize fnm in bash (adds shims to PATH, enables auto-switching)
-    programs.bash.initExtra = ''
-      eval "$(fnm env --use-on-cd)"
-    '';
+    # Initialize fnm in bash and zsh (adds the selected Node version to PATH
+    # and enables automatic switching based on project version files).
+    programs.bash = {
+      enable = true;
+      initExtra = ''
+        eval "$(fnm env --use-on-cd)"
+      '';
+    };
+
+    programs.zsh = lib.mkIf pkgs.stdenv.isDarwin {
+      enable = true;
+      initExtra = ''
+        eval "$(fnm env --use-on-cd --shell zsh)"
+      '';
+    };
 
     # Install latest LTS Node.js and set as default if no versions are installed yet
     home.activation.fnmInstallLts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

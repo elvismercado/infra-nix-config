@@ -16,11 +16,8 @@
     ../../../modules/home-manager/all/aliases.nix
     ../../../modules/home-manager/all/ansible.nix
     ../../../modules/home-manager/all/bash.nix
+    ../../../modules/home-manager/all/development.nix
     ../../../modules/home-manager/all/fastfetch.nix
-    ../../../modules/home-manager/all/fnm.nix
-    ../../../modules/home-manager/all/git.nix
-    ../../../modules/home-manager/all/pyenv.nix
-    ../../../modules/home-manager/all/ssh.nix
     ../../../modules/home-manager/all/starship.nix
 
     # Apps
@@ -40,10 +37,7 @@
   custom.hmAnsible.enable = true;
   custom.hmBash.enable = true;
   custom.hmFastfetch.enable = true;
-  custom.hmFnm.enable = true;
-  custom.hmGit.enable = true;
-  custom.hmPyenv.enable = true;
-  custom.hmSsh.enable = true;
+  custom.hmDevelopment.enable = true;
   custom.hmStarship.enable = true;
   custom.hmStarship.style = "pastel-powerline";
 

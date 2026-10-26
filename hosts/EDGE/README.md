@@ -25,7 +25,7 @@ macOS desktop — 2018 MacBook Pro 15", Intel Core i9
 - **Fonts:** Nerd Fonts, Google Fonts
 - **System Packages:** git, gh, nano
 - **Garbage Collection:** Disabled — Determinate Nix manages its own GC
-- **Dev Tools:** Git, fnm (Node), pyenv (Python), Android tools, Ansible
+- **Dev Tools:** Git, GitHub CLI, fnm (Node/npm), uv + Python, SSH, VS Code, Android tools, Ansible
 - **CLI:** Fastfetch, SSH, shell aliases
 - **macOS:** Rectangle (window management)
 

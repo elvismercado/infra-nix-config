@@ -87,13 +87,36 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 | `home-manager/all/ansible.nix`   | `custom.hmAnsible.enable`                                                                                                                                                                                                                                                                                                                |
 | `home-manager/all/bash.nix`      | `custom.hmBash.enable`                                                                                                                                                                                                                                                                                                                   |
 | `home-manager/all/fastfetch.nix` | `custom.hmFastfetch.enable`                                                                                                                                                                                                                                                                                                              |
+| `home-manager/all/development.nix` | `custom.hmDevelopment.enable` — composes fnm, Git, GitHub CLI, SSH, uv/Python, and the platform VS Code settings wrapper |
 | `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`                                                                                                                                                                                                                                                                                                                    |
 | `home-manager/all/git.nix`       | `custom.hmGit.enable`                                                                                                                                                                                                                                                                                                                    |
+| `home-manager/all/github-cli.nix` | `custom.hmGitHubCli.enable`                                                                                                                                                                                                                                                                                                            |
 | `home-manager/all/pyenv.nix`     | `custom.hmPyenv.enable`                                                                                                                                                                                                                                                                                                                  |
 | `home-manager/all/ssh.nix`       | `custom.hmSsh.enable`                                                                                                                                                                                                                                                                                                                    |
 | `home-manager/all/starship.nix`  | `custom.hmStarship.enable`                                                                                                                                                                                                                                                                                                               |
 |                                  | `custom.hmStarship.style`                                                                                                                                                                                                                                                                                                                |
+| `home-manager/all/uv.nix`        | `custom.hmUv.enable` — uv plus a base Python interpreter                                                                                                                                                                                                                                                                                 |
 | `home-manager/all/syncthing.nix` | `custom.hmSyncthing.enable` (+ `.defaultFolderPath` str default `~/cloud/syncthing`, `.ignorePermsByDefault` bool default `true`, `.defaultIgnoreLines` list — unified Linux + macOS module backed by `services.syncthing`; auto-imported by `modules/apps/{linux,darwin}/syncthing.nix` — prefer enabling `custom.appSyncthing.enable`) |
+
+### Development Profile
+
+For a general development environment, import `home-manager/all/development.nix`
+and set `custom.hmDevelopment.enable = true`. The profile composes the
+individually toggleable fnm, Git, GitHub CLI, SSH, uv/Python, and VS Code
+modules. npm is provided by the Node.js version selected through fnm. The Git
+module configures GitHub CLI as the HTTPS credential helper only when the CLI
+module is enabled; authenticate separately with `gh auth login`.
+
+```nix
+{
+  imports = [ ../../../modules/home-manager/all/development.nix ];
+  custom.hmDevelopment.enable = true;
+}
+```
+
+On macOS, VS Code's application binary is installed through the system-level
+`custom.appVscode.enable` façade; the development profile supplies its Home
+Manager settings. Linux uses the Home Manager VS Code package directly.
 
 **Cross-platform core (internal — do not import from hosts)** (`home-manager/core/`):
 

@@ -15,6 +15,8 @@
 }:
 
 {
+  imports = [ ./github-cli.nix ];
+
   options = {
     custom.hmGit.enable = lib.mkEnableOption "Git with user identity, common aliases, and delta diff pager";
   };
@@ -43,10 +45,9 @@
         init.defaultBranch = "main";
         core.editor = config.custom.hmBase.editor;
         pull.rebase = false;
-
-        # gh auth login writes a credential helper entry after authenticating.
-        # Because home-manager manages git config as a read-only nix store symlink,
-        # that write fails. Pre-declaring it here avoids the error.
+      } // lib.optionalAttrs config.custom.hmGitHubCli.enable {
+        # Keep the helper paired with the optional CLI module. Git-only hosts
+        # should not receive a credential helper for a missing gh executable.
         "credential.https://github.com".helper = "!gh auth git-credential";
       };
     };
