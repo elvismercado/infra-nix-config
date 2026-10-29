@@ -88,7 +88,7 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 | `home-manager/all/bash.nix`      | `custom.hmBash.enable`                                                                                                                                                                                                                                                                                                                   |
 | `home-manager/all/fastfetch.nix` | `custom.hmFastfetch.enable`                                                                                                                                                                                                                                                                                                              |
 | `home-manager/all/development.nix` | `custom.hmDevelopment.enable` — composes fnm, Git, GitHub CLI, SSH, uv/Python, and the platform VS Code settings wrapper |
-| `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`                                                                                                                                                                                                                                                                                                                    |
+| `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`, `.shell` (`bash` or `zsh`; defaults to Bash on Linux and Zsh on macOS)                                                                                                                                                                                                                                             |
 | `home-manager/all/git.nix`       | `custom.hmGit.enable`                                                                                                                                                                                                                                                                                                                    |
 | `home-manager/all/github-cli.nix` | `custom.hmGitHubCli.enable`                                                                                                                                                                                                                                                                                                            |
 | `home-manager/all/pyenv.nix`     | `custom.hmPyenv.enable`                                                                                                                                                                                                                                                                                                                  |
@@ -101,22 +101,44 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 ### Development Profile
 
 For a general development environment, import `home-manager/all/development.nix`
-and set `custom.hmDevelopment.enable = true`. The profile composes the
-individually toggleable fnm, Git, GitHub CLI, SSH, uv/Python, and VS Code
-modules. npm is provided by the Node.js version selected through fnm. The Git
-module configures GitHub CLI as the HTTPS credential helper only when the CLI
-module is enabled; authenticate separately with `gh auth login`.
+in a host's `home-manager/default.nix` and set
+`custom.hmDevelopment.enable = true`. The profile composes the individually
+toggleable fnm, Git, GitHub CLI, SSH, uv/Python, and VS Code modules. It supports
+Linux and macOS hosts registered with this flake, which passes `userSettings` to
+all Home Manager modules, including standalone Home Manager hosts.
 
 ```nix
 {
   imports = [ ../../../modules/home-manager/all/development.nix ];
   custom.hmDevelopment.enable = true;
+
+  # Optional: use Zsh on Linux or Bash on macOS for fnm integration.
+  # custom.hmFnm.shell = "zsh";
 }
 ```
 
-On macOS, VS Code's application binary is installed through the system-level
-`custom.appVscode.enable` façade; the development profile supplies its Home
-Manager settings. Linux uses the Home Manager VS Code package directly.
+fnm installs the latest Node.js LTS on first Home Manager activation when no
+Node versions are present, then provides `node` and `npm`. The selected shell
+integration (Bash on Linux and Zsh on macOS by default) enables switching when
+entering directories with a `.node-version` file. `uv` provides Python version
+and project environment management; use
+project-local version pins and environments rather than enabling both uv and
+the optional pyenv module by default.
+
+Git uses `userSettings.username` as `user.name` and
+`${userSettings.username}@${userSettings.hostname}` as `user.email`. GitHub CLI
+is configured as Git's HTTPS credential helper; authenticate separately with
+`gh auth login`. SSH settings configure the client only; keys remain user-managed.
+
+On Linux, the profile installs VS Code and its Nix, GitLens, and Prettier
+extensions through Home Manager. On macOS, the app binary still comes from the
+system-level `custom.appVscode.enable` Homebrew façade; the profile supplies
+VS Code settings, and extensions are installed through the app.
+
+The profile is currently enabled on JIN, FENNEC, and EDGE. LULA does not enable
+it. To manage a non-NixOS Linux host through this flake, also register it in
+`homeManagerHosts` in `flake/hosts.nix`; otherwise the same Home Manager module
+can be imported by that host's own Home Manager configuration.
 
 **Cross-platform core (internal — do not import from hosts)** (`home-manager/core/`):
 

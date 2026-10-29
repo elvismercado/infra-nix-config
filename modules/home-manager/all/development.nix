@@ -16,14 +16,15 @@
 
 let
   cfg = config.custom.hmDevelopment;
-  # Use externally supplied host metadata in imports. Reading pkgs here would
-  # require config during import resolution and trigger infinite recursion.
   isLinux = lib.hasSuffix "linux" userSettings.system;
+  isDarwin = lib.hasSuffix "darwin" userSettings.system;
   vscodeModule =
     if isLinux then
       ../linux/vscode.nix
+    else if isDarwin then
+      ../darwin/vscode.nix
     else
-      ../darwin/vscode.nix;
+      throw "custom.hmDevelopment supports Linux and macOS hosts; got system '${userSettings.system}'";
 in
 {
   imports = [

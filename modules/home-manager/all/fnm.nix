@@ -18,26 +18,33 @@
   ...
 }:
 
+let cfg = config.custom.hmFnm;
+in
 {
-  options = {
-    custom.hmFnm.enable = lib.mkEnableOption "fnm Fast Node Manager (auto-installs latest LTS on first activation)";
+  options.custom.hmFnm = {
+    enable = lib.mkEnableOption "fnm Fast Node Manager (auto-installs latest LTS on first activation)";
+
+    shell = lib.mkOption {
+      type = lib.types.enum [ "bash" "zsh" ];
+      default = if pkgs.stdenv.isDarwin then "zsh" else "bash";
+      description = "Shell receiving fnm initialization; defaults to Zsh on macOS and Bash elsewhere.";
+    };
   };
 
-  config = lib.mkIf config.custom.hmFnm.enable {
+  config = lib.mkIf cfg.enable {
     home.packages = [ pkgs.fnm ];
 
-    # Initialize fnm in bash and zsh (adds the selected Node version to PATH
-    # and enables automatic switching based on project version files).
-    programs.bash = {
+    # Initialize fnm in the selected shell and switch versions on directory changes.
+    programs.bash = lib.mkIf (cfg.shell == "bash") {
       enable = true;
       initExtra = ''
         eval "$(fnm env --use-on-cd)"
       '';
     };
 
-    programs.zsh = lib.mkIf pkgs.stdenv.isDarwin {
+    programs.zsh = lib.mkIf (cfg.shell == "zsh") {
       enable = true;
-      initExtra = ''
+      initContent = ''
         eval "$(fnm env --use-on-cd --shell zsh)"
       '';
     };
