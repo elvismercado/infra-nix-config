@@ -86,6 +86,7 @@ Home Manager modules use the same `custom.*` namespace pattern. Import and enabl
 | `home-manager/all/android.nix`   | `custom.hmAndroid.enable`                                                                                                                                                                                                                                                                                                                |
 | `home-manager/all/ansible.nix`   | `custom.hmAnsible.enable`                                                                                                                                                                                                                                                                                                                |
 | `home-manager/all/bash.nix`      | `custom.hmBash.enable`                                                                                                                                                                                                                                                                                                                   |
+| `home-manager/all/codex.nix`     | `custom.hmCodex.enable` — Codex CLI from the already-pinned unstable nixpkgs input                                                                                                                                                                                                                                                       |
 | `home-manager/all/fastfetch.nix` | `custom.hmFastfetch.enable`                                                                                                                                                                                                                                                                                                              |
 | `home-manager/all/development.nix` | `custom.hmDevelopment.enable` — composes fnm, Git, GitHub CLI, SSH, uv/Python, and the platform VS Code settings wrapper |
 | `home-manager/all/fnm.nix`       | `custom.hmFnm.enable`, `.shell` (`bash` or `zsh`; defaults to Bash on Linux and Zsh on macOS)                                                                                                                                                                                                                                             |
@@ -139,6 +140,18 @@ The profile is currently enabled on JIN, FENNEC, and EDGE. LULA does not enable
 it. To manage a non-NixOS Linux host through this flake, also register it in
 `homeManagerHosts` in `flake/hosts.nix`; otherwise the same Home Manager module
 can be imported by that host's own Home Manager configuration.
+
+### Codex CLI and desktop app on Linux
+
+On a NixOS host, import `home-manager/all/codex.nix` and
+`modules/apps/linux/chatgpt.nix`, then enable `custom.hmCodex.enable` and
+`custom.appChatgpt.enable` respectively. These modules use the flake's pinned
+unstable nixpkgs input for the Codex CLI and ChatGPT desktop app, leaving the
+host's selected nixpkgs channel unchanged. The ChatGPT app package is unfree,
+so its imported package set explicitly allows unfree packages. OpenAI currently
+does not list NixOS among the supported Linux desktop-app distributions, and
+its documented mobile Remote hosts are macOS and Windows; those capabilities
+may therefore be unavailable on NixOS.
 
 **Cross-platform core (internal — do not import from hosts)** (`home-manager/core/`):
 

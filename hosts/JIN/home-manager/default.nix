@@ -66,6 +66,7 @@ in
     ../../../modules/home-manager/all/aliases.nix
     ../../../modules/home-manager/all/ansible.nix
     ../../../modules/home-manager/all/bash.nix
+    ../../../modules/home-manager/all/codex.nix
     ../../../modules/home-manager/all/development.nix
     ../../../modules/home-manager/all/fastfetch.nix
     ../../../modules/home-manager/all/starship.nix
@@ -104,6 +105,7 @@ in
   custom.hmAliasesAmdCpu.enable = true;
   custom.hmAnsible.enable = true;
   custom.hmBash.enable = true;
+  custom.hmCodex.enable = true;
   custom.hmFastfetch.enable = true;
   custom.hmDevelopment.enable = true;
   custom.hmStarship.enable = true;

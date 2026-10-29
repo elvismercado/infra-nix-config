@@ -103,6 +103,7 @@
     ../../../modules/apps/linux/proton-mail-bridge.nix
     ../../../modules/apps/linux/insync.nix
     ../../../modules/apps/linux/beeper.nix
+    ../../../modules/apps/linux/chatgpt.nix
     ../../../modules/apps/linux/ferdium.nix
     ../../../modules/apps/linux/shotcut.nix
     ../../../modules/apps/linux/sweet-home3d.nix
@@ -200,6 +201,7 @@
   custom.sysNixSunshine.enable = true;
 
   # Apps (cross-layer façades)
+  custom.appChatgpt.enable = true;
   custom.appSignal.enable = true;
   custom.appLibreoffice.enable = true;
   custom.appOnlyoffice.enable = true;
